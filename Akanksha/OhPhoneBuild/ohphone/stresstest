@@ -1,0 +1,42 @@
+#!/bin/sh
+
+IPADDR=127.0.0.1
+PORT1=10720
+PORT2=20720
+
+if [ -z "$1" ]; then
+  DEVICE1="1"
+else
+  DEVICE1=$1
+fi
+if [ -z "$2" ]; then
+  DEVICE2="2"
+else
+  DEVICE2=$2
+fi
+
+OHPHONE="./obj_linux_x86_d/ohphone"
+
+LOGDIR=./logs
+
+TIMEOUT="1"
+
+REPEAT=20000
+CHANNELCOUNT=$[ $REPEAT * 2 ]
+
+#FLAGS="-tttt"
+#FLAGS="-tttt -Tf"
+FLAGS="-Tf -v2 -tttt"
+#FLAGS="-Tf -v2"
+
+TXCMD="$OHPHONE -n --listenport $PORT1 -q $DEVICE1 --disable-menu --autorepeat $REPEAT $FLAGS ${IPADDR}:${PORT2}"
+RXCMD="$OHPHONE -n --listenport $PORT2 -q $DEVICE2 --disable-menu --autorepeat $REPEAT $FLAGS -a -l --autodisconnect 1"
+
+echo $RXCMD
+echo $TXCMD
+
+rm -rf $LOGDIR
+mkdir $LOGDIR
+
+$RXCMD > $LOGDIR/receiver.log 2>&1 &
+$TXCMD > $LOGDIR/transmitter.log 2>&1

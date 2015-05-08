@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--                                                                    -->
+<!--                    NxGEN Configuration file                        -->
+<!--                                                                    -->
+
+<nxgencfg>
+    <!--            client section description:                         -->
+    <!--            1) at least one client section must exist           -->
+    <!--            2) index number is mapped to command line option -N -->
+    <!--                                                                -->
+    <!--            Receiver                                            -->
+    <client index="1">
+        <!--        The valid arguments for scenario element:           -->
+        <!--        e.g.                                                -->
+        <!--        internal="uas"  (-sn)                               -->
+        <!--        file="uas.xml"  (-sf)                               -->
+        <!--                                                            -->
+        <!--        Note:                                               -->
+        <!--        1) internal: NxGEN build-in scenario name           -->
+        <!--           'nxgen -help' for valid scenario name list       -->
+        <!--        2) file: the scenario file full path and name       -->
+        <!-- <scenario file="uas.xml">                                  -->
+        <scenario file="uas-g711-new.xml">
+        </scenario>
+
+        <!--        The valid arguments for signaling element:          -->
+        <!--        e.g.                                                -->
+        <!--        from="1.1.0.20" (-i)                                -->
+        <!--        to="1.1.2.11"   (host)                              -->
+        <!--        calling="11220" (-sl)                               -->
+        <!--        called="11020"  (-s)                                -->
+        <!--                                                            -->
+        <!--        Note:                                               -->
+        <!--        1) from: the signaling IP address of NxGEN          -->
+        <!--        2) to: the signaling IP address of destination,     -->
+        <!--           which is only required for transmitter           -->
+        <!--        3) calling: the caller's registered phone number    -->
+        <!--           It is only required for transmitter, which is    -->
+        <!--           provisioned as "Generic IP Device"               -->
+        <!--        4) called: the receiver's registered phone number   -->
+        <!--           It is only required for transmitter, which is    -->
+        <!--           provisioned as "Generic IP Device"               -->
+        <signaling from="24.24.0.87">
+        </signaling>
+
+        <!--        The valid arguments for media element:              -->
+        <!--        e.g.                                                -->
+        <!--        interface="0"                                       -->
+        <!--        address="1.1.0.22"  (-mi)                           -->
+        <!--        vlan="1"  (-vlan)                                   -->
+        <!--                                                            -->
+        <!--        Note:                                               -->
+        <!--        1) interface: MGEN port id for sending media from   -->
+        <!--        2) address: the IP address for that port            -->
+        <!--        3) vlan: the vlan id for this IP address. If it's   -->
+        <!--           not given, the vlan id will be '0'               -->
+        <!--        4) if the media element doesn't exist, the NxGEN    -->
+        <!--           won't initialize and send media traffic          -->
+        <media interface="0" address="24.24.0.156" vlan="0">
+        </media>
+    </client>
+
+    <!--            Transmitter                                         -->
+    <client index="2">
+        <!--        The valid arguments for callparam element:          -->
+        <!--        e.g.                                                -->
+        <!--        duration="10000"       (#ms, -d)                    -->
+        <!--        rate="10"              (#calls/s, -r)               -->
+        <!--        allow="1000"           (#callls, -l)                -->
+        <!--        stop="10"              (#calls, -m)                 -->
+        <!--        jitter="10"            (#ms, -J)                    -->
+        <!--                                                            -->
+        <!--        Note:                                               -->
+        <!--        1) it's recommended to use only the combination of  -->
+        <!--           two of duration, rate and allow/stop             -->
+        <!--        2) allow and stop: only need one of them at a time  -->
+        <!--           allow: the number of concurrent calls            -->
+        <!--           stop: make the number of calls and then stop     -->
+        <!--        3) otherwise, if no callparam element, the default  -->
+        <!--           values will be used                              -->
+
+        <scenario file="uac-vz-mod.xml">
+        </scenario>
+
+        <signaling from="23.23.0.87" to="23.23.0.88">
+        </signaling>
+
+        <media interface="1" address="23.23.0.156" vlan="0">
+        </media>
+    </client>
+</nxgencfg>

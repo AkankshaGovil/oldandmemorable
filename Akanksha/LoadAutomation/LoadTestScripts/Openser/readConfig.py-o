@@ -1,0 +1,144 @@
+
+def readconfigfile(parameter):
+  """
+  This functions fetches the value of the key specified in string 'parameter' from the config file.
+  """
+  
+  value = ''
+  file = open("loadConfig","r")
+
+  while 1 :
+
+    line = file.readline()
+
+    if not line:
+      break
+
+    if line.startswith('#'):
+      continue
+
+    if line == '\n':
+      continue
+
+    a = line.strip()
+
+    if a.startswith(parameter):
+      value = getvalue(a)
+      continue
+
+  return value 
+
+
+def fetchserinfo():
+  """
+  This function returns the ser information
+  """
+
+  serdictlist = []
+  sercount = (int)(readconfigfile('SER_COUNT'))
+  
+  for i in range(sercount):
+    serdict = {}
+    serdict['NAME'] = "SER-%s" %(i+1)
+    serdict['IP'] =  readconfigfile('SER_IP_' + str(i+1))
+    serdict['MASK'] =  readconfigfile('SER_MASK_' + str(i+1))
+    serdict['DOMAIN'] =  readconfigfile('SER_DOMAIN_' + str(i+1))
+    serdictlist.append(serdict)
+
+  return serdictlist
+
+
+def fetchrealminfo():
+  """
+  This function returns the realm information
+  """
+
+  realmdictlist = []
+  type = 
+
+  count = int (readconfigfile('REALM_COUNT'))
+  for i in range(count):
+    
+    realmdict = {}
+    
+    if i == 0:
+      type = 'sender'
+      vnet = 'vnet_sender'
+    if i == 1:
+      type = 'receiver'
+      vnet = 'vnet_receiver'
+    if i == 2:
+      type = 'sipproxy'
+      vnet = 'vnet_sipproxy'
+
+    realmdict['TYPE'] = type 
+    realmdict['VNET'] = vnet 
+    realmdict['IP'] = readconfigfile('realm_' + type + '_IP') 
+    realmdict['MASK'] = readconfigfile('realm_' + type + '_mask')
+    realmdict['MEDPOOL'] = readconfigfile('realm_' + type + '_medpool')
+    
+    if type == 'sipproxy':
+      realmdict['MEDPOOL'] = '0'
+    
+    realmdictlist.append(realmdict)
+
+  return realmdictlist
+
+
+def fetchvnetinfo():
+  """
+  This function returns the vnet information
+  """
+
+  vnetdictlist = []
+  type = ''
+
+  for i in range(3):
+    
+    vnetdict = {}
+
+    if i == 0:
+      type = 'sender'
+      name = 'vnet_sender' 
+    if i == 1:
+      type = 'receiver'
+      name = 'vnet_receiver' 
+    if i == 2:
+      type = 'proxy'
+      name = 'vnet_sipproxy' 
+
+    vnetdict['TYPE'] = type
+    vnetdict['NAME'] = name
+    vnetdict['IP'] = readconfigfile('vnet_iface_' + type)
+
+    vnetdictlist.append(vnetdict)
+
+  return vnetdictlist
+
+
+def getvalue(line):
+    """
+    This function returns the value of each parameter
+    after spliting from '='
+    """
+
+    str = line.split('=')
+    
+    #removing spaces and inverted commas from the string
+    return (str[1].strip()).replace('\"','')
+
+
+def main():
+  serinfodict = fetchserinfo()
+  print serinfodict
+  realminfodict = fetchrealminfo()
+  print realminfodict
+  vnetinfodict = fetchvnetinfo()
+  print vnetinfodict
+
+  reg_gen_ip = readconfigfile('REG_GEN')
+  print reg_gen_ip
+
+
+if __name__ == '__main__':
+  main()

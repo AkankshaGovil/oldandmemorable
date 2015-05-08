@@ -1,0 +1,185 @@
+The SCM-state is => on
+
+Path where build is kept => /root/IserverBuilds/dailybuilds
+
+The IP address of the current machine is => 10.144.0.107 
+
+Uninstallation of 10.144.0.107 begins 
+
+Uninstallation begins at time => Fri Aug  8 04:53:40 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 04:59:20 EDT 2008 
+
+Uninstallaton is successful
+The IP address of the current machine is => 10.144.0.106 
+
+Uninstallation of 10.144.0.106 begins 
+
+Uninstallation begins at time => Fri Aug  8 04:59:20 EDT 2008 
+
+The SCM-state is => on
+
+Path where build is kept => /root/IserverBuilds/dailybuilds
+
+The IP address of the current machine is => 10.144.0.107 
+
+Uninstallation of 10.144.0.107 begins 
+
+Uninstallation begins at time => Fri Aug  8 05:22:02 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 05:22:02 EDT 2008 
+
+Uninstallaton is successful
+The IP address of the current machine is => 10.144.0.106 
+
+Uninstallation of 10.144.0.106 begins 
+
+Uninstallation begins at time => Fri Aug  8 05:22:02 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 05:23:04 EDT 2008 
+
+Uninstallaton is successful
+Installation of iServer begins on 10.144.0.106 machine
+
+Installation begins at time => Fri Aug  8 05:28:40 EDT 2008 
+
+Installation of iServer end on a 10.144.0.106 machine 
+
+Installation ends at time => Fri Aug  8 05:33:07 EDT 2008 
+
+The SCM-state is => on
+
+Path where build is kept => /root/IserverBuilds/dailybuilds
+
+The IP address of the current machine is => 10.144.0.107 
+
+Uninstallation of 10.144.0.107 begins 
+
+Uninstallation begins at time => Fri Aug  8 05:48:48 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 05:48:48 EDT 2008 
+
+Uninstallaton is successful
+The IP address of the current machine is => 10.144.0.106 
+
+Uninstallation of 10.144.0.106 begins 
+
+Uninstallation begins at time => Fri Aug  8 05:48:48 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 05:49:39 EDT 2008 
+
+Uninstallaton is successful
+Installation of iServer begins on 10.144.0.106 machine
+
+Installation begins at time => Fri Aug  8 05:55:15 EDT 2008 
+
+Installation of iServer end on a 10.144.0.106 machine 
+
+Installation ends at time => Fri Aug  8 05:57:01 EDT 2008 
+
+The SCM-state is => on
+
+Path where build is kept => /root/IserverBuilds/dailybuilds
+
+The IP address of the current machine is => 10.144.0.107 
+
+Uninstallation of 10.144.0.107 begins 
+
+Uninstallation begins at time => Fri Aug  8 06:03:06 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 06:03:06 EDT 2008 
+
+Uninstallaton is successful
+The IP address of the current machine is => 10.144.0.106 
+
+Uninstallation of 10.144.0.106 begins 
+
+Uninstallation begins at time => Fri Aug  8 06:03:06 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 06:03:57 EDT 2008 
+
+Uninstallaton is successful
+Installation of iServer begins on 10.144.0.106 machine
+
+Installation begins at time => Fri Aug  8 06:09:33 EDT 2008 
+
+Installation of iServer end on a 10.144.0.106 machine 
+
+Installation ends at time => Fri Aug  8 06:11:23 EDT 2008 
+
+The SCM-state is => on
+
+Path where build is kept => /root/IserverBuilds/dailybuilds
+
+The IP address of the current machine is => 10.144.0.107 
+
+Uninstallation of 10.144.0.107 begins 
+
+Uninstallation begins at time => Fri Aug  8 06:23:33 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 06:23:33 EDT 2008 
+
+Uninstallaton is successful
+The IP address of the current machine is => 10.144.0.106 
+
+Uninstallation of 10.144.0.106 begins 
+
+Uninstallation begins at time => Fri Aug  8 06:23:33 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 06:24:25 EDT 2008 
+
+Uninstallaton is successful
+Installation of iServer begins on 10.144.0.106 machine
+
+Installation begins at time => Fri Aug  8 06:25:15 EDT 2008 
+
+Installation of iServer end on a 10.144.0.106 machine 
+
+Installation ends at time => Fri Aug  8 06:26:42 EDT 2008 
+
+Installation of iServer begins on 10.144.0.107 machine
+
+Installation begins at time => Fri Aug  8 06:27:42 EDT 2008 
+
+Installation of iServer end on a 10.144.0.107 machine 
+
+Installation ends at time => Fri Aug  8 06:28:37 EDT 2008 
+
+The SCM-state is => on
+
+Path where build is kept => /root/IserverBuilds/dailybuilds
+
+The IP address of the current machine is => 10.144.0.107 
+
+Uninstallation of 10.144.0.107 begins 
+
+Uninstallation begins at time => Fri Aug  8 07:20:20 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 07:21:08 EDT 2008 
+
+Uninstallaton is successful
+The IP address of the current machine is => 10.144.0.106 
+
+Uninstallation of 10.144.0.106 begins 
+
+Uninstallation begins at time => Fri Aug  8 07:21:08 EDT 2008 
+
+Uninstallation ends at time => Fri Aug  8 07:22:06 EDT 2008 
+
+Uninstallaton is successful
+Installation of iServer begins on 10.144.0.106 machine
+
+Installation begins at time => Fri Aug  8 07:27:42 EDT 2008 
+
+Installation of iServer end on a 10.144.0.106 machine 
+
+Installation ends at time => Fri Aug  8 07:29:09 EDT 2008 
+
+Installation of iServer begins on 10.144.0.107 machine
+
+Installation begins at time => Fri Aug  8 07:35:07 EDT 2008 
+
+Installation of iServer end on a 10.144.0.107 machine 
+
+Installation ends at time => Fri Aug  8 07:36:02 EDT 2008 
+

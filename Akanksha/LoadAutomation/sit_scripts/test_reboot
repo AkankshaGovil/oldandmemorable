@@ -1,0 +1,115 @@
+#!/usr/bin/python2.3
+
+def main():
+
+    print 'executing reboot script'
+
+    try:
+        import os,pexpect
+	Max_Count = 10
+
+        b=pexpect.spawn('ssh root@bkupmsw')
+        b.expect(['#'],30)
+        b.sendline('iserver all stop')
+        b.expect(['#'],30)
+        print "stopped the bkup"
+        os.system ('sleep 30')
+
+        m=pexpect.spawn('ssh root@mymsw')
+        m.expect(['#'],30)
+        m.sendline('reboot')
+        print "MSX Reboot command executed"
+        os.system ('sleep 120')
+
+        SSH_Connect = True
+        count = 0
+
+        while (SSH_Connect and count < Max_Count):
+            msw=pexpect.spawn('ssh root@mymsw', timeout = 60)
+            index = msw.expect(['#',pexpect.EOF],60)
+            if (index == 1):
+                os.system ('sleep 30')
+            else:
+                SSH_Connect = False
+            count = count + 1
+
+        #print 'count is', count
+        if (count == Max_Count):
+            print 'Msw not up after reboot: exiting'
+            raise 'exit'
+        else:
+            print 'MSX up after reboot'
+
+        MSW_STATUS = True
+        count = 0
+
+        while (MSW_STATUS and count < Max_Count):
+            msw.sendline('cli scm')
+            msw.expect(['#'],30)
+            msw_output=msw.before
+            if (msw_output.__contains__('active')) :
+                MSW_STATUS = False
+            else:
+                os.system ('sleep 30')
+            count = count + 1
+
+        #print 'count is', count
+        if (count == Max_Count):
+            print 'Msw status not active after reboot: exiting'
+            raise 'exit' 
+        else:
+            print 'MSX Is up and Active'
+
+        b.sendline('reboot')
+        print "BKUP Reboot command executed"
+        os.system ('sleep 120')
+
+        SSH_Connect = True
+        count = 0
+
+        while (SSH_Connect and count < Max_Count):
+            bkup=pexpect.spawn('ssh root@bkupmsw',timeout = 60)
+            index = bkup.expect(['#',pexpect.EOF],60)
+            if (index == 1):
+                os.system ('sleep 30')
+            else:
+                SSH_Connect = False
+            count = count + 1
+
+        #print 'count is', count
+        if (count == Max_Count):
+            print 'Bkup not up after reboot: exiting'
+            raise 'exit'
+        else:
+            print 'Bkup is up after reboot'
+
+        BKUP_STATUS = True
+        count = 0
+
+        while (BKUP_STATUS and count < Max_Count):
+            bkup.sendline('cli scm')
+            bkup.expect(['#'],30)
+            bkup_output=bkup.before
+            if (bkup_output.__contains__('standby')) :
+                BKUP_STATUS = False
+            else:
+                os.system ('sleep 30')       
+            count = count + 1
+
+	# Added extra sleep time as all the ibkup process might not have come up yet even if sig state is standy
+        os.system ('sleep 30')
+        #print 'count is', count
+        if (count == Max_Count):
+            print 'Bkup status not standby after reboot: exiting'
+            raise 'exit'
+        else:
+            print 'BKUP is up and Standby'
+
+        print 'End of reboot script'
+        return 0
+
+    except 'exit':
+        return 1
+
+
+main()

@@ -1,0 +1,90 @@
+base_directory="./LoadTrial"
+CALL_GEN_COUNT=1
+SER_COUNT=2
+REALM_COUNT=5
+
+
+#SUT_IP = 
+
+
+REG_GEN = 10.145.0.4
+virtual_ip_start=23.23.90.2
+virtual_ip_iface=eth2
+virtual_ip_mask=255.255.0.0
+remote_realm_ip=23.23.0.88
+
+
+
+
+#SER_1=
+#SER_2=
+
+
+
+
+vnet_iface_sender="eth2"
+vnet_iface_receiver="eth3"
+vnet_iface_proxy="eth4"
+
+#REALM CONFIG
+realm_id=realm_1
+realm_type=sender
+realm_ip="23.23.0.88"
+realm_mask="255.255.0.0"
+realm_medpool="1"
+
+realm_id=realm_2
+realm_type=sender
+realm_ip="23.23.0.89"
+realm_mask="255.255.0.0"
+realm_medpool="3"
+
+
+realm_id=realm_3
+realm_type=receiver
+realm_ip="24.24.0.88"
+realm_mask="255.255.0.0"
+realm_medpool="2"
+
+realm_id=realm_4
+realm_type=receiver
+realm_ip="24.24.0.89"
+realm_mask="255.255.0.0"
+realm_medpool="5"
+
+realm_id=realm_5
+realm_type=sipproxy
+realm_ip="10.145.0.91"
+realm_mask="255.255.0.0"
+realm_medpool="0"
+
+ser_id=ser_1
+ser_ip="10.145.0.91"
+ser_mask="255.255.0.0"
+ser_domain="as.load52test1.com"
+
+ser_id=ser_2
+ser_ip="10.145.0.92"
+ser_mask="255.255.0.0"
+ser_domain="as.load52test2.com"
+
+
+
+
+call_gen_id =1
+CALL_GEN_IP= 10.145.0.1
+ser = ser_1
+realm_send = realm_1 
+realm_recv = realm_4 
+
+call_gen_id = 2
+CALL_GEN_IP= 10.145.0.2
+ser = ser_2
+realm_send = realm_2 
+realm_recv = realm_3 
+
+
+
+
+
+

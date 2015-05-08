@@ -1,0 +1,91 @@
+
+./sipp -sf new-auth-reg.xml -p 5061 -i 24.24.0.56 24.24.0.185 -inf csv-source.txt -d 180000 -r 8 -users 256 -trace_err -default_behaviors -bye,-abortunexp
+
+./sipp -sf new-auth-reg.xml -p 5061 -i 23.23.0.56 23.23.0.185 -inf csv-dest.txt -d 180000 -r 8 -users 256 -trace_err -default_behaviors -bye,-abortunexp
+
+./nxgen -cf config.xml -N 1 -T 2 -trace_err 
+
+./nxgen -cf config.xml -N 2 -T 2 -r 19 -inf csv-call.txt -d 200000 -trace_err -l 3800
+
+===================================================================================================================================
+
+(Running the calls also with sipp --without media)
+
+./sipp -sf uas-g711-new.xml -i 23.23.0.56 23.23.0.185 -trace_err -default_behaviors -bye,-abortunexp
+./sipp -sf uac-vz-mod.xml -r 30 -d 200000 -inf csv-call.txt -i 24.24.0.56 24.24.0.185 -trace_err -default_behaviors -bye,-abortunexp
+
+====================================================================================================================================
+Running with 2 SERs
+
+./sipp -sf new-auth-reg.xml -p 5061 -i 24.24.0.56 24.24.0.185 -inf csv-source.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf new-auth-reg-sittest.xml -p 5061 -i 24.24.2.51 24.24.0.185 -inf csv-source-sittest.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf new-auth-reg.xml -p 5061 -i 23.23.0.56 23.23.0.185 -inf csv-dest.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf new-auth-reg-sittest.xml -p 5061 -i 24.24.2.51 23.23.0.185 -inf csv-dest-sittest.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf uas-g711-new.xml -i 23.23.0.56 23.23.0.185 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+./sipp -sf uac-vz-mod.xml -r 19 -d 200000 -inf csv-call.txt -i 24.24.0.56 24.24.0.185 -users 3800 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+./sipp -sf uas-g711-new.xml -i 24.24.2.51 23.23.0.185 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+./sipp -sf uac-vz-mod.xml -r 19 -d 200000 -inf csv-call-sittest.txt -i 24.24.2.51 24.24.0.185 -users 3800 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+========================================================================================================================================================
+Running with 2 SERs and 4 GENs (using sipp for registeration and nxgen for calls,60K calls and 15K reg's  nohup and in individual directory)
+
+for registeration load
+from /opt/nxgen/bin/Sipp (GEN55)
+nohup ./new-reg-load2-sittest.sh    (same as new-reg-load2-sittest-100.sh)
+(for 120% load  nohup ./new-reg-load2-sittest-120.sh)
+
+For registering calling eps
+
+from reg_src_1 (GEN87)
+nohup ./sipp -sf new-auth-reg.xml -p 5061 -i 23.23.0.87 23.23.0.88 -inf csv-source_1.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+from reg_src_2 (GEN51)
+nohup ./sipp -sf new-auth-reg.xml -p 5061 -i 24.24.2.51 24.24.0.185 -inf csv-source_2.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+from reg_dst_1 (GEN87)
+nohup ./sipp -sf new-auth-reg.xml -p 5061 -i 24.24.0.87 24.24.0.88 -inf csv-dest_1.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+from reg_dst_2 (GEN51)
+nohup ./sipp -sf new-auth-reg.xml -p 5061 -i 23.23.2.51 23.23.0.185 -inf csv-dest_2.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+For Calls
+
+from call_dst_1 (GEN56)
+nohup ./nxgen -cf config.xml -N 1 -T 2 -trace_err
+
+from call_src_1 (GEN56)
+nohup ./nxgen -cf config.xml -N 2 -T 2 -r 10 -inf csv-call_1.txt -d 200000 -trace_err -l 2000
+
+from call_dst_2 (GEN51)
+nohup ./nxgen -cf config.xml -N 1 -T 2 -trace_err
+
+from call_src_2 (GEN51)
+nohup ./nxgen -cf config.xml -N 2 -T 2 -r 10 -inf csv-call_2.txt -d 200000 -trace_err -l 2000
+
+from call_dst_sittest_1 (GEN52)
+nohup ./nxgen -cf config.xml -N 1 -T 2 -trace_err
+
+from call_src-sittest_1 (GEN52)
+nohup ./nxgen -cf config.xml -N 2 -T 2 -r 9 -inf csv-call-sittest_1.txt -d 200000 -trace_err -l 1800
+
+from call_dst-sittest_2 (GEN62)
+nohup ./nxgen -cf config.xml -N 1 -T 2 -trace_err
+
+from call_src-sittest_2 (GEN62)
+nohup ./nxgen -cf config.xml -N 2 -T 2 -r 9 -inf csv-call-sittest_2.txt -d 200000 -trace_err -l 1800
+
+(For 120% 18K calls)
+Change rate and limit for the Tx
+Gen56  and Gen51 -r 12 -l 2400
+Gen55 r 11 -l 2200 and Gen62 r 9 -l 2000
+
+Running the 60K reg manually (fron GEN55 change csv-nated from 1 to 9)
+
+./sipp -sf new-reg-nated.xml -i 23.23.0.55 23.23.0.185 -inf /tmp/csv-nated1.txt -d 180000 -r 37 -users 6660 -trace_err -default_behaviors -bye,-abortunexp

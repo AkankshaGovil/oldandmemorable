@@ -1,0 +1,170 @@
+# Vnet configuration:
+# ---------------------
+cli vnet add v1
+cli vnet add v2
+cli vnet add v3
+cli vnet edit v1 ifname eth0 gateway 0.0.0.0
+cli vnet edit v2 ifname eth1 gateway 0.0.0.0
+cli vnet edit v3 ifname eth3 gateway 0.0.0.0
+
+
+
+# Realm Configuration:
+# ----------------------
+cli realm add r1 realmid 4
+cli realm add r2 realmid 5
+cli realm add r3 realmid 6
+
+
+cli realm edit r1 admin enable addr private emr alwayson imr alwayson mask 255.255.0.0 medpool 1 rsa 20.20.0.185 vnet v1 sipauth all
+cli realm edit r2 admin enable addr private emr alwayson imr alwayson mask 255.255.0.0 medpool 2 rsa 22.22.0.185 vnet v2 sipauth all
+cli realm edit r3 admin enable addr private emr alwayson imr alwayson medpool 1 mask 255.255.0.0 rsa 10.145.0.41 vnet v3 sipauth all
+
+cli realm edit r1 rtptimeout default 
+cli realm edit r2 rtptimeout default
+cli realm edit r3 rtptimeout default (confirm with Supriya)
+
+cli realm edit r1 realm-panasonic enable 
+cli realm edit r2 realm-panasonic enable 
+cli realm edit r3 realm-panasonic enable 
+
+cli realm edit r1 natmr alwayson 
+cli realm edit r2 natmr alwayson 
+cli realm edit r3 natmr alwayson
+
+# cli realm edit r3 imr alwayson
+# cli realm edit r3 emr alwayson
+
+cli realm edit r1 sigiptos 160
+cli realm edit r2 sigiptos 160
+cli realm edit r3 sigiptos 160
+
+cli realm edit r1 mediptos audio:160
+cli realm edit r2 mediptos audio:160
+cli realm edit r3 mediptos audio:160
+
+
+# sessionLayerRateLimitingPolicy = 0/1  ==>> (DROP)/(RESPOND)
+cli realm edit r1 sessionLayerRateLimitingPolicy 1 
+cli realm edit r2 sessionLayerRateLimitingPolicy 1 
+cli realm edit r3 sessionLayerRateLimitingPolicy 1
+
+cli realm edit r1 sessionLayerRateLimitingErrorResponse 503
+cli realm edit r2 sessionLayerRateLimitingErrorResponse 503
+
+
+cli realm edit r1 reportingInterval 60
+cli realm edit r2 reportingInterval 60
+
+
+cli realm edit r1 max_pps_sig sip reg 500 500
+cli realm edit r2 max_pps_sig sip reg 500 500
+cli realm edit r3 max_pps_sig sip reg 500 500
+
+cli realm edit r1 max_pps_sig_ep sip reg 500 500 
+cli realm edit r2 max_pps_sig_ep sip reg 500 500 
+cli realm edit r3 max_pps_sig_ep sip reg 500 500 
+
+cli realm edit r1 max_pps_sig sip msg 550 550
+cli realm edit r2 max_pps_sig sip msg 550 550
+cli realm edit r3 max_pps_sig sip msg 500 500
+
+cli realm edit r1 max_pps_sig_ep sip msg 550 550
+cli realm edit r2 max_pps_sig_ep sip msg 550 550
+cli realm edit r3 max_pps_sig_ep sip msg 550 550
+
+cli realm edit r1 max_pps_sig sip inv 50 50 (confirm with Supriya)
+cli realm edit r2 max_pps_sig sip inv 50 50  ('')
+cli realm edit r3 max_pps_sig sip inv 100 100
+
+cli realm edit r1 max_pps_sig_ep sip inv 50 50 (Confirm)
+cli realm edit r2 max_pps_sig_ep sip inv 50 50 ('')
+cli realm edit r3 max_pps_sig_ep sip inv 100 100
+
+
+
+cli iedge add SERProxy 0
+cli iedge edit SERProxy 0 static 0.0.0.0 (to be done)
+cli iedge edit SERProxy 0 realm r3
+cli iedge edit SERProxy 0 redundancy enable
+cli iedge edit SERProxy 0 sip enable
+cli iedge edit SERProxy 0 uri as.syschar.com 
+cli iedge edit SERProxy 0 vendor broadsoft
+cli iedge edit SERProxy 0 type sipproxy
+cli iedge edit SERProxy 0 xcalls 0
+cli iedge edit SERProxy 0 locatingsipserver 3263
+cli iedge edit SERProxy 0 rtptimeout default
+
+
+# Used to be:
+# cli iedge edit SERProxy 0 type sipproxy static 10.145.0.46 realm r3 uri 10.145.0.46 sip enable
+
+# Add 911 emergency phone #
+# -------------------------
+
+cli emergnum add 911        (Confirm)
+
+
+
+# nxconfig.pl settings:
+# ---------------------
+
+1.nxconfig.pl -e siptrans-invitec -v 2
+
+2.nxconfig.pl -e siptimer-shorthunt -v 4
+
+3.nxconfig.pl -e hidesrcrsa -v 1
+
+4.nxconfig.pl -e rtptimeout -v 900 (confirm should be 180)
+
+5.nxconfig.pl -e mqm -v 1
+
+6.nxconfig.pl -e tagging -v 1
+
+7.nxconfig.pl -e obpxfactor -v 191
+
+8.nxconfig.pl -e obp -v 1
+
+9.nxconfig.pl -e allow-dynamicendpoints -v 1
+
+10.nxconfig.pl -e dynamicendpoints_invitenosdp -v 1
+
+11.nxconfig.pl -e enable-natdetection -v 1
+
+12.# nxconfig.pl -e minobpxfactor -v 30   (Confirm)
+
+13.nxconfig.pl -e age-timeout -v 3600
+
+14.nxconfig.pl -e dnscacheinterval -v 86400
+
+15.nxconfig.pl -e optimalregdetermination -v 1
+
+16.nxconfig.pl -e leading-plus-sign-in-uri -v 1
+
+17.nxconfig.pl -e sipsess -v 1800
+
+18.nxconfig.pl -e sipminse -v 90
+
+19.nxconfig.pl -e maxhunts -v 2
+
+20.nxconfig.pl -e max911MRports -v 100
+
+21.nxconfig.pl -e max911vports -v 100
+
+
+
+
+
+
+
+
+# ----
+22.nxconfig.pl -e h323-maxcalls -v 10   (Confirm)
+
+23.nxconfig.pl -e session-layer-rate-limiting -v 1
+
+24.nxconfig.pl -e ip-layer-rate-limiting -v 0
+
+
+# ======
+25.nxconfig.pl -e cdrtype -v fixed

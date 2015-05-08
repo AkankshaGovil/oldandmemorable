@@ -1,0 +1,25 @@
+#Running with 2 SERs
+./sipp -sf new-auth-reg.xml -p 5061 -i 24.24.0.56 24.24.0.185 -inf csv-source.txt -d 180000 -r 8 -users 128 -trace_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf [REG_SCENARIO_FILE_SER_1] -p 5061 -i [LOCAL_IP_1] [REALM_IP_1] -inf [CSV_SOURCE_FILE] -d 180000 -r [RATE] -users [USERS] -trace_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf new-auth-reg.xml -p 5061 -i 24.24.0.56 24.24.0.185 -inf csv-source.txt -d 180000 -r 8 -users 128 -trace_err -defa
+./sipp -sf new-auth-reg-sittest.xml -p 5061 -i 24.24.2.51 24.24.0.185 -inf csv-source-sittest.txt -d 180000 -r 8 -users 128
+-trace_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf new-auth-reg.xml -p 5061 -i 23.23.0.56 23.23.0.185 -inf csv-dest.txt -d 180000 -r 8 -users 128 -trace_err -defaul
+t_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf new-auth-reg-sittest.xml -p 5061 -i 24.24.2.51 23.23.0.185 -inf csv-dest-sittest.txt -d 180000 -r 8 -users 128 -t
+race_err -default_behaviors -bye,-abortunexp  -pause_msg_ign
+
+./sipp -sf uas-g711-new.xml -i 23.23.0.56 23.23.0.185 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+./sipp -sf uac-vz-mod.xml -r 19 -d 200000 -inf csv-call.txt -i 24.24.0.56 24.24.0.185 -users 3800 -trace_err -default_behavi
+ors -bye,-abortunexp -pause_msg_ign
+
+./sipp -sf uas-g711-new.xml -i 24.24.2.51 23.23.0.185 -trace_err -default_behaviors -bye,-abortunexp -pause_msg_ign
+
+./sipp -sf uac-vz-mod.xml -r 19 -d 200000 -inf csv-call-sittest.txt -i 24.24.2.51 24.24.0.185 -users 3800 -trace_err -defaul
+t_behaviors -bye,-abortunexp -pause_msg_ign
+

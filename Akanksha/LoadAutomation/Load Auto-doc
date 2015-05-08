@@ -1,0 +1,29 @@
+Load Automation:
+Realm configuration syntax:
+
+
+Separate read of config file for this, and for each set type,ip,medpool andmask are mandatory
+
+
+Now sut_config, openser config and reg config are done
+
+Start with Callgens:
+Requirement:
+
+4 registration instance:
+2 source and 2 destination
+for each gen needed:
+1 source and 1 destination reg instance and they should go to the same ser
+
+new-auth-reg.xml - realm_sender_1, domain SER-1, users 128 each
+csv-source.txt
+
+new-auth-reg-sittest.xml realm_sender_2 domain SER-2
+csv-source-sittest.txt
+
+new-auth-reg.xml realm_receiver_1 domain SER-1
+csv-dest.txt
+
+new-auth-reg-sittest.xml realm_receiver_2 domain SER-2
+csv-dest-sittest.tx
+

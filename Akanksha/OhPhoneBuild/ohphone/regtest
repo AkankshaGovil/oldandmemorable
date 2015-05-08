@@ -1,0 +1,101 @@
+#!/bin/sh
+
+IPADDR=10.0.2.7
+PORT1=10720
+PORT2=20720
+
+DEVICE1="-q2"
+DEVICE2="-q0"
+
+OHPHONE="./obj_linux_x86_d/ohphone"
+
+LOGDIR=./logs
+
+TIMEOUT="1"
+
+REPEAT=2
+CHANNELCOUNT=$[ $REPEAT * 2 ]
+
+TXCMD="$OHPHONE -n --listenport $PORT1 $DEVICE1 --disable-menu -tttt --autorepeat $REPEAT"
+RXCMD="$OHPHONE -n --listenport $PORT2 $DEVICE2 --disable-menu --autodisconnect 1 --autorepeat $REPEAT -a -l -tttt"
+
+function testconnection ()
+{
+NUM=$1
+RXTUNNEL=$2
+RXFAST=$3
+TXTUNNEL=$4
+TXFAST=$5
+
+SUFFIX="$2_$3_$4_$5_$1"
+LISTENLOG=$LOGDIR/listen_${SUFFIX}.txt
+CONNECTLOG=$LOGDIR/connect_${SUFFIX}.txt
+
+RXFLAGS=
+TXFLAGS=
+
+if [ "$RXTUNNEL" -eq "0" ] ; then RXFLAGS="$RXFLAGS -T" ; fi
+if [ "$TXTUNNEL" -eq "0" ] ; then TXFLAGS="$TXFLAGS -T" ; fi
+
+if [ "$RXFAST" -eq "0" ] ; then RXFLAGS="$RXFLAGS -f" ; fi
+if [ "$TXFAST" -eq "0" ] ; then TXFLAGS="$TXFLAGS -f" ; fi
+
+echo "$2 $3 $4 $5 : RXFLAGS = $RXFLAGS, TXFLAGS = $TXFLAGS"
+
+echo $RXCMD $RXFLAGS > $LISTENLOG
+$RXCMD $RXFLAGS >> $LISTENLOG 2>&1 &
+
+echo $TXCMD ${IPADDR}:${PORT2} > $CONNECTLOG
+$TXCMD $TXFLAGS ${IPADDR}:${PORT2} >> $CONNECTLOG 2>&1
+
+RXCHANS=`grep "Started logical channel" $LISTENLOG | wc -l | sed 's/ //g'`
+TXCHANS=`grep "Started logical channel" $CONNECTLOG | wc -l | sed 's/ //g'`
+
+if [ "$RXCHANS" -ne "$CHANNELCOUNT" ] ; then
+  echo "  ERROR: Listener (\"$RXFLAGS\") failed to open $CHANNELCOUNT channels from \"$TXFLAGS\""
+fi
+
+if [ "$TXCHANS" -ne "$CHANNELCOUNT" ] ; then
+  echo "  ERROR: Connect (\"$TXFLAGS\") failed to open $CHANNELCOUNT channels to \"$RXFLAGS\""
+fi
+
+./check_listen.awk < $LISTENLOG > check.txt
+
+if [ "$RXTUNNEL" -eq "0" ] ; then
+  grep -q "TX H225: callProceeding, tunnel = FALSE" check.txt
+  if [ "$?" -ne "0" ] ; then
+    echo "  ERROR: Listener opened tunneling connection";
+  fi
+fi
+
+}
+
+function testcombo ()
+{
+testconnection $1 $2 $3 0 0
+testconnection $1 $2 $3 0 1
+testconnection $1 $2 $3 1 0
+testconnection $1 $2 $3 1 1
+}
+
+function testall ()
+{
+echo "Test $1"
+testcombo $1 0 0
+testcombo $1 0 1
+testcombo $1 1 0
+testcombo $1 1 1
+}
+
+rm -rf $LOGDIR
+mkdir $LOGDIR
+
+COUNT=0;
+
+while [ "1" ] ; do
+  testall $COUNT
+  COUNT=$[ $COUNT + 1 ]
+done
+
+
+

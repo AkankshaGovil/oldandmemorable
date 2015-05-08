@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+set cmdVersion 4.3
+#if { 1==1 || 2==3 } {
+if { [string compare $cmdVersion "5.1"] == 0 || [string compare $cmdVersion "4.3"] == 0  } {
+send "1\n"
+}
+#expect "hello"
+#send "hi\n"
+
+
+

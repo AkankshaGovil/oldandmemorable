@@ -1,0 +1,1 @@
+./publish.sh -b '2008-05-06 10:35:42' -e '2008-08-07 14:35:42' -P 'MSX' -m '4.0'  -v '4.0c3-75' -s 'Pass' -t 'Full' -n '2000' -p '1737' -S 'Jarrell' -M 'HK' -N 'nextest-r4-0a-pre75' -c 'Rachana' -d 'test1'

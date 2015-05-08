@@ -1,0 +1,414 @@
+'\" t
+.\" Man page for ohphone
+.\" CRS 29 May 2000
+.\"
+.TH ohphone 1 "29 May 2000"
+.LO 1
+.SH NAME
+ohphone \- initiate, or receive, a H.323 IP telephony call
+.SH SYNOPSIS
+.B ohphone
+\-l|\-\-listen [\fIoptions\fR]...
+.LP
+.B ohphone
+[\fIoptions\fR]... \fIaddress\fR
+.SH DESCRIPTION
+.PP
+.B ohphone
+is a command line application that can be used to listen for incoming H.323 calls, or to initiate a call to a remote host.
+Although originally intended as a test harneess for the OpenH323 project (see http://www.openh323.org) it has developed into a fully functional H.323 endpoint application.
+.B ohphone
+includes a simple menu that allows interactive control of functions, as well as allowing control of most dialling and answer functions via a phone handset when used with a Quicknet (see http://www.quicknet.com) LineJack or PhoneJack.
+
+When used with the \-l option, 
+.B ohphone
+will wait for incoming calls. If this option is not specified, 
+.B ohphone
+expects a hostname to be specified and will attempt to connect to a H.323 client at that address.
+
+.SH OPTIONS
+.PP
+All of the command line options to
+.B ohphone
+can be specified in long form, and the most commonly used options also have single character equivalents. The long forms can also be used in the
+.B ohphone
+configuration file.
+To disable or turn off a feature, use the long form of the name with the prefix \-\-no\-, i.e. \-\-no\-answer or \-\-no\-gsm.
+
+.TP
+\fB\-a\fR, \fB\-\-auto\-answer\fR
+Automatically answer incoming calls. 
+
+.TP
+\fB\-\-autohook\fR
+Automatically handle hook state for phone devices that appear permanently off-hook.
+This option is intended for use with the Quicknet PhoneCARD.
+
+.TP
+\fB\-\-aec\fR, \fIlevel\fR             
+Set the AEC (audio echo cancellation) level when using a Quicknet card.
+\fIlevel\fR must be in the range 0 through 3. The default value is 2.
+
+.TP
+\fB\-b\fR, \fB\-\-bandwidth\fR bps\fR
+Limit bandwidth usage reported to gatekeeper to \fIbps\fR bits/second.
+
+.TP
+\fB\--callerid\fR
+Enable transmission of caller ID to phone handset
+
+.TP
+\fB\-d\fR, \fB\-\-autodial\fR \fIhost\fR
+Automatically dial \fIhost\fR if phone goes off hook.
+
+.TP
+\fB\-\-dial-after-hangup\fR
+By default
+.B ohphone
+will present a busy tone when a connection is broken, requiring the handset to be put on hook before making another call.
+If this flag is specified, a new dialtone will be presented, allowing a new connection to be made without requiring an hook transition.
+
+.TP
+\fB\-\-disable-menu\fR
+Disable the internal menu.
+
+.TP
+\fB\-e\fR, \fB\-\-silence\fR
+Disable silence detection and removal for GSM and software G.711.
+
+.TP
+\fB\-f\fR, \fB\-\-fast\-disable\fR
+Do not request H323V2 FastConnect when initiaiting a connection.
+
+.TP
+\fB\-h\fR, \fB\-\-h245tunnel\-disable\fR
+Do not perform H245 tunneling when initiating a connection.
+
+.TP
+\fB\-g\fR, \fB\-\-gatekeeper\fR \fIhost\fR    
+Upon startup, register with only with the specified gatekeeper rather than attempting to find a gatekeeper by using UDP broadcast.
+
+.TP
+\fB\-\-g711\-ulaw\fR         
+Set G.711 uLaw as preferred codec.
+
+.TP
+\fB\-\-g711\-Alaw\fR         
+Set G.711 ALaw as preferred codec.
+
+.TP
+\fB\-\-g7231\fR             
+Set G.723.1 as preferred codec, when using a Quicknet card.
+
+.TP
+\fB\-\-gsm\fR               
+Use GSM 06.10 as preferred codec.
+
+.TP
+\fB\-\-h261\fR \fIdevice\fR       
+This option has been deprecated in favour of the videoreceive and videotransmit options
+
+.TP
+\fB\-i\fR, \fB\-\-interface\fR \fIinterface\fR
+Only bind to the specified network interface address.
+By default, 
+.B ohphone
+automatically listens for incoming calls on all TCP/IP network interfaces available on the host machine.
+This option is useful for running multiple copies of 
+.B ohphone
+on the same multi\-homed machine, or for ensuring that only calls from the external, or internal, network will be received on a particular handset.
+
+.TP
+\fB\-j\fR, \fB\-\-jitter\fR delay\fR       
+Set jitter buffer to \fIdelay\fR ms. By default, the jitter buffer is set to 50 ms.
+
+.TP
+\fB\-l\fR, \fB\-\-listen\fR             
+Listen for incoming calls.
+
+.TP
+\fB\-n\fR, \fB\-\-no\-gatekeeper\fR      
+Do not attempt to find a gatetkeeper upon startup using UDP broadcast.
+
+.TP
+\fB\-o\fR, \fB\-\-output\fR \fIfilename\fR
+Write trace output (enabled with the \fB\-t\fR option) to the specified file rather than to stdout.
+
+.TP
+\fB\-p\fR, \fB\-\-proxy\fR \fIhost\fR
+Connect to the remote endpoint using the specified H.323 proxy host, rather than attempting to connect directly.
+
+.TP
+\fB\-\-playvol\fR \fIvol\fR
+Set the playback volume. For sound cards, this is an integer value from 0 through 100. For Quicknet cards, this is a real number from 0.0 through 16.0 (1.0 is normal volume)
+
+.TP
+\fB\-q\fR, \fB\-\-quicknet\fR \fInum\fR    
+Use the specified Linux telephony device (/dev/phone\fInum\fR) rather than a sound card. This overrides the default of using the sound card.
+
+.TP
+\fB\-\-quicknet-playvol\fR \fIvol\fR
+Set the playback volume when a Quicknet card is used. This overrides the value of \-\-playvol (if set). The volume is a real number from 0.0 through 16.0 (1.0 is normal volume).
+
+.TP
+\fB\-\-quicknet-recvol\fR \fIvol\fR
+Set the record volume when a Quicknet card is used. This overrides the value of \-\-recvol (if set). The volume is a real number from 0.0 through 16.0 (1.0 is normal volume).
+
+.TP
+\fB\-r\fR, \fB\-\-require\-gatekeeper\fR 
+Exit if a gatekeeper cannot be found.
+
+.TP
+\fB\-\-recvol\fR \fIvol\fR
+Set the record volume. For sound cards, this is an integer value from 0 through 100. For Quicknet cards, this is a real number from 0.0 through 16.0 (1.0 is normal volume)
+
+.TP
+\fB\-\-ringfile\fR \fIfilename\fR
+Play the PCM data in \fIfilename\fR when an incoming call arrives.
+
+.TP
+\fB\-\-ringdelay\fR \fIdelay\fR
+If the \-\-ringfile option is specified, this option defines how many to delay between playing each ring. If the delay is specified as -1, then the file is only played once. If it is zero, then the file loops continuously with no delay. The default delay is 5 seconds.
+
+.TP
+\fB\-s\fR, \fB\-\-sound\fR device\fR       
+Select the sound input and output device. The default value is /dev/dsp0.
+
+.TP
+\fB\-\-sound-mixer\fR device\fR       
+Select the sound card mixer device. The default value is /dev/mixer0
+
+.TP
+\fB\-\-sound-recchan\fR device\fR       
+Select the sound card record channel. By default, the mic channel is used.
+
+.TP
+\fB\-\-sound\-in\fR, \fB\-\-sound\-out\fR \fIdevice\fR      
+Select the sound input or output device seperately. Only needed if different sound devices are needed for input and output.
+
+.TP
+\fB\-\-sound-playvol\fR \fIvol\fR
+Set the playback volume when a sound card is used. This overrides the value of \-\-playvol (if set). The volume is an integer value from 0 through 100
+
+.TP
+\fB\-\-sound-recol\fR \fIvol\fR
+Set the record volume when a sound card is used. This overrides the value of \-\-recvol (if set). The volume is an integer value from 0 through 100
+
+.TP
+\fB\-t\fR, \fB\-\-trace\fR 
+Enable debug tracing, which displays messages at run\-time to assist in debugging or problem identification.
+Specifying this option multiple time increases the amount of information displayed. 
+.B ohphone 
+has trace statements up to level 5. Use the \fB\-o\fR option to write the trace information to a file rather than to stdout.
+
+.TP
+\fB\-\-tos \fR value\fR          
+Set the Type Of Service in outgoing RTP packets to the specified value.
+
+.TP
+\fB\-u\fR, \fB\-\-user\fR name\fR          
+Set local endpoint alias name. Can be used multiple times to add multiple aliases.
+By default, the alias list contains a single entry with the current user's login name.
+
+.TP
+\fB\-\-videoformat\fR \fIformat\fR    
+Set the video capture format. \fIformat\fR must be the string \fIpal\fR (default) or \fIntsc\fR
+
+.TP
+\fB\-\-videolocal\fR
+Enable display of the local video input. If \-\-videopip is specified, this will be displayed as subwindow
+inside the received video window.
+
+.TP
+\fB\-\-videoinput\fR \fIinput\fR    
+Set input port used for video. The default value is 0 - the maximum value is determined by the video device
+
+.TP
+\fB\-\-videopip\fR
+Enable picture in picture for local video window and received video window
+
+.TP
+\fB\-\-videoquality\fR \fIquality\fR    
+Set the video qualty requested from the remote endpoint. \fIquality\fR must be in the range 0 to  31.
+
+.TP
+\fB\-\-videoreceive\fR \fIdevice\fR    
+Enable reception of video data in H.261 format.
+The \fIdevice\fR specifies the device to be used to display the received video information. 
+Permitted values of \fIdevice\fR are:
+.RS
+.TP
+null
+do nothing (useful for debugging)
+.TP
+ppm
+Create a numbered sequence of PPM files
+.TP
+svga256
+Write directly to the console in 256 colour VGA mode (Linux only)
+.TP
+svga
+Write directly to the console in full-colour VGA mode (Linux only)
+.TP
+x11
+Write received data to an X11 window usng shared memory extensions.
+Can also specify x1124, x1116 or X118 to force visual depth.
+Add an 's' to the device to specify shared memory (i.e. x1124s).
+.RE
+
+.TP
+\fB\-\-videosize\fR \fIsize\fR    
+Set the size of the transmitted video signal. \fIsize\fR must be the string \fIsmall\fR (default) or \fIlarge\fR
+
+.TP
+\fB\-\-videotransmit\fR
+Enable tranmission of video in H261 format.
+The size ofthe video window is determined by the \-\-videosize option.
+The video input used is determined by the \-\-videoinput option.
+The video format used is determined by the \-\-videoformat option.
+If \-\-videolocal is specified, then the local video signal will be displayed in a seperate window.
+
+.SH CONFIGURATION FILE
+.PP
+.B ohphone 
+options and speed dials can be set in the ohphone configuration file
+.B ~/.pwlib_config/ohphone.ini .
+This config file is divided into sections, with each section indentified by a header enclosed in square brackets.
+Options must be located in the section prefixed with [Options], whilst speed dials must be located in the section prefixed [Speedial].
+The long form of any command line option specified above can be specified in the configuration file, in the format:
+.TP
+\fIoption\fR = \fIvalue\fR
+
+.SH SPEED DIALS
+.PP
+.B ohphone
+can be configured to dial an IP address upon entering a speed dial code
+conisisting of an integer followed by the hash (#) character. Speed dial codes
+are available via the menu "C" command (see the
+.B MENU
+section) or via the phone handset (if a Quicknet card is used).
+.B ohphone
+Speed dials are configured using the menu "D" command, or can be added directly to the [SpeedDials] section of the configuration file (see below).
+
+Speed dials can also contain wild card characters which allow groups of numbers to be assigned to specific gateways. The following examples show the use of wild cards:
+
+.TP
+7??  @192.168.5.3
+Dial three digit numbers starting with 7 through the gateway at 192.168.5.3
+
+.TP
+9*   %192.168.7.1
+Dial any number starting with 9 through the gateway at 192.168.6.3, but strip the leading 9 before dialling.
+
+The following special speed dials can also be used:
+.TP
+#
+Redial the previously dialled number
+
+.TP
+*#
+Dial the previous caller
+
+.SH DIALLING IP NUMBERS USING A HANDSET
+An IP number can be dialled using a phone handset connected to a Quicknet card.
+This is done by pushing the star (*) button, and then entering the IP number using the star (*) button to seperate each of the four parts of the IP address, and then pressing the (#) button.
+For example, the sequence below can be used to dial the IP address 192.168.64.5:
+.RS
+*192*168*64*5#
+.RE
+
+.SH INTERNAL MENU
+.PP
+.B ohphone
+allows the user to perform various operations whilst listening for an
+incoming connection, or whilst a call is in progress. These operations are
+accessed via single line commands which each start with a single character
+identifying the function. The available commands are:
+.TP
+\fBQ\fR or \fBX\fR
+Hangup any active calls and exit the program.
+.TP
+\fBH\fR
+Hangup any active calls.
+.TP
+\fBC\fR \fIaddress\fR [\fIgateway\fR]
+Initiate a call to the specified host or IP address. If the optional getway paramater is used, then the specified gateway will be used to make the call. If the address ends with the hash (#) character, it is assumed to be a Speed Dial code.
+.TP
+\fBL\fR
+List all current speed dial codes
+.TP
+\fBD\fR \fIcode\fR \fIaddress\fR
+Create a new speed dial for \fIaddress\fR using \fIcode\fR.
+.TP
+\fBS\fR
+Print statistics of the call in progress.
+.TP
+\fBP\fR
+Toggle between speakerphone and normal mode
+.TP
+\fBA\fR
+Turn AEC up by one level (Quicknet cards only)
+.TP
+\fBa\fR
+Turn AEC down by one level (Quicknet cards only)
+.TP
+\fB[\fR
+Turn play volume up by one level.
+.TP
+\fB]\fR
+Turn play volume down by one level.
+.TP
+\fB}\fR
+Turn record volume up by one level.
+.TP
+\fB{\fR
+Turn record volume down by one level.
+.TP
+\fBV\fR
+Display current volume settings
+.TP
+\fBE\fR
+Toggle silence supression
+.TP
+\fBI\fR
+Show last 16 calls made
+.TP
+\fBi\fR
+Show last 16 calls received
+
+.SH EXAMPLES
+.PP
+
+.TP
+ohphone -l
+Find a gatekeeper on the local network, register with it, and then listen for incoming calls.
+
+.TP
+ohphone -ln
+Listen for calls without registering with a gatekeeper.
+
+.TP
+ohphone -ln -q0 --callerid
+Listen for calls without registering with a gatekeeper, using /dev/phone0 (a Quicknet card) as the sound device, and enabling transmission of caller ID to the handset on incoming calls.
+
+.TP
+ohphone -n \fIipaddress\fR
+Make a call using directly to another endpoint without a gatekeeper
+
+.TP
+ohphone -n \fIipaddress\fR
+Make a call using directly to another endpoint without a gatekeeper
+
+.SH FILES
+.PP
+~/.pwlib_config/ohphone.ini
+
+.SH BUGS
+.PP
+Picking up a handset after initiating a call using the menu C comment sometimes produces odd results
+
+.PP
+Quicknet cards seem to change playback volume when calls are started - sometimes!
+
+.SH "SEE ALSO"
+None

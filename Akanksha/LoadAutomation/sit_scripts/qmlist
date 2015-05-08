@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+pushd $QMTEST_DB_PATH > /dev/null
+find . -name "*.qm[st]"
+popd > /dev/null

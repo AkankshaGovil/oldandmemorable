@@ -1,0 +1,37 @@
+nxconfig.pl -e obp 1
+nxconfig.pl -e obpxfactor -v 191 
+nxconfig.pl -e allow-dynamicendpoints -v 1
+nxconfig.pl -e dynamicendpoints_invitenosdp -v 1
+nxconfig.pl -e enable-natdetection -v 1
+nxconfig.pl -e age-timeout -v 3600
+nxconfig.pl -e cdrtype fixed 
+
+cli vnet add v1
+cli vnet add v2
+cli vnet add v3
+cli vnet edit v1 ifname eth2 gateway 0.0.0.0
+cli vnet edit v2 ifname eth3 gateway 0.0.0.0
+cli vnet edit v3 ifname eth4 gateway 0.0.0.0
+
+cli realm add r1
+cli realm add r2
+cli realm add r3
+cli realm edit r1 admin enable addr private emr alwayson imr alwayson mask 255.255.0.0 medpool 1 rsa 23.23.0.88 vnet v1 sipauth all
+cli realm edit r2 admin enable addr private emr alwayson imr alwayson mask 255.255.0.0 medpool 2 rsa 24.24.0.88 vnet v2 sipauth all
+cli realm edit r3 admin enable addr private emr alwaysoff imr alwaysoff medpool 1 mask 255.255.0.0 rsa 10.148.0.41 vnet v3 sipauth all
+
+#---------Proxy 1---
+cli iedge add SERProxy1 0
+cli iedge edit SERProxy1 0 type sipproxy static 10.148.0.85 realm r3 uri as.load52test1.com sip enable
+cli iedge add SERProxy1 1
+cli iedge edit SERProxy1 1 type sipproxy static 10.148.0.85 realm r3 uri 10.148.0.85 locatingsipserver srv sip enable
+#------------Proxy 2
+cli iedge add SERProxy2 0
+cli iedge edit SERProxy2 0 type sipproxy static 0.0.0.0 realm r3 uri as.load52test2.com sip enable
+cli iedge add SERProxy2 1
+cli iedge edit SERProxy2 1 type sipproxy static 0.0.0.0 realm r3 uri 10.148.0.91 locatingsipserver srv sip enable
+#------------Proxy 3
+cli iedge add SERProxy3 0
+cli iedge edit SERProxy3 0 type sipproxy static 0.0.0.0 realm r3 uri as.load52test3.com sip enable
+cli iedge add SERProxy3 1
+cli iedge edit SERProxy3 1 type sipproxy static 0.0.0.0 realm r3 uri 10.148.0.94 locatingsipserver srv sip enable

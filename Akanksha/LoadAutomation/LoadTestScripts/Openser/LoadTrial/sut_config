@@ -1,0 +1,6 @@
+cli vnet add vnet_sender
+cli vnet edit vnet_sender ifname  gateway 0.0.0.0
+cli vnet add vnet_receiver
+cli vnet edit vnet_receiver ifname  gateway 0.0.0.0
+cli vnet add vnet_sipproxy
+cli vnet edit vnet_sipproxy ifname  gateway 0.0.0.0

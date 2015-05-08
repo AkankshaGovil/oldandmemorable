@@ -1,0 +1,5 @@
+-------------------iedge Update Time----------------
+LCR Start Time : Fri Aug 29 22:17:23 EDT 2008
+2008-08-29 22:35:54 [Thread-19] FINER [com.nextone.bn.rating.MSWRoutesGeneratorDataProvider:replaceToRSMAndMSW] - [RoutesGeneration]==================== Sent one batch to RSM/MSW, offset=0, batch=25000
+-------------------Route Generation Time----------------
+2008-08-29 22:59:29 [Thread-19] INFO [com.nextone.bn.rating.MSWRoutesGenerator:process] - [MSWRoutesGenerator]Routes Generation/Estimation Done, total time taken in milliseconds: 2225838.0

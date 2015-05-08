@@ -1,0 +1,7 @@
+/usr/local/nextone/bin/cli db add /tmp/facia_firstdb
+
+/usr/local/nextone/bin/cli iedge add Srikant 0
+
+/tmp/Endpoints.pl
+
+

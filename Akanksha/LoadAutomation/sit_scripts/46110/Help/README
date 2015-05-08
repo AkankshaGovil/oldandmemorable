@@ -1,0 +1,62 @@
+Installation
+
+    Copy 46110 directory to the RSM server.
+
+PreRequisite
+
+	1.	4.3.m6_rc8 build has to be installed on both primary and secondary iservers in SCM mode.
+	2.	Iserver must have a valid license to run more than 3000 concurrent calls. A sample license 
+		file (iserverlc.xml) is available in 46110/Help directory.	
+	3.	4.3m5rc3 RSM build has to installed on RSM server. RSM installation help is 
+                available in 46110/Help directory.
+	4.	To set proper logging level in RSM, go to System Tab -> Logging page in rsm console and 
+                set Routing, RatingImport and WebServices logging level to FINEST. Then press submit button.
+
+Setup
+
+	1.	Run cli db clean all on primary MSX.
+	2.	Run cli db add facia_firstdb. facia_firstdb file is available in 46110/scripts directory.
+	3.	Run Endpoint.pl on primary MSX. Endpoint.pl file is available in 46110/scripts directory.
+	4.	Run cli iedge add Srikant 0
+	5.	Add master and slave MSX device on RSM
+	6.	Run manual database synchronization from MSW to RSM on rsm.
+        7.	Run 46110/scripts/automated/copy.sh with arguments <Primary MSX IP> <Secondary MSX IP>. 
+
+Run Test
+
+1. The main script for running the test case is runAutomation.sh. The first section of the script is configuration section.
+You modify this section according to your requirement.
+
+Here is an example.
+
+############################################################################################################
+priMSX=<primary MSX IP address> e.g. 10.135.0.177
+secMSX=<secondary MSX IP address> e.g. 10.135.0.178
+
+#Declaring the base file path and result path
+BaseFilePath=<Where you have copied 46110 directory> e.g. /root/46110
+resultPathOnRSM=<Where temporary result path will be created> e.g."$BaseFilePath/scripts/automated"
+PathOnMSX=<The path where MSX scripts will be copied> e.g. "/tmp/46110Scripts/"
+
+#Declaring the callgen server and gateway(realm) ip
+callGenServer=<Callgen server IP> e.g. "10.135.0.118"
+callGenClient=<Callgen client IP> e.g. "10.135.0.117"
+gatewayIp=<Realm IP> e.g. "10.135.0.204"
+
+#Delaring the device name. It has to be same as the added device of RSM
+deviceName=<Device Name configured on RSM> e.g."msx177"
+
+#Declaring RSM root users password.
+RsmUserPasswd=<RSM root user's password> e.g."nextone123"
+
+#Declaring the Mailer information
+toaddr=<Addresses mail would be sent to> e.g."nabanita.dutta@globallogic.com"
+fromaddr=<Address mail would be sent from> e.g. "simi.vasuja@globallogic.com"
+mail_server=<mail server> e.g. "smtp-out-del1.globallogic.com"
+login=<Mail server login name> e.g. "simi.vasuja"
+passwd=<Mail server Password> e.g. "password"
+############################################################################################################
+
+2. Go to 46110/scripts/ directory. Start the test with the command. nohup ./runAutomation.sh
+
+The standard output will be redirected to nohup.out. After every stage, the script will print the result path for that stage.

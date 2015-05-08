@@ -1,0 +1,12 @@
+keyfile=/root/.ssh/id_dsa
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+#chown test:users /root/.ssh
+chown root:root /root/.ssh
+ssh-keygen -t dsa -f $keyfile -q -N ''
+ssh-copy-id -i $keyfile root@10.135.0.177
+ssh-copy-id -i $keyfile root@10.135.0.178
+ssh-copy-id -i $keyfile root@10.135.0.118
+ssh-copy-id -i $keyfile root@10.135.0.117
+#ssh root@10.135.0.177
+

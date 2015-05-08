@@ -1,0 +1,52 @@
+#! /usr/bin/env jython
+#
+# Get iServer configuration information
+#
+# $Id: getiserver,v 1.1 2004/04/24 15:31:10 slowrey Exp $
+
+from   com.nextone.common import *
+from   java.net import *
+import MyTP
+import sys
+
+def usage():
+    print """Usage: getconf HOST
+
+    The HOST can be either the IP address of host name of an MSW.
+    """
+    
+######################################################################
+# Process command line
+######################################################################
+argc = len(sys.argv)
+if argc != 2:
+    usage()
+    sys.exit(1)
+
+host = sys.argv[1]
+
+######################################################################
+# Get address of host
+######################################################################
+# Create a dummy timeout provider object for the Bridge.
+tp = MyTP()
+try: 
+    ipAddr = InetAddress.getByName(host)
+except UnknownHostException:
+    print "ihunt: %s: unknown host" % host
+    sys.exit(3)
+if not ipAddr: usage()
+
+######################################################################
+# Connect to jserver and get iserver config
+######################################################################
+b = BridgeClientImpl(ipAddr, tp)
+i = b.getIserverConfig()
+print type(i)
+########################################################################
+# Local Variables:
+# mode: python
+# indent-tabs-mode: nil
+# fill-column: 78
+# auto-fill-function: do-auto-fill
+# End:

@@ -1,0 +1,21 @@
+/.cvsignore/1.9/Sun Oct 28 23:58:47 2001//Tv1_4_1
+/Makefile/1.45/Thu Jun 12 19:39:09 2003//Tv1_4_1
+/OhPhone.dsp/1.24/Thu Apr 17 01:59:14 2003//Tv1_4_1
+/ReadMe.txt/1.1/Tue Oct 23 07:50:39 2001//Tv1_4_1
+/check_listen.awk/1.1/Wed Nov  1 01:26:50 2000//Tv1_4_1
+/main.cxx/1.315/Mon Aug  4 04:07:54 2003//Tv1_4_1
+/main.h/1.97/Wed May 14 02:49:52 2003//Tv1_4_1
+/mpl-1.0.htm/1.1/Thu Aug 16 22:49:40 2001//Tv1_4_1
+/ohphone.1/1.6/Mon Aug 21 06:01:36 2000//Tv1_4_1
+/ohphone.dsw/1.1/Thu May 11 09:51:14 2000//Tv1_4_1
+/precompile.cxx/1.2/Tue May  2 04:32:25 2000//Tv1_4_1
+/regtest/1.1/Wed Nov  1 01:26:03 2000//Tv1_4_1
+/shmvideo.cxx/1.2/Thu Jun 12 21:34:13 2003//Tv1_4_1
+/shmvideo.h/1.1/Thu Jun 12 19:39:11 2003//Tv1_4_1
+/stresstest/1.2/Wed Jan 24 03:51:59 2001//Tv1_4_1
+/version.h/1.78/Tue Aug 19 01:28:59 2003//Tv1_4_1
+/vidlinux.cxx/1.10/Wed Mar 19 00:51:15 2003//Tv1_4_1
+/vidlinux.h/1.10/Wed Mar 19 00:51:15 2003//Tv1_4_1
+/xlibvid.cxx/1.20/Tue Mar 18 07:11:34 2003//Tv1_4_1
+/xlibvid.h/1.13/Tue Mar 18 07:11:34 2003//Tv1_4_1
+D

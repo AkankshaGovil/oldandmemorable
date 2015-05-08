@@ -1,0 +1,67 @@
+#! /usr/bin/env jython
+# $Id: ihunt,v 1.2 2004/03/15 23:15:45 slowrey Exp $
+
+from   com.nextone.common import *
+from   java.net import *
+import MyTP
+import sys
+
+def usage():
+    print """Usage: ihunt HOST [enable | disable]
+
+    Enable or disable call hunting on the MSW.
+    
+    The HOST can be either the IP address of host name of an MSW.  If
+    no enabling keyword is specified, the call hunt state will be
+    displayed.
+    """
+
+######################################################################
+# Process command line
+######################################################################
+argc = len(sys.argv)
+if argc < 2:
+    usage()
+    sys.exit(1)
+
+host = sys.argv[1]
+flag = None
+if argc > 2:
+    if sys.argv[2] == 'enable':
+        flag = 1
+    elif sys.argv[2] == 'disable':
+        flag = 0
+    else:
+        print "unknown directive %s", sys.argv[2]
+        usage()
+        sys.exit(2)
+
+######################################################################
+# Begin
+######################################################################
+# Create a dummy timeout provider object for the Bridge.
+tp = MyTP()
+# Get the host address 
+try: 
+    ipAddr = InetAddress.getByName(host)
+except UnknownHostException:
+    print "ihunt: %s: unknown host" % host
+    sys.exit(3)
+if not ipAddr: usage()
+
+# Use the NexTone BridgeClient to connect to the MSW's jserver
+b = BridgeClientImpl(ipAddr, tp)
+i = b.getIserverConfig()
+billing = i.getBillingConfig()
+if flag is not None:
+    print "ihunt: setting hunt to %s" % flag
+    billing.setCdrLogHunt(flag)
+    b.setIserverConfig(i)
+
+########################################################################
+# Local Variables:
+# mode: python
+# indent-tabs-mode: nil
+# fill-column: 72
+# auto-fill-function: do-auto-fill
+# End:

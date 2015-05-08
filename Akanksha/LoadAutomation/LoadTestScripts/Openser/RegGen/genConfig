@@ -1,0 +1,13 @@
+ip_start=23.23.90.2
+
+mask=255.255.0.0
+
+iface=eth2
+
+reg_gen_ip=23.23.0.86
+remote_ip=23.23.0.88
+
+ser_domain_1=as.load52test1.com
+ser_domain_2=as.load52test2.com
+
+

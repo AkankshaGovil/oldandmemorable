@@ -1,0 +1,49 @@
+nxconfig.pl -e siptrans-invitec -v 2
+
+nxconfig.pl -e siptimer-shorthunt -v 4
+
+nxconfig.pl -e hidesrcrsa -v 1
+
+nxconfig.pl -e rtptimeout -v 180 
+
+nxconfig.pl -e mqm -v 1
+
+nxconfig.pl -e tagging -v 1
+
+nxconfig.pl -e obpxfactor -v 191
+
+nxconfig.pl -e obp -v 1
+
+nxconfig.pl -e allow-dynamicendpoints -v 1
+
+nxconfig.pl -e dynamicendpoints_invitenosdp -v 1
+
+nxconfig.pl -e enable-natdetection -v 1
+
+nxconfig.pl -e age-timeout -v 3600
+
+nxconfig.pl -e dnscacheinterval -v 86400
+
+nxconfig.pl -e optimalregdetermination -v 1
+
+nxconfig.pl -e leading-plus-sign-in-uri -v 1
+
+nxconfig.pl -e sipsess -v 1800
+
+nxconfig.pl -e sipminse -v 90
+
+nxconfig.pl -e maxhunts -v 2
+
+nxconfig.pl -e max911MRports -v 100
+
+nxconfig.pl -e max911vports -v 100
+
+nxconfig.pl -e h323-maxcalls -v 10 
+
+nxconfig.pl -e session-layer-rate-limiting -v 1
+
+nxconfig.pl -e ip-layer-rate-limiting -v 0
+
+nxconfig.pl -e cdrtype -v fixed
+
+# nxconfig.pl -e minobpxfactor -v 30   (Confirm)

@@ -1,0 +1,76 @@
+Here are the steps to install RSM-4.3
+
+1. Download RSM server
+2. Create a directory and copy the build there.
+3. Run "tar -xvzf <build name>"
+4. tar -xvf install.tar
+5. run ./setup
+6. You will get  NexTone Setup Utility. v0.5 page. Type 1 beside the string "Select choice by number:" and press enter. 
+
+7. The license page will come. Press q to go to the end of the license. Type y after you get "Do you agree to the above license terms? [y/n]:" and press Enter.
+
+8. You will get "Choose software package:" page, type 1 beside "Select choice by number:" and press enter. 
+
+9. It starts installing RSM. Press Enter once you get "Hit <CR> to continue..."
+
+10. Wait till you get "Do you want to install a fresh MySQL server? Select n if you wish to keep any existing MySql data/logs. [y/n] :"
+type y and press enter.
+
+11. You will get "Do you want to backup your database? A large amount of space and time may be required depending on the size of your database. [y/n] :"
+type n and press enter.
+
+12. You will get "Enter directory to be used for creating database [/opt/nxtn/mysql/data] :"
+Press Enter.
+
+13. Next you will get "Delete contents of /opt/nxtn/mysql/data? [y/n] :"
+type y and press enter
+
+14. Wait till you get "Enter directory to be used for creating database logs [/opt/nxtn/mysql/log] :"
+press Enter
+
+15. Next you will get "Delete contents of /opt/nxtn/mysql/log? [y/n] :"
+type y and press enter
+
+16. Wait till get the following line. Enter a password here. Press Enter. Retype the password in nextline.
+Type new password for MySQL root user :
+Retype new password for MySQL root user : 
+
+17. Wait till you get the following line. Press Enter once you get that.
+Enter the directory for JAVA installation [/opt/nxtn] : 
+
+18. License page for JAVA will be shown. Press q. You will get the following line. Type yes and press Enter.
+Do you agree to the above license terms? [yes or no] 
+
+19. Java Installation will take time. Wait till you get the following line, then press enter.
+Enter the directory for JBoss installation [/opt/nxtn] :
+
+20. You will get the following the line once jboss installation is done. Press Enter.
+Hit <CR> to continue...
+
+21. It will start configuring Mysql database now. Wait till you get the following line. Enter the password, then press Enter key, Reenter the password in the nex line and press enter.
+Type new password for MySQL ivms user : 
+Retype new password for MySQL ivms user : 
+
+22. Enter the IP address of the local machine here.
+Enter your host IP address:
+
+23. Press Enter key once you get the following line.
+Enter your organization [myOrganization]:  
+
+24. Press Enter key once you get the following line.
+Enter your city [myCity]:  
+
+25. Press Enter key once you get the following line.
+Enter your state [myState]:  
+
+26. Press Enter key once you get the following line.
+Enter your countrycode [XX]:  
+
+27. Enter the password, then press Enter key, Reenter the password in the next line and press enter.
+Enter key password [atleast 6 characters]:  
+Re-enter key  password:  
+
+28. You will get the following message. Press enter.
+Successfully installed RSM Server!!
+Hit <CR> to continue...
+

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+ <MEDIA-DEVICES>
+ <DEV name="MS">
+ <CE>
+  <PROTO type="local" /> 
+  <POOL id="2" name="p2" /> 
+  <POOL id="1" name="p1" /> 
+  </CE>
+ <FE>
+ <POOL id="2" name="p2">
+  <DEVPOOL sub-dev="hk" sub-pool="p2" /> 
+  </POOL>
+ <POOL id="1" name="p1">
+  <DEVPOOL sub-dev="hk" sub-pool="p1" /> 
+  </POOL>
+  <SUB-DEV name="hk" type="mfcp" /> 
+  </FE>
+  </DEV>
+ <DEV name="hk" type="mfcp">
+ <CE>
+  <PROTO type="mfcp" ipaddress="169.254.0.2" mask="255.255.0.0" /> 
+ <POOL id="1" name="p1">
+ <CAP>
+  <NAT /> 
+  </CAP>
+  </POOL>
+ <POOL id="2" name="p2">
+ <CAP>
+  <NAT /> 
+  </CAP>
+  </POOL>
+  </CE>
+ <FE>
+  <PROTO type="local" /> 
+ <POOL id="1" name="p1">
+ <CAP>
+  <NAT /> 
+  </CAP>
+  <PORTALLOC address="23.23.0.181" high="59999" low="9000" mask="255.255.0.0" vnet="m1" /> 
+  </POOL>
+ <POOL id="2" name="p2">
+ <CAP>
+  <NAT /> 
+  </CAP>
+  <PORTALLOC address="24.24.0.181" high="59999" low="9000" mask="255.255.0.0" vnet="m2" /> 
+  </POOL>
+ <VNET interface="hk0,0" name="m1" vlanid="none">
+  <ROUTE dest_ip="0.0.0.0" gw="23.23.0.1" mask="0.0.0.0" /> 
+  </VNET>
+ <VNET interface="hk0,1" name="m2" vlanid="none">
+  <ROUTE dest_ip="0.0.0.0" gw="24.24.0.1" mask="0.0.0.0" /> 
+  </VNET>
+  </FE>
+  </DEV>
+  </MEDIA-DEVICES>

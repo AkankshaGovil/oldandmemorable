@@ -1,0 +1,22 @@
+/bsd-endian.h/1.8/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/bv.c/1.5/Tue May  8 05:26:33 2001//Tv1_12_2
+/config.h/1.11/Thu Oct 10 05:40:11 2002//Tv1_12_2
+/crdef.h/1.3/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/dct.cxx/1.14/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/dct.h/1.5/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/encoder-h261.cxx/1.19/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/encoder-h261.h/1.12/Fri May 17 01:47:33 2002//Tv1_12_2
+/encoder.h/1.6/Thu Apr 10 22:39:32 2003//Tv1_12_2
+/grabber.h/1.12/Mon Jan  6 22:18:01 2003//Tv1_12_2
+/huffcode.c/1.2/Mon Jan 29 19:42:38 2001//Tv1_12_2
+/p64-huff.h/1.5/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/p64.cxx/1.12/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/p64.h/1.6/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/p64encoder.cxx/1.15/Thu Apr  3 23:54:15 2003//Tv1_12_2
+/p64encoder.h/1.18/Thu Apr  3 23:54:15 2003//Tv1_12_2
+/transmitter.cxx/1.8/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/transmitter.h/1.9/Fri Mar 14 07:25:55 2003//Tv1_12_2
+/vid_coder.cxx/1.6/Thu Apr  3 23:54:15 2003//Tv1_12_2
+/vid_coder.h/1.10/Thu Apr  3 23:54:15 2003//Tv1_12_2
+/videoframe.h/1.8/Mon Feb 10 00:32:34 2003//Tv1_12_2
+D

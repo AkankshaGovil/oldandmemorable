@@ -1,0 +1,15 @@
+/add.c/1.3/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/code.c/1.3/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/decode.c/1.3/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/gsm_create.c/1.2/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/gsm_decode.c/1.2/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/gsm_destroy.c/1.2/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/gsm_encode.c/1.2/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/gsm_lpc.c/1.2/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/gsm_option.c/1.2/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/long_term.c/1.3/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/preprocess.c/1.3/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/rpe.c/1.3/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/short_term.c/1.3/Fri Mar 14 07:08:40 2003//Tv1_12_2
+/table.c/1.2/Fri Mar 14 07:08:40 2003//Tv1_12_2
+D

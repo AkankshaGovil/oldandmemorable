@@ -1,0 +1,14 @@
+1. Untar and copy the directory into /opt/lampstack-5.5/apache2/htdocs/ directory.
+2. Go to /opt/lampstack-5.5/ 
+3. Run ./lampctl.sh start apache
+4. Run ./lampctl.sh start mysql
+5. Go to /opt/lampstack-5.5/apache2/htdocs/phpScheduleIt/install
+6. /opt/lampstack-5.5/mysql/bin/mysql --socket /opt/lampstack-5.5/mysql/tmp/mysql.sock -pverify < setup.sql
+7. Create a user from GUI sigh-up page. 
+8. Login into the phpScheduleIT.
+9. Create a resource by name "TestBed-1".
+10. Connect to the Database using /opt/lampstack-5.5/mysql/bin/mysql --socket /opt/lampstack-5.5/mysql/tmp/mysql.sock -pverify -D phpScheduleIt
+11. Run the following sql.
+INSERT INTO machines VALUES(NULL, "test1","172.16.45.215","MSX","Jarell","HK","",(SELECT machid from resources WHERE resources.name = "TestBed-1"));
+INSERT INTO machines VALUES(NULL, "test2","172.16.45.216","GEN","Jarell","HK","",(SELECT machid from resources WHERE resources.name = "TestBed-1"));
+12. Go to booking page. And click on the resources link.
