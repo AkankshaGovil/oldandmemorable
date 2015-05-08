@@ -1,0 +1,1947 @@
+##
+##  ca-bundle.crt -- Bundle of CA Root Certificates
+##  Last Modified: Thu Mar  2 09:32:46 CET 2000
+##
+##  This is a bundle of X.509 certificates of public
+##  Certificate Authorities (CA). These were automatically
+##  extracted from Netscape Communicator 4.72's certificate database
+##  (the file `cert7.db'). It contains the certificates in both
+##  plain text and PEM format and therefore can be directly used
+##  with an Apache+mod_ssl webserver for SSL client authentication.
+##  Just configure this file as the SSLCACertificateFile.
+##
+##  (SKIPME)
+##
+
+ABAecom (sub., Am. Bankers Assn.) Root CA
+=========================================
+MD5 Fingerprint: 82:12:F7:89:E1:0B:91:60:A4:B6:22:9F:94:68:11:92
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIID+DCCAuCgAwIBAgIRANAeQJAAACdLAAAAAQAAAAQwDQYJKoZIhvcNAQEFBQAw
+gYwxCzAJBgNVBAYTAlVTMQ0wCwYDVQQIEwRVdGFoMRcwFQYDVQQHEw5TYWx0IExh
+a2UgQ2l0eTEYMBYGA1UEChMPWGNlcnQgRVogYnkgRFNUMRgwFgYDVQQDEw9YY2Vy
+dCBFWiBieSBEU1QxITAfBgkqhkiG9w0BCQEWEmNhQGRpZ3NpZ3RydXN0LmNvbTAe
+Fw05OTA3MTQxNjE0MThaFw0wOTA3MTExNjE0MThaMIGMMQswCQYDVQQGEwJVUzEN
+MAsGA1UECBMEVXRhaDEXMBUGA1UEBxMOU2FsdCBMYWtlIENpdHkxGDAWBgNVBAoT
+D1hjZXJ0IEVaIGJ5IERTVDEYMBYGA1UEAxMPWGNlcnQgRVogYnkgRFNUMSEwHwYJ
+KoZIhvcNAQkBFhJjYUBkaWdzaWd0cnVzdC5jb20wggEiMA0GCSqGSIb3DQEBAQUA
+A4IBDwAwggEKAoIBAQCtVBjetL/3reh0qu2LfI/C1HUa1YS5tmL8ie/kl2GS+x24
+4VpHNJ6eBiL70+o4y7iLB/caoBd3B1owHNQpOCDXJ0DYUJNDv9IYoil2BXKqa7Zp
+mKt5Hhxl9WqL/MUWqqJy2mDtTm4ZJXoKHTDjUJtCPETrobAgHtsCfv49H7/QAIrb
+QHamGKUVp1e2UsIBF5h3j4qBxhq0airmr6nWAKzP2BVJfNsbof6B+of505DBAsD5
+0ELpkWglX8a/hznplQBgKL+DLMDnXrbXNhbnYId26OcnsiUNi3rlqh3lWc3OCw5v
+xsic4xDZhTnTt5v6xrp8dNJddVardKSiUb9SfO5xAgMBAAGjUzBRMA8GA1UdEwEB
+/wQFMAMBAf8wHwYDVR0jBBgwFoAUCCBsZuuBCmxc1bWmPEHdHJaRJ3cwHQYDVR0O
+BBYEFAggbGbrgQpsXNW1pjxB3RyWkSd3MA0GCSqGSIb3DQEBBQUAA4IBAQBah1iP
+Lat2IWtUDNnxQfZOzSue4x+boy1/2St9WMhnpCn16ezVvZY/o3P4xFs2fNBjLDQ5
+m0i4PW/2FMWeY+anNG7T6DOzxzwYbiOuQ5KZP5jFaTDxNjutuTCC1rZZFpYCCykS
+YbQRifcML5SQhZgonFNsfmPdc/QZ/0qB0bJSI/08SjTOWhvgUIrtT4GV2GDn5MQN
+u1g+WPdOaG8+Z8nLepcWJ+xCYRR2uwDF6wg9FX9LtiJdhzuQ9PPA/jez6dliDMDD
+Wa9gvR8N26E0HzDEPYutsB0Ek+1f1eS/IDAE9EjpMwHRLpAnUrOb3jocq6mXf5vr
+wo3CbezcE9NGxXl8
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            d0:1e:40:90:00:00:27:4b:00:00:00:01:00:00:00:04
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, ST=Utah, L=Salt Lake City, O=Xcert EZ by DST, CN=Xcert EZ by DST/Email=ca@digsigtrust.com
+        Validity
+            Not Before: Jul 14 16:14:18 1999 GMT
+            Not After : Jul 11 16:14:18 2009 GMT
+        Subject: C=US, ST=Utah, L=Salt Lake City, O=Xcert EZ by DST, CN=Xcert EZ by DST/Email=ca@digsigtrust.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:ad:54:18:de:b4:bf:f7:ad:e8:74:aa:ed:8b:7c:
+                    8f:c2:d4:75:1a:d5:84:b9:b6:62:fc:89:ef:e4:97:
+                    61:92:fb:1d:b8:e1:5a:47:34:9e:9e:06:22:fb:d3:
+                    ea:38:cb:b8:8b:07:f7:1a:a0:17:77:07:5a:30:1c:
+                    d4:29:38:20:d7:27:40:d8:50:93:43:bf:d2:18:a2:
+                    29:76:05:72:aa:6b:b6:69:98:ab:79:1e:1c:65:f5:
+                    6a:8b:fc:c5:16:aa:a2:72:da:60:ed:4e:6e:19:25:
+                    7a:0a:1d:30:e3:50:9b:42:3c:44:eb:a1:b0:20:1e:
+                    db:02:7e:fe:3d:1f:bf:d0:00:8a:db:40:76:a6:18:
+                    a5:15:a7:57:b6:52:c2:01:17:98:77:8f:8a:81:c6:
+                    1a:b4:6a:2a:e6:af:a9:d6:00:ac:cf:d8:15:49:7c:
+                    db:1b:a1:fe:81:fa:87:f9:d3:90:c1:02:c0:f9:d0:
+                    42:e9:91:68:25:5f:c6:bf:87:39:e9:95:00:60:28:
+                    bf:83:2c:c0:e7:5e:b6:d7:36:16:e7:60:87:76:e8:
+                    e7:27:b2:25:0d:8b:7a:e5:aa:1d:e5:59:cd:ce:0b:
+                    0e:6f:c6:c8:9c:e3:10:d9:85:39:d3:b7:9b:fa:c6:
+                    ba:7c:74:d2:5d:75:56:ab:74:a4:a2:51:bf:52:7c:
+                    ee:71
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Authority Key Identifier: 
+                keyid:08:20:6C:66:EB:81:0A:6C:5C:D5:B5:A6:3C:41:DD:1C:96:91:27:77
+
+            X509v3 Subject Key Identifier: 
+                08:20:6C:66:EB:81:0A:6C:5C:D5:B5:A6:3C:41:DD:1C:96:91:27:77
+    Signature Algorithm: sha1WithRSAEncryption
+        5a:87:58:8f:2d:ab:76:21:6b:54:0c:d9:f1:41:f6:4e:cd:2b:
+        9e:e3:1f:9b:a3:2d:7f:d9:2b:7d:58:c8:67:a4:29:f5:e9:ec:
+        d5:bd:96:3f:a3:73:f8:c4:5b:36:7c:d0:63:2c:34:39:9b:48:
+        b8:3d:6f:f6:14:c5:9e:63:e6:a7:34:6e:d3:e8:33:b3:c7:3c:
+        18:6e:23:ae:43:92:99:3f:98:c5:69:30:f1:36:3b:ad:b9:30:
+        82:d6:b6:59:16:96:02:0b:29:12:61:b4:11:89:f7:0c:2f:94:
+        90:85:98:28:9c:53:6c:7e:63:dd:73:f4:19:ff:4a:81:d1:b2:
+        52:23:fd:3c:4a:34:ce:5a:1b:e0:50:8a:ed:4f:81:95:d8:60:
+        e7:e4:c4:0d:bb:58:3e:58:f7:4e:68:6f:3e:67:c9:cb:7a:97:
+        16:27:ec:42:61:14:76:bb:00:c5:eb:08:3d:15:7f:4b:b6:22:
+        5d:87:3b:90:f4:f3:c0:fe:37:b3:e9:d9:62:0c:c0:c3:59:af:
+        60:bd:1f:0d:db:a1:34:1f:30:c4:3d:8b:ad:b0:1d:04:93:ed:
+        5f:d5:e4:bf:20:30:04:f4:48:e9:33:01:d1:2e:90:27:52:b3:
+        9b:de:3a:1c:ab:a9:97:7f:9b:eb:c2:8d:c2:6d:ec:dc:13:d3:
+        46:c5:79:7c
+
+ANX Network CA by DST
+=====================
+MD5 Fingerprint: A8:ED:DE:EB:93:88:66:D8:2F:C3:BD:1D:BE:45:BE:4D
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDTTCCAragAwIBAgIENm6ibzANBgkqhkiG9w0BAQUFADBSMQswCQYDVQQGEwJV
+UzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMR0wGwYDVQQL
+ExREU1QgKEFOWCBOZXR3b3JrKSBDQTAeFw05ODEyMDkxNTQ2NDhaFw0xODEyMDkx
+NjE2NDhaMFIxCzAJBgNVBAYTAlVTMSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVy
+ZSBUcnVzdCBDby4xHTAbBgNVBAsTFERTVCAoQU5YIE5ldHdvcmspIENBMIGdMA0G
+CSqGSIb3DQEBAQUAA4GLADCBhwKBgQC0SBGAWKDVpZkP9jcsRLZu0XzzKmueEbaI
+IwRccSWeahJ3EW6/aDllqPay9qIYsokVoGe3eowiSGv2hDQftsr3G3LL8ltI04ce
+InYTBLSsbJZ/5w4IyTJRMC3VgOghZ7rzXggkLAdZnZAa7kbJtaQelrRBkdR/0o04
+JrBvQ24JfQIBA6OCATAwggEsMBEGCWCGSAGG+EIBAQQEAwIABzB0BgNVHR8EbTBr
+MGmgZ6BlpGMwYTELMAkGA1UEBhMCVVMxJDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0
+dXJlIFRydXN0IENvLjEdMBsGA1UECxMURFNUIChBTlggTmV0d29yaykgQ0ExDTAL
+BgNVBAMTBENSTDEwKwYDVR0QBCQwIoAPMTk5ODEyMDkxNTQ2NDhagQ8yMDE4MTIw
+OTE1NDY0OFowCwYDVR0PBAQDAgEGMB8GA1UdIwQYMBaAFIwWVXDMFgpTZMKlhKqz
+ZBdDP4I2MB0GA1UdDgQWBBSMFlVwzBYKU2TCpYSqs2QXQz+CNjAMBgNVHRMEBTAD
+AQH/MBkGCSqGSIb2fQdBAAQMMAobBFY0LjADAgSQMA0GCSqGSIb3DQEBBQUAA4GB
+AEklyWCxDF+pORDTxTRVfc95wynr3vnCQPnoVsXwL+z02exIUbhjOF6TbhiWhbnK
+UJykuOpmJmiThW9vTHHQvnoLPDG5975pnhDX0UDorBZxq66rOOFwscqSFuBdhaYY
+gAYAnOGmGEJRp2hoWe8mlF+tMQz+KR4XAYQ3W+gSMqNd
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 913220207 (0x366ea26f)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Digital Signature Trust Co., OU=DST (ANX Network) CA
+        Validity
+            Not Before: Dec  9 15:46:48 1998 GMT
+            Not After : Dec  9 16:16:48 2018 GMT
+        Subject: C=US, O=Digital Signature Trust Co., OU=DST (ANX Network) CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:b4:48:11:80:58:a0:d5:a5:99:0f:f6:37:2c:44:
+                    b6:6e:d1:7c:f3:2a:6b:9e:11:b6:88:23:04:5c:71:
+                    25:9e:6a:12:77:11:6e:bf:68:39:65:a8:f6:b2:f6:
+                    a2:18:b2:89:15:a0:67:b7:7a:8c:22:48:6b:f6:84:
+                    34:1f:b6:ca:f7:1b:72:cb:f2:5b:48:d3:87:1e:22:
+                    76:13:04:b4:ac:6c:96:7f:e7:0e:08:c9:32:51:30:
+                    2d:d5:80:e8:21:67:ba:f3:5e:08:24:2c:07:59:9d:
+                    90:1a:ee:46:c9:b5:a4:1e:96:b4:41:91:d4:7f:d2:
+                    8d:38:26:b0:6f:43:6e:09:7d
+                Exponent: 3 (0x3)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Digital Signature Trust Co./OU=DST (ANX Network) CA/CN=CRL1
+
+            X509v3 Private Key Usage Period: 
+                Not Before: Dec  9 15:46:48 1998 GMT, Not After: Dec  9 15:46:48 2018 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:8C:16:55:70:CC:16:0A:53:64:C2:A5:84:AA:B3:64:17:43:3F:82:36
+
+            X509v3 Subject Key Identifier: 
+                8C:16:55:70:CC:16:0A:53:64:C2:A5:84:AA:B3:64:17:43:3F:82:36
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0
+..V4.0....
+    Signature Algorithm: sha1WithRSAEncryption
+        49:25:c9:60:b1:0c:5f:a9:39:10:d3:c5:34:55:7d:cf:79:c3:
+        29:eb:de:f9:c2:40:f9:e8:56:c5:f0:2f:ec:f4:d9:ec:48:51:
+        b8:63:38:5e:93:6e:18:96:85:b9:ca:50:9c:a4:b8:ea:66:26:
+        68:93:85:6f:6f:4c:71:d0:be:7a:0b:3c:31:b9:f7:be:69:9e:
+        10:d7:d1:40:e8:ac:16:71:ab:ae:ab:38:e1:70:b1:ca:92:16:
+        e0:5d:85:a6:18:80:06:00:9c:e1:a6:18:42:51:a7:68:68:59:
+        ef:26:94:5f:ad:31:0c:fe:29:1e:17:01:84:37:5b:e8:12:32:
+        a3:5d
+
+American Express CA
+===================
+MD5 Fingerprint: 1C:D5:8E:82:BE:70:55:8E:39:61:DF:AD:51:DB:6B:A0
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIICkDCCAfkCAgCNMA0GCSqGSIb3DQEBBAUAMIGPMQswCQYDVQQGEwJVUzEnMCUG
+A1UEChMeQW1lcmljYW4gRXhwcmVzcyBDb21wYW55LCBJbmMuMSYwJAYDVQQLEx1B
+bWVyaWNhbiBFeHByZXNzIFRlY2hub2xvZ2llczEvMC0GA1UEAxMmQW1lcmljYW4g
+RXhwcmVzcyBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNOTgwODE0MjIwMTAwWhcN
+MDYwODE0MjM1OTAwWjCBjzELMAkGA1UEBhMCVVMxJzAlBgNVBAoTHkFtZXJpY2Fu
+IEV4cHJlc3MgQ29tcGFueSwgSW5jLjEmMCQGA1UECxMdQW1lcmljYW4gRXhwcmVz
+cyBUZWNobm9sb2dpZXMxLzAtBgNVBAMTJkFtZXJpY2FuIEV4cHJlc3MgQ2VydGlm
+aWNhdGUgQXV0aG9yaXR5MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJ8kmS
+hcr9FSm1BrZE7PyIo/KGzv8UTyQckvnCI8HOQ99dNMi4FOzVKnCRSZXXVs2U8amT
+0Ggi3E19oApyKkfqJfCFAF82VGHPC/k3Wmed6R/pZD9wlWGn0DAC3iYopGYDBOkw
++48zB/lvYYeictvzaHhjZlmpybdm4RWySDYs+QIDAQABMA0GCSqGSIb3DQEBBAUA
+A4GBAGgXYrhzi0xs60qlPqvlnS7SzYoHV/PGWZd2Fxf4Uo4nk9hY2Chs9KIEeorC
+diSxArTfKPL386infiNIYYj0EWiuJl32oUtTJWrYKhQCDuCHIG6eGVxzkAsj4jGX
+Iz/VIqLTBnvaN/XXtUFEF3pFAtmFRWbWjsfwegyZYiJpW+3S
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 141 (0x8d)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=US, O=American Express Company, Inc., OU=American Express Technologies, CN=American Express Certificate Authority
+        Validity
+            Not Before: Aug 14 22:01:00 1998 GMT
+            Not After : Aug 14 23:59:00 2006 GMT
+        Subject: C=US, O=American Express Company, Inc., OU=American Express Technologies, CN=American Express Certificate Authority
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:c9:f2:49:92:85:ca:fd:15:29:b5:06:b6:44:ec:
+                    fc:88:a3:f2:86:ce:ff:14:4f:24:1c:92:f9:c2:23:
+                    c1:ce:43:df:5d:34:c8:b8:14:ec:d5:2a:70:91:49:
+                    95:d7:56:cd:94:f1:a9:93:d0:68:22:dc:4d:7d:a0:
+                    0a:72:2a:47:ea:25:f0:85:00:5f:36:54:61:cf:0b:
+                    f9:37:5a:67:9d:e9:1f:e9:64:3f:70:95:61:a7:d0:
+                    30:02:de:26:28:a4:66:03:04:e9:30:fb:8f:33:07:
+                    f9:6f:61:87:a2:72:db:f3:68:78:63:66:59:a9:c9:
+                    b7:66:e1:15:b2:48:36:2c:f9
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: md5WithRSAEncryption
+        68:17:62:b8:73:8b:4c:6c:eb:4a:a5:3e:ab:e5:9d:2e:d2:cd:
+        8a:07:57:f3:c6:59:97:76:17:17:f8:52:8e:27:93:d8:58:d8:
+        28:6c:f4:a2:04:7a:8a:c2:76:24:b1:02:b4:df:28:f2:f7:f3:
+        a8:a7:7e:23:48:61:88:f4:11:68:ae:26:5d:f6:a1:4b:53:25:
+        6a:d8:2a:14:02:0e:e0:87:20:6e:9e:19:5c:73:90:0b:23:e2:
+        31:97:23:3f:d5:22:a2:d3:06:7b:da:37:f5:d7:b5:41:44:17:
+        7a:45:02:d9:85:45:66:d6:8e:c7:f0:7a:0c:99:62:22:69:5b:
+        ed:d2
+
+American Express Global CA
+==========================
+MD5 Fingerprint: 63:1B:66:93:8C:F3:66:CB:3C:79:57:DC:05:49:EA:DB
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIEBDCCAuygAwIBAgICAIUwDQYJKoZIhvcNAQEFBQAwgZYxCzAJBgNVBAYTAlVT
+MScwJQYDVQQKEx5BbWVyaWNhbiBFeHByZXNzIENvbXBhbnksIEluYy4xJjAkBgNV
+BAsTHUFtZXJpY2FuIEV4cHJlc3MgVGVjaG5vbG9naWVzMTYwNAYDVQQDEy1BbWVy
+aWNhbiBFeHByZXNzIEdsb2JhbCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNOTgw
+ODE0MTkwNjAwWhcNMTMwODE0MjM1OTAwWjCBljELMAkGA1UEBhMCVVMxJzAlBgNV
+BAoTHkFtZXJpY2FuIEV4cHJlc3MgQ29tcGFueSwgSW5jLjEmMCQGA1UECxMdQW1l
+cmljYW4gRXhwcmVzcyBUZWNobm9sb2dpZXMxNjA0BgNVBAMTLUFtZXJpY2FuIEV4
+cHJlc3MgR2xvYmFsIENlcnRpZmljYXRlIEF1dGhvcml0eTCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAPAkJmYu++tKc3FTiUfLJjxTkpRMysKFtQ34w1e9
+Lyofahi3V68MABb6oLaQpvcaoS5mJsdoo4qTaWa1RlYtHYLqkAwKIsKJUI0F89Sr
+c0HwzxKsKLRvFJSWWUuekHWG3+JH6+HpT0N+h8onGGaetcFAZX38YW+tm3LPqV7Y
+8/nabpEQ+ky16n4g3qk5L/WI5IpvNcYgnCuGRjMK/DFVpWusFkDpzTVZbzIEw3u1
+D3t3cPNIuypSgs6vKW3xEW9t5gcAAe+a8yYNpnkTZ6/4qxx1rJG1a75AsN6cDLFp
+hRlxkRNFyt/R/eayypaDedvFuKpbepALeFY+xteflEgR9a0CAwEAAaNaMFgwEgYD
+VR0TAQH/BAgwBgEB/wIBBTAOBgNVHQ8BAf8EBAMCAQYwFwYDVR0gBBAwDjAMBgoq
+hkiG+Q8KAQUBMBkGA1UdDgQSBBBXRzV7NicRqAj8L0Yl6yRpMA0GCSqGSIb3DQEB
+BQUAA4IBAQDHYUWoinG5vjTpIXshzVYTmNUwY+kYqkuSFb8LHbvskmnFLsNhi+gw
+RcsQRsFzOFyLGdIr80DrfHKzLh4n43WVihybLsSVBYZy0FX0oZJSeVzb9Pjc5dcS
+sUDHPIbkMWVKyjfG3nZXGWlMRmn8Kq0WN3qTrPchSy3766lQy8HRQAjaA2mHpzde
+VcHF7cTjjgwml5tcV0ty4/IDBdACOyYDQJCevgtbSQx48dVMVSng9v1MA6lUAjLR
+V1qFrEPtWzsWX6C/NdtLnnvo/+cNPDuom0lBRvVzTv+SZSGDE1Vx60k8f4gawhIo
+JaFGS0E3l3/sjvHUoZbCILZerakcHhGg
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 133 (0x85)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=American Express Company, Inc., OU=American Express Technologies, CN=American Express Global Certificate Authority
+        Validity
+            Not Before: Aug 14 19:06:00 1998 GMT
+            Not After : Aug 14 23:59:00 2013 GMT
+        Subject: C=US, O=American Express Company, Inc., OU=American Express Technologies, CN=American Express Global Certificate Authority
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:f0:24:26:66:2e:fb:eb:4a:73:71:53:89:47:cb:
+                    26:3c:53:92:94:4c:ca:c2:85:b5:0d:f8:c3:57:bd:
+                    2f:2a:1f:6a:18:b7:57:af:0c:00:16:fa:a0:b6:90:
+                    a6:f7:1a:a1:2e:66:26:c7:68:a3:8a:93:69:66:b5:
+                    46:56:2d:1d:82:ea:90:0c:0a:22:c2:89:50:8d:05:
+                    f3:d4:ab:73:41:f0:cf:12:ac:28:b4:6f:14:94:96:
+                    59:4b:9e:90:75:86:df:e2:47:eb:e1:e9:4f:43:7e:
+                    87:ca:27:18:66:9e:b5:c1:40:65:7d:fc:61:6f:ad:
+                    9b:72:cf:a9:5e:d8:f3:f9:da:6e:91:10:fa:4c:b5:
+                    ea:7e:20:de:a9:39:2f:f5:88:e4:8a:6f:35:c6:20:
+                    9c:2b:86:46:33:0a:fc:31:55:a5:6b:ac:16:40:e9:
+                    cd:35:59:6f:32:04:c3:7b:b5:0f:7b:77:70:f3:48:
+                    bb:2a:52:82:ce:af:29:6d:f1:11:6f:6d:e6:07:00:
+                    01:ef:9a:f3:26:0d:a6:79:13:67:af:f8:ab:1c:75:
+                    ac:91:b5:6b:be:40:b0:de:9c:0c:b1:69:85:19:71:
+                    91:13:45:ca:df:d1:fd:e6:b2:ca:96:83:79:db:c5:
+                    b8:aa:5b:7a:90:0b:78:56:3e:c6:d7:9f:94:48:11:
+                    f5:ad
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:5
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Certificate Policies: 
+                Policy: 1.2.840.113807.10.1.5.1
+
+            X509v3 Subject Key Identifier: 
+                57:47:35:7B:36:27:11:A8:08:FC:2F:46:25:EB:24:69
+    Signature Algorithm: sha1WithRSAEncryption
+        c7:61:45:a8:8a:71:b9:be:34:e9:21:7b:21:cd:56:13:98:d5:
+        30:63:e9:18:aa:4b:92:15:bf:0b:1d:bb:ec:92:69:c5:2e:c3:
+        61:8b:e8:30:45:cb:10:46:c1:73:38:5c:8b:19:d2:2b:f3:40:
+        eb:7c:72:b3:2e:1e:27:e3:75:95:8a:1c:9b:2e:c4:95:05:86:
+        72:d0:55:f4:a1:92:52:79:5c:db:f4:f8:dc:e5:d7:12:b1:40:
+        c7:3c:86:e4:31:65:4a:ca:37:c6:de:76:57:19:69:4c:46:69:
+        fc:2a:ad:16:37:7a:93:ac:f7:21:4b:2d:fb:eb:a9:50:cb:c1:
+        d1:40:08:da:03:69:87:a7:37:5e:55:c1:c5:ed:c4:e3:8e:0c:
+        26:97:9b:5c:57:4b:72:e3:f2:03:05:d0:02:3b:26:03:40:90:
+        9e:be:0b:5b:49:0c:78:f1:d5:4c:55:29:e0:f6:fd:4c:03:a9:
+        54:02:32:d1:57:5a:85:ac:43:ed:5b:3b:16:5f:a0:bf:35:db:
+        4b:9e:7b:e8:ff:e7:0d:3c:3b:a8:9b:49:41:46:f5:73:4e:ff:
+        92:65:21:83:13:55:71:eb:49:3c:7f:88:1a:c2:12:28:25:a1:
+        46:4b:41:37:97:7f:ec:8e:f1:d4:a1:96:c2:20:b6:5e:ad:a9:
+        1c:1e:11:a0
+
+BelSign Object Publishing CA
+============================
+MD5 Fingerprint: 8A:02:F8:DF:B8:E1:84:9F:5A:C2:60:24:65:D1:73:FB
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDAzCCAmygAwIBAgIBATANBgkqhkiG9w0BAQQFADCBuzELMAkGA1UEBhMCQkUx
+ETAPBgNVBAcTCEJydXNzZWxzMRMwEQYDVQQKEwpCZWxTaWduIE5WMTgwNgYDVQQL
+Ey9CZWxTaWduIE9iamVjdCBQdWJsaXNoaW5nIENlcnRpZmljYXRlIEF1dGhvcml0
+eTElMCMGA1UEAxMcQmVsU2lnbiBPYmplY3QgUHVibGlzaGluZyBDQTEjMCEGCSqG
+SIb3DQEJARYUd2VibWFzdGVyQGJlbHNpZ24uYmUwHhcNOTcwOTE5MjIwMzAwWhcN
+MDcwOTE5MjIwMzAwWjCBuzELMAkGA1UEBhMCQkUxETAPBgNVBAcTCEJydXNzZWxz
+MRMwEQYDVQQKEwpCZWxTaWduIE5WMTgwNgYDVQQLEy9CZWxTaWduIE9iamVjdCBQ
+dWJsaXNoaW5nIENlcnRpZmljYXRlIEF1dGhvcml0eTElMCMGA1UEAxMcQmVsU2ln
+biBPYmplY3QgUHVibGlzaGluZyBDQTEjMCEGCSqGSIb3DQEJARYUd2VibWFzdGVy
+QGJlbHNpZ24uYmUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMQuH7a/7oJA
+3fm3LkHVngWxWtAmfGJVA5v8y2HeS+/+6Jn+h7mIz5DaDwk8dt8Xl7bLPyVF/bS8
+WAC+sFq2FIeP7mdkrR2Ig7tnn2VhAFgIgFCfgMkx9iqQHC33SmwQ9iNDXTgJYIhX
+As0WbBj8zfuSKnfQnpOjXYhk0Mj4XVRRAgMBAAGjFTATMBEGCWCGSAGG+EIBAQQE
+AwIABzANBgkqhkiG9w0BAQQFAAOBgQBjdhd8lvBTpV0BHFPOKcJ+daxMDaIIc7Rq
+Mf0CBhSZ3FQEpL/IloafMUMyJVf2hfYluze+oXkjyVcGJXFrRU/49AJAFoIir1Tq
+Mij2De6ZuksIUQ9uhiMhTC0liIHELg7xEyw4ipUCJMM6lWPkk45IuwhHcl+u5jpa
+R9Zxxp6aUg==
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=BE, L=Brussels, O=BelSign NV, OU=BelSign Object Publishing Certificate Authority, CN=BelSign Object Publishing CA/Email=webmaster@belsign.be
+        Validity
+            Not Before: Sep 19 22:03:00 1997 GMT
+            Not After : Sep 19 22:03:00 2007 GMT
+        Subject: C=BE, L=Brussels, O=BelSign NV, OU=BelSign Object Publishing Certificate Authority, CN=BelSign Object Publishing CA/Email=webmaster@belsign.be
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:c4:2e:1f:b6:bf:ee:82:40:dd:f9:b7:2e:41:d5:
+                    9e:05:b1:5a:d0:26:7c:62:55:03:9b:fc:cb:61:de:
+                    4b:ef:fe:e8:99:fe:87:b9:88:cf:90:da:0f:09:3c:
+                    76:df:17:97:b6:cb:3f:25:45:fd:b4:bc:58:00:be:
+                    b0:5a:b6:14:87:8f:ee:67:64:ad:1d:88:83:bb:67:
+                    9f:65:61:00:58:08:80:50:9f:80:c9:31:f6:2a:90:
+                    1c:2d:f7:4a:6c:10:f6:23:43:5d:38:09:60:88:57:
+                    02:cd:16:6c:18:fc:cd:fb:92:2a:77:d0:9e:93:a3:
+                    5d:88:64:d0:c8:f8:5d:54:51
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+    Signature Algorithm: md5WithRSAEncryption
+        63:76:17:7c:96:f0:53:a5:5d:01:1c:53:ce:29:c2:7e:75:ac:
+        4c:0d:a2:08:73:b4:6a:31:fd:02:06:14:99:dc:54:04:a4:bf:
+        c8:96:86:9f:31:43:32:25:57:f6:85:f6:25:bb:37:be:a1:79:
+        23:c9:57:06:25:71:6b:45:4f:f8:f4:02:40:16:82:22:af:54:
+        ea:32:28:f6:0d:ee:99:ba:4b:08:51:0f:6e:86:23:21:4c:2d:
+        25:88:81:c4:2e:0e:f1:13:2c:38:8a:95:02:24:c3:3a:95:63:
+        e4:93:8e:48:bb:08:47:72:5f:ae:e6:3a:5a:47:d6:71:c6:9e:
+        9a:52
+
+BelSign Secure Server CA
+========================
+MD5 Fingerprint: 3D:5E:82:C6:D9:AD:D9:8B:93:6B:0C:10:B9:49:0A:B1
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIC8zCCAlygAwIBAgIBATANBgkqhkiG9w0BAQQFADCBszELMAkGA1UEBhMCQkUx
+ETAPBgNVBAcTCEJydXNzZWxzMRMwEQYDVQQKEwpCZWxTaWduIE5WMTQwMgYDVQQL
+EytCZWxTaWduIFNlY3VyZSBTZXJ2ZXIgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MSEw
+HwYDVQQDExhCZWxTaWduIFNlY3VyZSBTZXJ2ZXIgQ0ExIzAhBgkqhkiG9w0BCQEW
+FHdlYm1hc3RlckBiZWxzaWduLmJlMB4XDTk3MDcxNjIyMDA1NFoXDTA3MDcxNjIy
+MDA1NFowgbMxCzAJBgNVBAYTAkJFMREwDwYDVQQHEwhCcnVzc2VsczETMBEGA1UE
+ChMKQmVsU2lnbiBOVjE0MDIGA1UECxMrQmVsU2lnbiBTZWN1cmUgU2VydmVyIENl
+cnRpZmljYXRlIEF1dGhvcml0eTEhMB8GA1UEAxMYQmVsU2lnbiBTZWN1cmUgU2Vy
+dmVyIENBMSMwIQYJKoZIhvcNAQkBFhR3ZWJtYXN0ZXJAYmVsc2lnbi5iZTCBnzAN
+BgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA1gESeJL4BEJ/yccig/x8R3AwK0kLPjZA
+kCjaIXODU/LE0RZAwFP/rqbGJLMnbaWzPTl3XagG9ubpvGMRTgZlcAqdk/miQIt/
+SoQOjRax1swIZBIM4ChLyKWEkBf7EUYu1qeFGMsYrmOasFgG9ADP+MQJGjUMofnu
+Sv1t3v4mpTsCAwEAAaMVMBMwEQYJYIZIAYb4QgEBBAQDAgCgMA0GCSqGSIb3DQEB
+BAUAA4GBAGw9mcMF4h3K5S2qaIWLQDEgZhNo5lg6idCNdbLFYth9go/32TKBd/Y1
+W4UpzmeyubwrGXjP84f9RvGVdbIJVwMwwXrNckdxgMp9ncllPEcRIn36BwsoeKGT
+6AVFSOIyMko96FMcELfHc4wHUOH5yStTQfWDjeUJOUqOA2KqQGOL
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=BE, L=Brussels, O=BelSign NV, OU=BelSign Secure Server Certificate Authority, CN=BelSign Secure Server CA/Email=webmaster@belsign.be
+        Validity
+            Not Before: Jul 16 22:00:54 1997 GMT
+            Not After : Jul 16 22:00:54 2007 GMT
+        Subject: C=BE, L=Brussels, O=BelSign NV, OU=BelSign Secure Server Certificate Authority, CN=BelSign Secure Server CA/Email=webmaster@belsign.be
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:d6:01:12:78:92:f8:04:42:7f:c9:c7:22:83:fc:
+                    7c:47:70:30:2b:49:0b:3e:36:40:90:28:da:21:73:
+                    83:53:f2:c4:d1:16:40:c0:53:ff:ae:a6:c6:24:b3:
+                    27:6d:a5:b3:3d:39:77:5d:a8:06:f6:e6:e9:bc:63:
+                    11:4e:06:65:70:0a:9d:93:f9:a2:40:8b:7f:4a:84:
+                    0e:8d:16:b1:d6:cc:08:64:12:0c:e0:28:4b:c8:a5:
+                    84:90:17:fb:11:46:2e:d6:a7:85:18:cb:18:ae:63:
+                    9a:b0:58:06:f4:00:cf:f8:c4:09:1a:35:0c:a1:f9:
+                    ee:4a:fd:6d:de:fe:26:a5:3b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL Client, S/MIME
+    Signature Algorithm: md5WithRSAEncryption
+        6c:3d:99:c3:05:e2:1d:ca:e5:2d:aa:68:85:8b:40:31:20:66:
+        13:68:e6:58:3a:89:d0:8d:75:b2:c5:62:d8:7d:82:8f:f7:d9:
+        32:81:77:f6:35:5b:85:29:ce:67:b2:b9:bc:2b:19:78:cf:f3:
+        87:fd:46:f1:95:75:b2:09:57:03:30:c1:7a:cd:72:47:71:80:
+        ca:7d:9d:c9:65:3c:47:11:22:7d:fa:07:0b:28:78:a1:93:e8:
+        05:45:48:e2:32:32:4a:3d:e8:53:1c:10:b7:c7:73:8c:07:50:
+        e1:f9:c9:2b:53:41:f5:83:8d:e5:09:39:4a:8e:03:62:aa:40:
+        63:8b
+
+Deutsche Telekom AG Root CA
+===========================
+MD5 Fingerprint: 77:DE:04:94:77:D0:0C:5F:A7:B1:F4:30:18:87:FB:55
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIICjjCCAfegAwIBAgIBBjANBgkqhkiG9w0BAQQFADBtMQswCQYDVQQGEwJERTEc
+MBoGA1UEChMTRGV1dHNjaGUgVGVsZWtvbSBBRzEdMBsGA1UECxMUVGVsZVNlYyBU
+cnVzdCBDZW50ZXIxITAfBgNVBAMTGERldXRzY2hlIFRlbGVrb20gUm9vdCBDQTAe
+Fw05ODEyMDkwOTExMDBaFw0wNDEyMDkyMzU5MDBaMG0xCzAJBgNVBAYTAkRFMRww
+GgYDVQQKExNEZXV0c2NoZSBUZWxla29tIEFHMR0wGwYDVQQLExRUZWxlU2VjIFRy
+dXN0IENlbnRlcjEhMB8GA1UEAxMYRGV1dHNjaGUgVGVsZWtvbSBSb290IENBMIGf
+MA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDdBSz5BbO5EtdpcffqVjAIVxRDe7sa
+nG0vV2HX4vVEa+42QZb2ZM7hwbK5pBQEmFDocPiONZp9ScFhHVmu2gYYlX2tzuyp
+vtEYD0CRdiqj5f3+iRX0V/fgVdp1rQD0LME1zLRDJlViRC4BJZyKW/DB0AA1eP41
+3pRAZHiDocw5iQIDAQABoz4wPDAPBgNVHRMECDAGAQH/AgEFMA4GA1UdDwEB/wQE
+AwIBBjAZBgNVHQ4EEgQQLIdZH4sTgLL5hp0+En5YljANBgkqhkiG9w0BAQQFAAOB
+gQAP/nO1B4hvoAuJ6spQH5TelCsLJ15P9RyVJtqMllStGZE3Q12ryYuzzW+YOT3t
+3TXjcbftE5OD6IblKTMTE7w1e/0oL3BZ1dO0jSgTWTvI1XT5RcIHYKq4GFT5pWj/
+1wXVj7YFMS5BSvQQH2BHGguLGU2SVyDS71AZ6M3QcLy8Ng==
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 6 (0x6)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=DE, O=Deutsche Telekom AG, OU=TeleSec Trust Center, CN=Deutsche Telekom Root CA
+        Validity
+            Not Before: Dec  9 09:11:00 1998 GMT
+            Not After : Dec  9 23:59:00 2004 GMT
+        Subject: C=DE, O=Deutsche Telekom AG, OU=TeleSec Trust Center, CN=Deutsche Telekom Root CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:dd:05:2c:f9:05:b3:b9:12:d7:69:71:f7:ea:56:
+                    30:08:57:14:43:7b:bb:1a:9c:6d:2f:57:61:d7:e2:
+                    f5:44:6b:ee:36:41:96:f6:64:ce:e1:c1:b2:b9:a4:
+                    14:04:98:50:e8:70:f8:8e:35:9a:7d:49:c1:61:1d:
+                    59:ae:da:06:18:95:7d:ad:ce:ec:a9:be:d1:18:0f:
+                    40:91:76:2a:a3:e5:fd:fe:89:15:f4:57:f7:e0:55:
+                    da:75:ad:00:f4:2c:c1:35:cc:b4:43:26:55:62:44:
+                    2e:01:25:9c:8a:5b:f0:c1:d0:00:35:78:fe:35:de:
+                    94:40:64:78:83:a1:cc:39:89
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:TRUE, pathlen:5
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Subject Key Identifier: 
+                2C:87:59:1F:8B:13:80:B2:F9:86:9D:3E:12:7E:58:96
+    Signature Algorithm: md5WithRSAEncryption
+        0f:fe:73:b5:07:88:6f:a0:0b:89:ea:ca:50:1f:94:de:94:2b:
+        0b:27:5e:4f:f5:1c:95:26:da:8c:96:54:ad:19:91:37:43:5d:
+        ab:c9:8b:b3:cd:6f:98:39:3d:ed:dd:35:e3:71:b7:ed:13:93:
+        83:e8:86:e5:29:33:13:13:bc:35:7b:fd:28:2f:70:59:d5:d3:
+        b4:8d:28:13:59:3b:c8:d5:74:f9:45:c2:07:60:aa:b8:18:54:
+        f9:a5:68:ff:d7:05:d5:8f:b6:05:31:2e:41:4a:f4:10:1f:60:
+        47:1a:0b:8b:19:4d:92:57:20:d2:ef:50:19:e8:cd:d0:70:bc:
+        bc:36
+
+Digital Signature Trust Co. Global CA 1
+=======================================
+MD5 Fingerprint: 25:7A:BA:83:2E:B6:A2:0B:DA:FE:F5:02:0F:08:D7:AD
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDKTCCApKgAwIBAgIENnAVljANBgkqhkiG9w0BAQUFADBGMQswCQYDVQQGEwJV
+UzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMREwDwYDVQQL
+EwhEU1RDQSBFMTAeFw05ODEyMTAxODEwMjNaFw0xODEyMTAxODQwMjNaMEYxCzAJ
+BgNVBAYTAlVTMSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4x
+ETAPBgNVBAsTCERTVENBIEUxMIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQCg
+bIGpzzQeJN3+hijM3oMv+V7UQtLodGBmE5gGHKlREmlvMVW5SXIACH7TpWJENySZ
+j9mDSI+ZbZUTu0M7LklOiDfBu1h//uG9+LthzfNHwJmm8fOR6Hh8AMthyUQncWlV
+Sn5JTe2io74CTADKAqjuAQIxZA9SLRN0dja1erQtcQIBA6OCASQwggEgMBEGCWCG
+SAGG+EIBAQQEAwIABzBoBgNVHR8EYTBfMF2gW6BZpFcwVTELMAkGA1UEBhMCVVMx
+JDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0dXJlIFRydXN0IENvLjERMA8GA1UECxMI
+RFNUQ0EgRTExDTALBgNVBAMTBENSTDEwKwYDVR0QBCQwIoAPMTk5ODEyMTAxODEw
+MjNagQ8yMDE4MTIxMDE4MTAyM1owCwYDVR0PBAQDAgEGMB8GA1UdIwQYMBaAFGp5
+fpFpRhgTCgJ3pVlbYJglDqL4MB0GA1UdDgQWBBRqeX6RaUYYEwoCd6VZW2CYJQ6i
++DAMBgNVHRMEBTADAQH/MBkGCSqGSIb2fQdBAAQMMAobBFY0LjADAgSQMA0GCSqG
+SIb3DQEBBQUAA4GBACIS2Hod3IEGtgllsofIH160L+nEHvI8wbsEkBFKg05+k7lN
+QseSJqBcNJo4cvj9axY+IO6CizEqkzaFI4iKPANo08kJD038bKTaKHKTDomAsH3+
+gG9lbRgzl4vCa4nuYD3Im+9/KzJic5PLPON74nZ4RbyhkwS7hp86W0N6w4pl
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 913315222 (0x36701596)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Digital Signature Trust Co., OU=DSTCA E1
+        Validity
+            Not Before: Dec 10 18:10:23 1998 GMT
+            Not After : Dec 10 18:40:23 2018 GMT
+        Subject: C=US, O=Digital Signature Trust Co., OU=DSTCA E1
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:a0:6c:81:a9:cf:34:1e:24:dd:fe:86:28:cc:de:
+                    83:2f:f9:5e:d4:42:d2:e8:74:60:66:13:98:06:1c:
+                    a9:51:12:69:6f:31:55:b9:49:72:00:08:7e:d3:a5:
+                    62:44:37:24:99:8f:d9:83:48:8f:99:6d:95:13:bb:
+                    43:3b:2e:49:4e:88:37:c1:bb:58:7f:fe:e1:bd:f8:
+                    bb:61:cd:f3:47:c0:99:a6:f1:f3:91:e8:78:7c:00:
+                    cb:61:c9:44:27:71:69:55:4a:7e:49:4d:ed:a2:a3:
+                    be:02:4c:00:ca:02:a8:ee:01:02:31:64:0f:52:2d:
+                    13:74:76:36:b5:7a:b4:2d:71
+                Exponent: 3 (0x3)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Digital Signature Trust Co./OU=DSTCA E1/CN=CRL1
+
+            X509v3 Private Key Usage Period: 
+                Not Before: Dec 10 18:10:23 1998 GMT, Not After: Dec 10 18:10:23 2018 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:6A:79:7E:91:69:46:18:13:0A:02:77:A5:59:5B:60:98:25:0E:A2:F8
+
+            X509v3 Subject Key Identifier: 
+                6A:79:7E:91:69:46:18:13:0A:02:77:A5:59:5B:60:98:25:0E:A2:F8
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0
+..V4.0....
+    Signature Algorithm: sha1WithRSAEncryption
+        22:12:d8:7a:1d:dc:81:06:b6:09:65:b2:87:c8:1f:5e:b4:2f:
+        e9:c4:1e:f2:3c:c1:bb:04:90:11:4a:83:4e:7e:93:b9:4d:42:
+        c7:92:26:a0:5c:34:9a:38:72:f8:fd:6b:16:3e:20:ee:82:8b:
+        31:2a:93:36:85:23:88:8a:3c:03:68:d3:c9:09:0f:4d:fc:6c:
+        a4:da:28:72:93:0e:89:80:b0:7d:fe:80:6f:65:6d:18:33:97:
+        8b:c2:6b:89:ee:60:3d:c8:9b:ef:7f:2b:32:62:73:93:cb:3c:
+        e3:7b:e2:76:78:45:bc:a1:93:04:bb:86:9f:3a:5b:43:7a:c3:
+        8a:65
+
+Digital Signature Trust Co. Global CA 2
+=======================================
+MD5 Fingerprint: 6C:C9:A7:6E:47:F1:0C:E3:53:3B:78:4C:4D:C2:6A:C5
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIID2DCCAsACEQDQHkCLAAACfAAAAAIAAAABMA0GCSqGSIb3DQEBBQUAMIGpMQsw
+CQYDVQQGEwJ1czENMAsGA1UECBMEVXRhaDEXMBUGA1UEBxMOU2FsdCBMYWtlIENp
+dHkxJDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0dXJlIFRydXN0IENvLjERMA8GA1UE
+CxMIRFNUQ0EgWDExFjAUBgNVBAMTDURTVCBSb290Q0EgWDExITAfBgkqhkiG9w0B
+CQEWEmNhQGRpZ3NpZ3RydXN0LmNvbTAeFw05ODEyMDExODE4NTVaFw0wODExMjgx
+ODE4NTVaMIGpMQswCQYDVQQGEwJ1czENMAsGA1UECBMEVXRhaDEXMBUGA1UEBxMO
+U2FsdCBMYWtlIENpdHkxJDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0dXJlIFRydXN0
+IENvLjERMA8GA1UECxMIRFNUQ0EgWDExFjAUBgNVBAMTDURTVCBSb290Q0EgWDEx
+ITAfBgkqhkiG9w0BCQEWEmNhQGRpZ3NpZ3RydXN0LmNvbTCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBANLGJrbnpT3BxGjVUG9TxW9JEwm4ryxIjRRqoxdf
+WvnTLnUv2Chi0ZMv/E3Uq4flCMeZ55I/db3rJbQVwZsZPdJEjdd0IG03Ao9pk1uK
+xBmd9LIO/BZsubEFkoPRhSxglD5FVaDZqwgh5mDoO3TymVBRaNADLbGAvqPYUrBE
+zUNKcI5YhZXhTizWLUFv1oTnyJhEykfbLCSlaSbPa7gnYsP0yXqSI+0TZ4KuRS5F
+5X5yP4WdlGIQ5jyRoa13AOAV7POEgHJ6jm5gl8ckWRA0g1vhpaRptlc1HHhZxtMv
+OnNn7pTKBBMFYgZwI7P0fO5F2WQLW0mqpEPOJsREEmy43XkCAwEAATANBgkqhkiG
+9w0BAQUFAAOCAQEAojeyP2n714Z5VEkxlTMr89EJFEliYIalsBHiUMIdBlc+Legz
+ZL6bqq1fG03UmZWii5rJYnK1aerZWKs17RWiQ9a2vAd5ZWRzfdd5ynvVWlHG4VME
+lo04z6MXrDlxawHDi1M8Y+nuecDkvpIyZHqzH5eUYr3qsiAVlfuX8ngvYzZAOONG
+Dx3drJXK50uQe7FLqdTF65raqtWjlBRGjS0f8zrWkzr2Pnn86Oawde3uPclwx12q
+gUtGJRzHbBXjlU4PqjI3lAoXJJIThFjSY28r9+ZbYgsTF7ANUkz+/m9c4pFuHf2k
+Ytdo+o56T9II2pPc8JIRetDccpMMc5NihWjQ9A==
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number:
+            d0:1e:40:8b:00:00:02:7c:00:00:00:02:00:00:00:01
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=us, ST=Utah, L=Salt Lake City, O=Digital Signature Trust Co., OU=DSTCA X1, CN=DST RootCA X1/Email=ca@digsigtrust.com
+        Validity
+            Not Before: Dec  1 18:18:55 1998 GMT
+            Not After : Nov 28 18:18:55 2008 GMT
+        Subject: C=us, ST=Utah, L=Salt Lake City, O=Digital Signature Trust Co., OU=DSTCA X1, CN=DST RootCA X1/Email=ca@digsigtrust.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:d2:c6:26:b6:e7:a5:3d:c1:c4:68:d5:50:6f:53:
+                    c5:6f:49:13:09:b8:af:2c:48:8d:14:6a:a3:17:5f:
+                    5a:f9:d3:2e:75:2f:d8:28:62:d1:93:2f:fc:4d:d4:
+                    ab:87:e5:08:c7:99:e7:92:3f:75:bd:eb:25:b4:15:
+                    c1:9b:19:3d:d2:44:8d:d7:74:20:6d:37:02:8f:69:
+                    93:5b:8a:c4:19:9d:f4:b2:0e:fc:16:6c:b9:b1:05:
+                    92:83:d1:85:2c:60:94:3e:45:55:a0:d9:ab:08:21:
+                    e6:60:e8:3b:74:f2:99:50:51:68:d0:03:2d:b1:80:
+                    be:a3:d8:52:b0:44:cd:43:4a:70:8e:58:85:95:e1:
+                    4e:2c:d6:2d:41:6f:d6:84:e7:c8:98:44:ca:47:db:
+                    2c:24:a5:69:26:cf:6b:b8:27:62:c3:f4:c9:7a:92:
+                    23:ed:13:67:82:ae:45:2e:45:e5:7e:72:3f:85:9d:
+                    94:62:10:e6:3c:91:a1:ad:77:00:e0:15:ec:f3:84:
+                    80:72:7a:8e:6e:60:97:c7:24:59:10:34:83:5b:e1:
+                    a5:a4:69:b6:57:35:1c:78:59:c6:d3:2f:3a:73:67:
+                    ee:94:ca:04:13:05:62:06:70:23:b3:f4:7c:ee:45:
+                    d9:64:0b:5b:49:aa:a4:43:ce:26:c4:44:12:6c:b8:
+                    dd:79
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha1WithRSAEncryption
+        a2:37:b2:3f:69:fb:d7:86:79:54:49:31:95:33:2b:f3:d1:09:
+        14:49:62:60:86:a5:b0:11:e2:50:c2:1d:06:57:3e:2d:e8:33:
+        64:be:9b:aa:ad:5f:1b:4d:d4:99:95:a2:8b:9a:c9:62:72:b5:
+        69:ea:d9:58:ab:35:ed:15:a2:43:d6:b6:bc:07:79:65:64:73:
+        7d:d7:79:ca:7b:d5:5a:51:c6:e1:53:04:96:8d:38:cf:a3:17:
+        ac:39:71:6b:01:c3:8b:53:3c:63:e9:ee:79:c0:e4:be:92:32:
+        64:7a:b3:1f:97:94:62:bd:ea:b2:20:15:95:fb:97:f2:78:2f:
+        63:36:40:38:e3:46:0f:1d:dd:ac:95:ca:e7:4b:90:7b:b1:4b:
+        a9:d4:c5:eb:9a:da:aa:d5:a3:94:14:46:8d:2d:1f:f3:3a:d6:
+        93:3a:f6:3e:79:fc:e8:e6:b0:75:ed:ee:3d:c9:70:c7:5d:aa:
+        81:4b:46:25:1c:c7:6c:15:e3:95:4e:0f:aa:32:37:94:0a:17:
+        24:92:13:84:58:d2:63:6f:2b:f7:e6:5b:62:0b:13:17:b0:0d:
+        52:4c:fe:fe:6f:5c:e2:91:6e:1d:fd:a4:62:d7:68:fa:8e:7a:
+        4f:d2:08:da:93:dc:f0:92:11:7a:d0:dc:72:93:0c:73:93:62:
+        85:68:d0:f4
+
+Digital Signature Trust Co. Global CA 3
+=======================================
+MD5 Fingerprint: 93:C2:8E:11:7B:D4:F3:03:19:BD:28:75:13:4A:45:4A
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDKTCCApKgAwIBAgIENm7TzjANBgkqhkiG9w0BAQUFADBGMQswCQYDVQQGEwJV
+UzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMREwDwYDVQQL
+EwhEU1RDQSBFMjAeFw05ODEyMDkxOTE3MjZaFw0xODEyMDkxOTQ3MjZaMEYxCzAJ
+BgNVBAYTAlVTMSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4x
+ETAPBgNVBAsTCERTVENBIEUyMIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQC/
+k48Xku8zExjrEH9OFr//Bo8qhbxe+SSmJIi2A7fBw18DW9Fvrn5C6mYjuGODVvso
+LeE4i7TuqAHhzhy2iCoiRoX7n6dwqUcUP87eZfCocfdPJmyMvMa1795JJ/9IKn3o
+TQPMx7JSxhcxEzu1TdvIxPbDDyQq2gyd55FbgM2UnQIBA6OCASQwggEgMBEGCWCG
+SAGG+EIBAQQEAwIABzBoBgNVHR8EYTBfMF2gW6BZpFcwVTELMAkGA1UEBhMCVVMx
+JDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0dXJlIFRydXN0IENvLjERMA8GA1UECxMI
+RFNUQ0EgRTIxDTALBgNVBAMTBENSTDEwKwYDVR0QBCQwIoAPMTk5ODEyMDkxOTE3
+MjZagQ8yMDE4MTIwOTE5MTcyNlowCwYDVR0PBAQDAgEGMB8GA1UdIwQYMBaAFB6C
+TShlgDzJQW6sNS5ay97u+DlbMB0GA1UdDgQWBBQegk0oZYA8yUFurDUuWsve7vg5
+WzAMBgNVHRMEBTADAQH/MBkGCSqGSIb2fQdBAAQMMAobBFY0LjADAgSQMA0GCSqG
+SIb3DQEBBQUAA4GBAEeNg61i8tuwnkUiBbmi1gMOOHLnnvx75pO2mqWilMg0HZHR
+xdf0CiUPPXiBng+xZ8SQTGPdXqfiup/1902lMXucKS1M/mQ+7LZT/uqb7YLbdHVL
+B3luHtgZg3Pe9T7Qtd7nS2h9Qy4qIOF+oHhEngj1mPnHfxsb1gYgAlihw6ID
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 913232846 (0x366ed3ce)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Digital Signature Trust Co., OU=DSTCA E2
+        Validity
+            Not Before: Dec  9 19:17:26 1998 GMT
+            Not After : Dec  9 19:47:26 2018 GMT
+        Subject: C=US, O=Digital Signature Trust Co., OU=DSTCA E2
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:bf:93:8f:17:92:ef:33:13:18:eb:10:7f:4e:16:
+                    bf:ff:06:8f:2a:85:bc:5e:f9:24:a6:24:88:b6:03:
+                    b7:c1:c3:5f:03:5b:d1:6f:ae:7e:42:ea:66:23:b8:
+                    63:83:56:fb:28:2d:e1:38:8b:b4:ee:a8:01:e1:ce:
+                    1c:b6:88:2a:22:46:85:fb:9f:a7:70:a9:47:14:3f:
+                    ce:de:65:f0:a8:71:f7:4f:26:6c:8c:bc:c6:b5:ef:
+                    de:49:27:ff:48:2a:7d:e8:4d:03:cc:c7:b2:52:c6:
+                    17:31:13:3b:b5:4d:db:c8:c4:f6:c3:0f:24:2a:da:
+                    0c:9d:e7:91:5b:80:cd:94:9d
+                Exponent: 3 (0x3)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Digital Signature Trust Co./OU=DSTCA E2/CN=CRL1
+
+            X509v3 Private Key Usage Period: 
+                Not Before: Dec  9 19:17:26 1998 GMT, Not After: Dec  9 19:17:26 2018 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:1E:82:4D:28:65:80:3C:C9:41:6E:AC:35:2E:5A:CB:DE:EE:F8:39:5B
+
+            X509v3 Subject Key Identifier: 
+                1E:82:4D:28:65:80:3C:C9:41:6E:AC:35:2E:5A:CB:DE:EE:F8:39:5B
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0
+..V4.0....
+    Signature Algorithm: sha1WithRSAEncryption
+        47:8d:83:ad:62:f2:db:b0:9e:45:22:05:b9:a2:d6:03:0e:38:
+        72:e7:9e:fc:7b:e6:93:b6:9a:a5:a2:94:c8:34:1d:91:d1:c5:
+        d7:f4:0a:25:0f:3d:78:81:9e:0f:b1:67:c4:90:4c:63:dd:5e:
+        a7:e2:ba:9f:f5:f7:4d:a5:31:7b:9c:29:2d:4c:fe:64:3e:ec:
+        b6:53:fe:ea:9b:ed:82:db:74:75:4b:07:79:6e:1e:d8:19:83:
+        73:de:f5:3e:d0:b5:de:e7:4b:68:7d:43:2e:2a:20:e1:7e:a0:
+        78:44:9e:08:f5:98:f9:c7:7f:1b:1b:d6:06:20:02:58:a1:c3:
+        a2:03
+
+Digital Signature Trust Co. Global CA 4
+=======================================
+MD5 Fingerprint: CD:3B:3D:62:5B:09:B8:09:36:87:9E:12:2F:71:64:BA
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIID2DCCAsACEQDQHkCLAAB3bQAAAAEAAAAEMA0GCSqGSIb3DQEBBQUAMIGpMQsw
+CQYDVQQGEwJ1czENMAsGA1UECBMEVXRhaDEXMBUGA1UEBxMOU2FsdCBMYWtlIENp
+dHkxJDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0dXJlIFRydXN0IENvLjERMA8GA1UE
+CxMIRFNUQ0EgWDIxFjAUBgNVBAMTDURTVCBSb290Q0EgWDIxITAfBgkqhkiG9w0B
+CQEWEmNhQGRpZ3NpZ3RydXN0LmNvbTAeFw05ODExMzAyMjQ2MTZaFw0wODExMjcy
+MjQ2MTZaMIGpMQswCQYDVQQGEwJ1czENMAsGA1UECBMEVXRhaDEXMBUGA1UEBxMO
+U2FsdCBMYWtlIENpdHkxJDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0dXJlIFRydXN0
+IENvLjERMA8GA1UECxMIRFNUQ0EgWDIxFjAUBgNVBAMTDURTVCBSb290Q0EgWDIx
+ITAfBgkqhkiG9w0BCQEWEmNhQGRpZ3NpZ3RydXN0LmNvbTCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBANx18IzAdZaawGIfJvfE4Zrq4FZzW5nNAUSoCLbV
+p9oaBBg5kkp4o4HC9Xd6ULRw/5qrxsfKboNPQpj7Jgva3G3WqZlVUmfpKAOS3OWw
+BZoPFflrWXJW8vo5/Kpo7g8fEIMv/J36F5bdguPmRX3AS4BEH+0s4IT9kVySVGkl
+5WJp3OXuAFK9MwutdQKFp2RQLcUZGTDAJtvJ0/0uma1ZtQtN1EGuhUhDWdy3qOKi
+3sOP17ihYqZoUFLkzzGnlIXan0YyF1bl8utmPRL/Q9uY73fPy4GNNLHGUEom0eQ+
+QVCvbK4iNC7Va26Dunm4dmVI2gkpZGMiuftHdoWMhkTLCdsCAwEAATANBgkqhkiG
+9w0BAQUFAAOCAQEAtTYOXeFhKFoRZcA/gwN5Tb4opgsHAlKFzfiR0BBstWogWxyQ
+2TA8xkieil5k+aFxd+8EJx8H6+Qm93N0yUQYGmbT4EOvkTvRyyzYdFQ6HE3K1GjN
+I3wdEJ5F6fYAbqbNGf9PLCmPV03Ed5K+4EwJ+11EhmYhqLkyolbV6YyDfFk/xPEL
+553snr2cGA4+wjl5KLcDDQjLxufZATdQEOzMYRZA1K8xdHv8PzGn0EdzMzkbzE5q
+10mDEQb+64JYMzJM8FasHpwvVpp7wUocpf1VNs78lk30sPDst2yC7S8xmUJMqbIN
+uBVd8d+6ybVK1GSYsyapMMj9puyrliGtf8J4tg==
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number:
+            d0:1e:40:8b:00:00:77:6d:00:00:00:01:00:00:00:04
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=us, ST=Utah, L=Salt Lake City, O=Digital Signature Trust Co., OU=DSTCA X2, CN=DST RootCA X2/Email=ca@digsigtrust.com
+        Validity
+            Not Before: Nov 30 22:46:16 1998 GMT
+            Not After : Nov 27 22:46:16 2008 GMT
+        Subject: C=us, ST=Utah, L=Salt Lake City, O=Digital Signature Trust Co., OU=DSTCA X2, CN=DST RootCA X2/Email=ca@digsigtrust.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:dc:75:f0:8c:c0:75:96:9a:c0:62:1f:26:f7:c4:
+                    e1:9a:ea:e0:56:73:5b:99:cd:01:44:a8:08:b6:d5:
+                    a7:da:1a:04:18:39:92:4a:78:a3:81:c2:f5:77:7a:
+                    50:b4:70:ff:9a:ab:c6:c7:ca:6e:83:4f:42:98:fb:
+                    26:0b:da:dc:6d:d6:a9:99:55:52:67:e9:28:03:92:
+                    dc:e5:b0:05:9a:0f:15:f9:6b:59:72:56:f2:fa:39:
+                    fc:aa:68:ee:0f:1f:10:83:2f:fc:9d:fa:17:96:dd:
+                    82:e3:e6:45:7d:c0:4b:80:44:1f:ed:2c:e0:84:fd:
+                    91:5c:92:54:69:25:e5:62:69:dc:e5:ee:00:52:bd:
+                    33:0b:ad:75:02:85:a7:64:50:2d:c5:19:19:30:c0:
+                    26:db:c9:d3:fd:2e:99:ad:59:b5:0b:4d:d4:41:ae:
+                    85:48:43:59:dc:b7:a8:e2:a2:de:c3:8f:d7:b8:a1:
+                    62:a6:68:50:52:e4:cf:31:a7:94:85:da:9f:46:32:
+                    17:56:e5:f2:eb:66:3d:12:ff:43:db:98:ef:77:cf:
+                    cb:81:8d:34:b1:c6:50:4a:26:d1:e4:3e:41:50:af:
+                    6c:ae:22:34:2e:d5:6b:6e:83:ba:79:b8:76:65:48:
+                    da:09:29:64:63:22:b9:fb:47:76:85:8c:86:44:cb:
+                    09:db
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha1WithRSAEncryption
+        b5:36:0e:5d:e1:61:28:5a:11:65:c0:3f:83:03:79:4d:be:28:
+        a6:0b:07:02:52:85:cd:f8:91:d0:10:6c:b5:6a:20:5b:1c:90:
+        d9:30:3c:c6:48:9e:8a:5e:64:f9:a1:71:77:ef:04:27:1f:07:
+        eb:e4:26:f7:73:74:c9:44:18:1a:66:d3:e0:43:af:91:3b:d1:
+        cb:2c:d8:74:54:3a:1c:4d:ca:d4:68:cd:23:7c:1d:10:9e:45:
+        e9:f6:00:6e:a6:cd:19:ff:4f:2c:29:8f:57:4d:c4:77:92:be:
+        e0:4c:09:fb:5d:44:86:66:21:a8:b9:32:a2:56:d5:e9:8c:83:
+        7c:59:3f:c4:f1:0b:e7:9d:ec:9e:bd:9c:18:0e:3e:c2:39:79:
+        28:b7:03:0d:08:cb:c6:e7:d9:01:37:50:10:ec:cc:61:16:40:
+        d4:af:31:74:7b:fc:3f:31:a7:d0:47:73:33:39:1b:cc:4e:6a:
+        d7:49:83:11:06:fe:eb:82:58:33:32:4c:f0:56:ac:1e:9c:2f:
+        56:9a:7b:c1:4a:1c:a5:fd:55:36:ce:fc:96:4d:f4:b0:f0:ec:
+        b7:6c:82:ed:2f:31:99:42:4c:a9:b2:0d:b8:15:5d:f1:df:ba:
+        c9:b5:4a:d4:64:98:b3:26:a9:30:c8:fd:a6:ec:ab:96:21:ad:
+        7f:c2:78:b6
+
+Entrust Worldwide by DST
+========================
+MD5 Fingerprint: B4:65:22:0A:7C:AD:DF:41:B7:D5:44:D5:AD:FA:9A:75
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDRzCCArCgAwIBAgIENm3FGDANBgkqhkiG9w0BAQUFADBQMQswCQYDVQQGEwJV
+UzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMRswGQYDVQQL
+ExJEU1QtRW50cnVzdCBHVEkgQ0EwHhcNOTgxMjA5MDAwMjI0WhcNMTgxMjA5MDAz
+MjI0WjBQMQswCQYDVQQGEwJVUzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUg
+VHJ1c3QgQ28uMRswGQYDVQQLExJEU1QtRW50cnVzdCBHVEkgQ0EwgZ0wDQYJKoZI
+hvcNAQEBBQADgYsAMIGHAoGBALYd90uNDxPjEvUJ/gYyDq9MQfV91Ec9KgrfgwXe
+3n3mAxb2UTrLRxpKrX7E/R20vnSKeN0Lg460hBPE+/htKa6h4Q8PQ+O1XmBp+oOU
+/Hnm3Hbt0UQrjv0Su/4XdxcMie2n71F9xO04wzujevviTaBgtfL9E2XTxuw/vjWc
+PSLvAgEDo4IBLjCCASowEQYJYIZIAYb4QgEBBAQDAgAHMHIGA1UdHwRrMGkwZ6Bl
+oGOkYTBfMQswCQYDVQQGEwJVUzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUg
+VHJ1c3QgQ28uMRswGQYDVQQLExJEU1QtRW50cnVzdCBHVEkgQ0ExDTALBgNVBAMT
+BENSTDEwKwYDVR0QBCQwIoAPMTk5ODEyMDkwMDAyMjRagQ8yMDE4MTIwOTAwMDIy
+NFowCwYDVR0PBAQDAgEGMB8GA1UdIwQYMBaAFJOaRMrQeFOAKUkE38evMz+ZdV+u
+MB0GA1UdDgQWBBSTmkTK0HhTgClJBN/HrzM/mXVfrjAMBgNVHRMEBTADAQH/MBkG
+CSqGSIb2fQdBAAQMMAobBFY0LjADAgSQMA0GCSqGSIb3DQEBBQUAA4GBAGSJzAOn
+3AryWCDn/RegKHLNh7DNmLUkR2MzMRAQsu+KV3KuTAPgZ5+sYEOEIsGpo+Wxp94J
+1M8NeEYjW49Je/4TIpeU6nJI4SwgeJbpZkUZywllY2E/0UmYsXYQVdVjSmZLpAdr
+3nt/ueaTWxoCW4AO3Y0Y1Iqjwmjxo+AY0U5M
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 913163544 (0x366dc518)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Digital Signature Trust Co., OU=DST-Entrust GTI CA
+        Validity
+            Not Before: Dec  9 00:02:24 1998 GMT
+            Not After : Dec  9 00:32:24 2018 GMT
+        Subject: C=US, O=Digital Signature Trust Co., OU=DST-Entrust GTI CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:b6:1d:f7:4b:8d:0f:13:e3:12:f5:09:fe:06:32:
+                    0e:af:4c:41:f5:7d:d4:47:3d:2a:0a:df:83:05:de:
+                    de:7d:e6:03:16:f6:51:3a:cb:47:1a:4a:ad:7e:c4:
+                    fd:1d:b4:be:74:8a:78:dd:0b:83:8e:b4:84:13:c4:
+                    fb:f8:6d:29:ae:a1:e1:0f:0f:43:e3:b5:5e:60:69:
+                    fa:83:94:fc:79:e6:dc:76:ed:d1:44:2b:8e:fd:12:
+                    bb:fe:17:77:17:0c:89:ed:a7:ef:51:7d:c4:ed:38:
+                    c3:3b:a3:7a:fb:e2:4d:a0:60:b5:f2:fd:13:65:d3:
+                    c6:ec:3f:be:35:9c:3d:22:ef
+                Exponent: 3 (0x3)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Digital Signature Trust Co./OU=DST-Entrust GTI CA/CN=CRL1
+
+            X509v3 Private Key Usage Period: 
+                Not Before: Dec  9 00:02:24 1998 GMT, Not After: Dec  9 00:02:24 2018 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:93:9A:44:CA:D0:78:53:80:29:49:04:DF:C7:AF:33:3F:99:75:5F:AE
+
+            X509v3 Subject Key Identifier: 
+                93:9A:44:CA:D0:78:53:80:29:49:04:DF:C7:AF:33:3F:99:75:5F:AE
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0
+..V4.0....
+    Signature Algorithm: sha1WithRSAEncryption
+        64:89:cc:03:a7:dc:0a:f2:58:20:e7:fd:17:a0:28:72:cd:87:
+        b0:cd:98:b5:24:47:63:33:31:10:10:b2:ef:8a:57:72:ae:4c:
+        03:e0:67:9f:ac:60:43:84:22:c1:a9:a3:e5:b1:a7:de:09:d4:
+        cf:0d:78:46:23:5b:8f:49:7b:fe:13:22:97:94:ea:72:48:e1:
+        2c:20:78:96:e9:66:45:19:cb:09:65:63:61:3f:d1:49:98:b1:
+        76:10:55:d5:63:4a:66:4b:a4:07:6b:de:7b:7f:b9:e6:93:5b:
+        1a:02:5b:80:0e:dd:8d:18:d4:8a:a3:c2:68:f1:a3:e0:18:d1:
+        4e:4c
+
+Entrust.net Premium 2048 Secure Server CA
+=========================================
+MD5 Fingerprint: BA:21:EA:20:D6:DD:DB:8F:C1:57:8B:40:AD:A1:FC:FC
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIEXDCCA0SgAwIBAgIEOGO5ZjANBgkqhkiG9w0BAQUFADCBtDEUMBIGA1UEChML
+RW50cnVzdC5uZXQxQDA+BgNVBAsUN3d3dy5lbnRydXN0Lm5ldC9DUFNfMjA0OCBp
+bmNvcnAuIGJ5IHJlZi4gKGxpbWl0cyBsaWFiLikxJTAjBgNVBAsTHChjKSAxOTk5
+IEVudHJ1c3QubmV0IExpbWl0ZWQxMzAxBgNVBAMTKkVudHJ1c3QubmV0IENlcnRp
+ZmljYXRpb24gQXV0aG9yaXR5ICgyMDQ4KTAeFw05OTEyMjQxNzUwNTFaFw0xOTEy
+MjQxODIwNTFaMIG0MRQwEgYDVQQKEwtFbnRydXN0Lm5ldDFAMD4GA1UECxQ3d3d3
+LmVudHJ1c3QubmV0L0NQU18yMDQ4IGluY29ycC4gYnkgcmVmLiAobGltaXRzIGxp
+YWIuKTElMCMGA1UECxMcKGMpIDE5OTkgRW50cnVzdC5uZXQgTGltaXRlZDEzMDEG
+A1UEAxMqRW50cnVzdC5uZXQgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgKDIwNDgp
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArU1LqRKGsuqjIAcVFmQq
+K0vRvwtKTY7tgHalZ7d4QMBzQshowNtTK91euHaYNZOLGp18EzoOH1u3Hs/lJBQe
+sYGpjX24zGtLA/ECDNyrpUAkAH90lKGdCCmziAv1h3edVc3kw37XamSrhRSGlVuX
+MlBvPci6Zgzj/L24ScF2iUkZ/cCovYmjZy/Gn7xxGWC4LeksyZB2ZnuU4q941mVT
+XTzWnLLPKQP5L6RQstRIzgUyVYr9smRMDuSYB3Xbf9+5CFVghTAp+XtIpGmG4zU/
+HoZdenoVve8AjhUiVBcAkCaTvA5JaJG/+EfTnZVCwQ5N328mz8MYIWJmQ3DW1cAH
+4QIDAQABo3QwcjARBglghkgBhvhCAQEEBAMCAAcwHwYDVR0jBBgwFoAUVeSB0RGA
+vtiJuQijMfmhJAkWuXAwHQYDVR0OBBYEFFXkgdERgL7YibkIozH5oSQJFrlwMB0G
+CSqGSIb2fQdBAAQQMA4bCFY1LjA6NC4wAwIEkDANBgkqhkiG9w0BAQUFAAOCAQEA
+WUesIYSKF8mciVMeuoCFGsY8Tj6xnLZ8xpJdGGQC49MGCBFhfGPjK50xA3B20qMo
+oPS7mmNz7W3lKtvtFKkrxjYR0CvrB4ul2p5cGZ1WEvVUKcgF7bISKo30Axv/55IQ
+h7A6tcOdBTcSo8f0FbnVpDkWm1M6I5HxqIKiaohowXkCIryqptau37AUX7iH0N18
+f3v/rxzP5tsHrV7bhZ3QKw0z2wTR5klAEyt2+z7pnIkPFc4YsIV4IU9rTw76NmfN
+B/L/CNDi3tm/Kq+4h4YhPATKt5Rof8886ZjXOP/swNlQ8C5LWK5Gb9Auw2DaclVy
+vUxFnmG6v4SBkgPR0ml8xQ==
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 946059622 (0x3863b966)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: O=Entrust.net, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), OU=(c) 1999 Entrust.net Limited, CN=Entrust.net Certification Authority (2048)
+        Validity
+            Not Before: Dec 24 17:50:51 1999 GMT
+            Not After : Dec 24 18:20:51 2019 GMT
+        Subject: O=Entrust.net, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), OU=(c) 1999 Entrust.net Limited, CN=Entrust.net Certification Authority (2048)
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:ad:4d:4b:a9:12:86:b2:ea:a3:20:07:15:16:64:
+                    2a:2b:4b:d1:bf:0b:4a:4d:8e:ed:80:76:a5:67:b7:
+                    78:40:c0:73:42:c8:68:c0:db:53:2b:dd:5e:b8:76:
+                    98:35:93:8b:1a:9d:7c:13:3a:0e:1f:5b:b7:1e:cf:
+                    e5:24:14:1e:b1:81:a9:8d:7d:b8:cc:6b:4b:03:f1:
+                    02:0c:dc:ab:a5:40:24:00:7f:74:94:a1:9d:08:29:
+                    b3:88:0b:f5:87:77:9d:55:cd:e4:c3:7e:d7:6a:64:
+                    ab:85:14:86:95:5b:97:32:50:6f:3d:c8:ba:66:0c:
+                    e3:fc:bd:b8:49:c1:76:89:49:19:fd:c0:a8:bd:89:
+                    a3:67:2f:c6:9f:bc:71:19:60:b8:2d:e9:2c:c9:90:
+                    76:66:7b:94:e2:af:78:d6:65:53:5d:3c:d6:9c:b2:
+                    cf:29:03:f9:2f:a4:50:b2:d4:48:ce:05:32:55:8a:
+                    fd:b2:64:4c:0e:e4:98:07:75:db:7f:df:b9:08:55:
+                    60:85:30:29:f9:7b:48:a4:69:86:e3:35:3f:1e:86:
+                    5d:7a:7a:15:bd:ef:00:8e:15:22:54:17:00:90:26:
+                    93:bc:0e:49:68:91:bf:f8:47:d3:9d:95:42:c1:0e:
+                    4d:df:6f:26:cf:c3:18:21:62:66:43:70:d6:d5:c0:
+                    07:e1
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+            X509v3 Authority Key Identifier: 
+                keyid:55:E4:81:D1:11:80:BE:D8:89:B9:08:A3:31:F9:A1:24:09:16:B9:70
+
+            X509v3 Subject Key Identifier: 
+                55:E4:81:D1:11:80:BE:D8:89:B9:08:A3:31:F9:A1:24:09:16:B9:70
+            1.2.840.113533.7.65.0: 
+                0...V5.0:4.0....
+    Signature Algorithm: sha1WithRSAEncryption
+        59:47:ac:21:84:8a:17:c9:9c:89:53:1e:ba:80:85:1a:c6:3c:
+        4e:3e:b1:9c:b6:7c:c6:92:5d:18:64:02:e3:d3:06:08:11:61:
+        7c:63:e3:2b:9d:31:03:70:76:d2:a3:28:a0:f4:bb:9a:63:73:
+        ed:6d:e5:2a:db:ed:14:a9:2b:c6:36:11:d0:2b:eb:07:8b:a5:
+        da:9e:5c:19:9d:56:12:f5:54:29:c8:05:ed:b2:12:2a:8d:f4:
+        03:1b:ff:e7:92:10:87:b0:3a:b5:c3:9d:05:37:12:a3:c7:f4:
+        15:b9:d5:a4:39:16:9b:53:3a:23:91:f1:a8:82:a2:6a:88:68:
+        c1:79:02:22:bc:aa:a6:d6:ae:df:b0:14:5f:b8:87:d0:dd:7c:
+        7f:7b:ff:af:1c:cf:e6:db:07:ad:5e:db:85:9d:d0:2b:0d:33:
+        db:04:d1:e6:49:40:13:2b:76:fb:3e:e9:9c:89:0f:15:ce:18:
+        b0:85:78:21:4f:6b:4f:0e:fa:36:67:cd:07:f2:ff:08:d0:e2:
+        de:d9:bf:2a:af:b8:87:86:21:3c:04:ca:b7:94:68:7f:cf:3c:
+        e9:98:d7:38:ff:ec:c0:d9:50:f0:2e:4b:58:ae:46:6f:d0:2e:
+        c3:60:da:72:55:72:bd:4c:45:9e:61:ba:bf:84:81:92:03:d1:
+        d2:69:7c:c5
+
+Entrust.net Secure Personal CA
+==============================
+MD5 Fingerprint: 0C:41:2F:13:5B:A0:54:F5:96:66:2D:7E:CD:0E:03:F4
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIE7TCCBFagAwIBAgIEOAOR7jANBgkqhkiG9w0BAQQFADCByTELMAkGA1UEBhMC
+VVMxFDASBgNVBAoTC0VudHJ1c3QubmV0MUgwRgYDVQQLFD93d3cuZW50cnVzdC5u
+ZXQvQ2xpZW50X0NBX0luZm8vQ1BTIGluY29ycC4gYnkgcmVmLiBsaW1pdHMgbGlh
+Yi4xJTAjBgNVBAsTHChjKSAxOTk5IEVudHJ1c3QubmV0IExpbWl0ZWQxMzAxBgNV
+BAMTKkVudHJ1c3QubmV0IENsaWVudCBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAe
+Fw05OTEwMTIxOTI0MzBaFw0xOTEwMTIxOTU0MzBaMIHJMQswCQYDVQQGEwJVUzEU
+MBIGA1UEChMLRW50cnVzdC5uZXQxSDBGBgNVBAsUP3d3dy5lbnRydXN0Lm5ldC9D
+bGllbnRfQ0FfSW5mby9DUFMgaW5jb3JwLiBieSByZWYuIGxpbWl0cyBsaWFiLjEl
+MCMGA1UECxMcKGMpIDE5OTkgRW50cnVzdC5uZXQgTGltaXRlZDEzMDEGA1UEAxMq
+RW50cnVzdC5uZXQgQ2xpZW50IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIGdMA0G
+CSqGSIb3DQEBAQUAA4GLADCBhwKBgQDIOpleMRffrCdvkHvkGf9FozTC28GoT/Bo
+6oT9n3V5z8GKUZSvx1cDR2SerYIbWtp/N3hHuzeYEpbOxhN979IMMFGpOZ5V+Pux
+5zDeg7K6PvHViTs7hbqqdCz+PzFur5GVbgbUB01LLFZHGARS2g4Qk79jkJvh34zm
+AqTmT173iwIBA6OCAeAwggHcMBEGCWCGSAGG+EIBAQQEAwIABzCCASIGA1UdHwSC
+ARkwggEVMIHkoIHhoIHepIHbMIHYMQswCQYDVQQGEwJVUzEUMBIGA1UEChMLRW50
+cnVzdC5uZXQxSDBGBgNVBAsUP3d3dy5lbnRydXN0Lm5ldC9DbGllbnRfQ0FfSW5m
+by9DUFMgaW5jb3JwLiBieSByZWYuIGxpbWl0cyBsaWFiLjElMCMGA1UECxMcKGMp
+IDE5OTkgRW50cnVzdC5uZXQgTGltaXRlZDEzMDEGA1UEAxMqRW50cnVzdC5uZXQg
+Q2xpZW50IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MQ0wCwYDVQQDEwRDUkwxMCyg
+KqAohiZodHRwOi8vd3d3LmVudHJ1c3QubmV0L0NSTC9DbGllbnQxLmNybDArBgNV
+HRAEJDAigA8xOTk5MTAxMjE5MjQzMFqBDzIwMTkxMDEyMTkyNDMwWjALBgNVHQ8E
+BAMCAQYwHwYDVR0jBBgwFoAUxPucKXuXzUyW/O5bs8qZdIuV6kwwHQYDVR0OBBYE
+FMT7nCl7l81MlvzuW7PKmXSLlepMMAwGA1UdEwQFMAMBAf8wGQYJKoZIhvZ9B0EA
+BAwwChsEVjQuMAMCBJAwDQYJKoZIhvcNAQEEBQADgYEAP66K8ddmAwWePvrqHEa7
+pFuPeJoSSJn59DXeDDYHAmsQOokUgZwxpnyyQbJq5wcBoUv5nyU7lsqZwz6hURzz
+wy5E97BnRqqS5TvaHBkUODDV4qIxJS7x7EU47fgGWANzYrAQMY9Av2TgXD7FTx/a
+EkP/TOYGJqibGapEPHayXOw=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 939758062 (0x380391ee)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=US, O=Entrust.net, OU=www.entrust.net/Client_CA_Info/CPS incorp. by ref. limits liab., OU=(c) 1999 Entrust.net Limited, CN=Entrust.net Client Certification Authority
+        Validity
+            Not Before: Oct 12 19:24:30 1999 GMT
+            Not After : Oct 12 19:54:30 2019 GMT
+        Subject: C=US, O=Entrust.net, OU=www.entrust.net/Client_CA_Info/CPS incorp. by ref. limits liab., OU=(c) 1999 Entrust.net Limited, CN=Entrust.net Client Certification Authority
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:c8:3a:99:5e:31:17:df:ac:27:6f:90:7b:e4:19:
+                    ff:45:a3:34:c2:db:c1:a8:4f:f0:68:ea:84:fd:9f:
+                    75:79:cf:c1:8a:51:94:af:c7:57:03:47:64:9e:ad:
+                    82:1b:5a:da:7f:37:78:47:bb:37:98:12:96:ce:c6:
+                    13:7d:ef:d2:0c:30:51:a9:39:9e:55:f8:fb:b1:e7:
+                    30:de:83:b2:ba:3e:f1:d5:89:3b:3b:85:ba:aa:74:
+                    2c:fe:3f:31:6e:af:91:95:6e:06:d4:07:4d:4b:2c:
+                    56:47:18:04:52:da:0e:10:93:bf:63:90:9b:e1:df:
+                    8c:e6:02:a4:e6:4f:5e:f7:8b
+                Exponent: 3 (0x3)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Entrust.net/OU=www.entrust.net/Client_CA_Info/CPS incorp. by ref. limits liab./OU=(c) 1999 Entrust.net Limited/CN=Entrust.net Client Certification Authority/CN=CRL1
+                URI:http://www.entrust.net/CRL/Client1.crl
+
+            X509v3 Private Key Usage Period: 
+                Not Before: Oct 12 19:24:30 1999 GMT, Not After: Oct 12 19:24:30 2019 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:C4:FB:9C:29:7B:97:CD:4C:96:FC:EE:5B:B3:CA:99:74:8B:95:EA:4C
+
+            X509v3 Subject Key Identifier: 
+                C4:FB:9C:29:7B:97:CD:4C:96:FC:EE:5B:B3:CA:99:74:8B:95:EA:4C
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0
+..V4.0....
+    Signature Algorithm: md5WithRSAEncryption
+        3f:ae:8a:f1:d7:66:03:05:9e:3e:fa:ea:1c:46:bb:a4:5b:8f:
+        78:9a:12:48:99:f9:f4:35:de:0c:36:07:02:6b:10:3a:89:14:
+        81:9c:31:a6:7c:b2:41:b2:6a:e7:07:01:a1:4b:f9:9f:25:3b:
+        96:ca:99:c3:3e:a1:51:1c:f3:c3:2e:44:f7:b0:67:46:aa:92:
+        e5:3b:da:1c:19:14:38:30:d5:e2:a2:31:25:2e:f1:ec:45:38:
+        ed:f8:06:58:03:73:62:b0:10:31:8f:40:bf:64:e0:5c:3e:c5:
+        4f:1f:da:12:43:ff:4c:e6:06:26:a8:9b:19:aa:44:3c:76:b2:
+        5c:ec
+
+Entrust.net Secure Server CA
+============================
+MD5 Fingerprint: DF:F2:80:73:CC:F1:E6:61:73:FC:F5:42:E9:C5:7C:EE
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIE2DCCBEGgAwIBAgIEN0rSQzANBgkqhkiG9w0BAQUFADCBwzELMAkGA1UEBhMC
+VVMxFDASBgNVBAoTC0VudHJ1c3QubmV0MTswOQYDVQQLEzJ3d3cuZW50cnVzdC5u
+ZXQvQ1BTIGluY29ycC4gYnkgcmVmLiAobGltaXRzIGxpYWIuKTElMCMGA1UECxMc
+KGMpIDE5OTkgRW50cnVzdC5uZXQgTGltaXRlZDE6MDgGA1UEAxMxRW50cnVzdC5u
+ZXQgU2VjdXJlIFNlcnZlciBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw05OTA1
+MjUxNjA5NDBaFw0xOTA1MjUxNjM5NDBaMIHDMQswCQYDVQQGEwJVUzEUMBIGA1UE
+ChMLRW50cnVzdC5uZXQxOzA5BgNVBAsTMnd3dy5lbnRydXN0Lm5ldC9DUFMgaW5j
+b3JwLiBieSByZWYuIChsaW1pdHMgbGlhYi4pMSUwIwYDVQQLExwoYykgMTk5OSBF
+bnRydXN0Lm5ldCBMaW1pdGVkMTowOAYDVQQDEzFFbnRydXN0Lm5ldCBTZWN1cmUg
+U2VydmVyIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIGdMA0GCSqGSIb3DQEBAQUA
+A4GLADCBhwKBgQDNKIM0VBuJ8w+vN5Ex/68xYMmo6LIQaO2f55M28Qpku0f1BBc/
+I0dNxScZgSYMVHINiC3ZH5oSn7yzcdOAGT9HZnuMNSjSuQrfJNqc1lB5gXpa0zf3
+wkrYKZImZNHkmGw6AIr1NJtl+O3jEP/9uElY3KDegjlrgbEWGWG5VLbmQwIBA6OC
+AdcwggHTMBEGCWCGSAGG+EIBAQQEAwIABzCCARkGA1UdHwSCARAwggEMMIHeoIHb
+oIHYpIHVMIHSMQswCQYDVQQGEwJVUzEUMBIGA1UEChMLRW50cnVzdC5uZXQxOzA5
+BgNVBAsTMnd3dy5lbnRydXN0Lm5ldC9DUFMgaW5jb3JwLiBieSByZWYuIChsaW1p
+dHMgbGlhYi4pMSUwIwYDVQQLExwoYykgMTk5OSBFbnRydXN0Lm5ldCBMaW1pdGVk
+MTowOAYDVQQDEzFFbnRydXN0Lm5ldCBTZWN1cmUgU2VydmVyIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MQ0wCwYDVQQDEwRDUkwxMCmgJ6AlhiNodHRwOi8vd3d3LmVu
+dHJ1c3QubmV0L0NSTC9uZXQxLmNybDArBgNVHRAEJDAigA8xOTk5MDUyNTE2MDk0
+MFqBDzIwMTkwNTI1MTYwOTQwWjALBgNVHQ8EBAMCAQYwHwYDVR0jBBgwFoAU8Bdi
+E1U9s/8KAGv7UISX8+1i0BowHQYDVR0OBBYEFPAXYhNVPbP/CgBr+1CEl/PtYtAa
+MAwGA1UdEwQFMAMBAf8wGQYJKoZIhvZ9B0EABAwwChsEVjQuMAMCBJAwDQYJKoZI
+hvcNAQEFBQADgYEAkNwwAvpkdMKnCqV8IY00F6j7Rw7/JXyNEwr75Ji174z4xRAN
+95K+8cPV1ZVqBLssziY2ZcgxxufuP+NXdYR6Ee9GTxj005i7qIcyunL2POI9n9cd
+2cNgQ4xYDiKWL2KjLB+6rQXvqzJ4h6BUcxm1XAX5Uj5tLUUL9wqT6u0G+bI=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 927650371 (0x374ad243)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Entrust.net, OU=www.entrust.net/CPS incorp. by ref. (limits liab.), OU=(c) 1999 Entrust.net Limited, CN=Entrust.net Secure Server Certification Authority
+        Validity
+            Not Before: May 25 16:09:40 1999 GMT
+            Not After : May 25 16:39:40 2019 GMT
+        Subject: C=US, O=Entrust.net, OU=www.entrust.net/CPS incorp. by ref. (limits liab.), OU=(c) 1999 Entrust.net Limited, CN=Entrust.net Secure Server Certification Authority
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:cd:28:83:34:54:1b:89:f3:0f:af:37:91:31:ff:
+                    af:31:60:c9:a8:e8:b2:10:68:ed:9f:e7:93:36:f1:
+                    0a:64:bb:47:f5:04:17:3f:23:47:4d:c5:27:19:81:
+                    26:0c:54:72:0d:88:2d:d9:1f:9a:12:9f:bc:b3:71:
+                    d3:80:19:3f:47:66:7b:8c:35:28:d2:b9:0a:df:24:
+                    da:9c:d6:50:79:81:7a:5a:d3:37:f7:c2:4a:d8:29:
+                    92:26:64:d1:e4:98:6c:3a:00:8a:f5:34:9b:65:f8:
+                    ed:e3:10:ff:fd:b8:49:58:dc:a0:de:82:39:6b:81:
+                    b1:16:19:61:b9:54:b6:e6:43
+                Exponent: 3 (0x3)
+        X509v3 extensions:
+            Netscape Cert Type: 
+                SSL CA, S/MIME CA, Object Signing CA
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Entrust.net/OU=www.entrust.net/CPS incorp. by ref. (limits liab.)/OU=(c) 1999 Entrust.net Limited/CN=Entrust.net Secure Server Certification Authority/CN=CRL1
+                URI:http://www.entrust.net/CRL/net1.crl
+
+            X509v3 Private Key Usage Period: 
+                Not Before: May 25 16:09:40 1999 GMT, Not After: May 25 16:09:40 2019 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:F0:17:62:13:55:3D:B3:FF:0A:00:6B:FB:50:84:97:F3:ED:62:D0:1A
+
+            X509v3 Subject Key Identifier: 
+                F0:17:62:13:55:3D:B3:FF:0A:00:6B:FB:50:84:97:F3:ED:62:D0:1A
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0
+..V4.0....
+    Signature Algorithm: sha1WithRSAEncryption
+        90:dc:30:02:fa:64:74:c2:a7:0a:a5:7c:21:8d:34:17:a8:fb:
+        47:0e:ff:25:7c:8d:13:0a:fb:e4:98:b5:ef:8c:f8:c5:10:0d:
+        f7:92:be:f1:c3:d5:d5:95:6a:04:bb:2c:ce:26:36:65:c8:31:
+        c6:e7:ee:3f:e3:57:75:84:7a:11:ef:46:4f:18:f4:d3:98:bb:
+        a8:87:32:ba:72:f6:3c:e2:3d:9f:d7:1d:d9:c3:60:43:8c:58:
+        0e:22:96:2f:62:a3:2c:1f:ba:ad:05:ef:ab:32:78:87:a0:54:
+        73:19:b5:5c:05:f9:52:3e:6d:2d:45:0b:f7:0a:93:ea:ed:06:
+        f9:b2
+
+Equifax Premium CA
+==================
+MD5 Fingerprint: A9:E9:A8:9D:0E:73:E3:B1:2F:37:0D:E8:48:3F:86:ED
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDIzCCAoygAwIBAgIENeHvHjANBgkqhkiG9w0BAQUFADBPMQswCQYDVQQGEwJV
+UzEQMA4GA1UEChMHRXF1aWZheDEuMCwGA1UECxMlRXF1aWZheCBQcmVtaXVtIENl
+cnRpZmljYXRlIEF1dGhvcml0eTAeFw05ODA4MjQyMjU0MjNaFw0xODA4MjQyMjU0
+MjNaME8xCzAJBgNVBAYTAlVTMRAwDgYDVQQKEwdFcXVpZmF4MS4wLAYDVQQLEyVF
+cXVpZmF4IFByZW1pdW0gQ2VydGlmaWNhdGUgQXV0aG9yaXR5MIGfMA0GCSqGSIb3
+DQEBAQUAA4GNADCBiQKBgQDOoQaOBswIC8GGqN4g1Q0O0Q3En+pq2bPCMkdAb4qI
+pAm9OCwd5svmpPM269rrvPxkswf2Lbyqzp8ZSGhK/PWiRX4JEPWPs0lcIwY56hOL
+uAvNkR12X9k3oUT7X5DyZ7PNGJlDH3YSawLylYM4Q8L2YjTKyXhdX9LYupr/vhBg
+WwIDAQABo4IBCjCCAQYwcQYDVR0fBGowaDBmoGSgYqRgMF4xCzAJBgNVBAYTAlVT
+MRAwDgYDVQQKEwdFcXVpZmF4MS4wLAYDVQQLEyVFcXVpZmF4IFByZW1pdW0gQ2Vy
+dGlmaWNhdGUgQXV0aG9yaXR5MQ0wCwYDVQQDEwRDUkwxMBoGA1UdEAQTMBGBDzIw
+MTgwODI0MjI1NDIzWjALBgNVHQ8EBAMCAQYwHwYDVR0jBBgwFoAUFe6yKFmrbuX4
+z4uB9CThrj91G5gwHQYDVR0OBBYEFBXusihZq27l+M+LgfQk4a4/dRuYMAwGA1Ud
+EwQFMAMBAf8wGgYJKoZIhvZ9B0EABA0wCxsFVjMuMGMDAgbAMA0GCSqGSIb3DQEB
+BQUAA4GBAL0LnCepA9so3JipS9DRjqeoGlqR4Jzx9xh8LiKeNh/JqLXNRkpu+jUH
+G4YI65/iqPmdQS06rlxctl80BOv8KmCw+3TkhellOJbuFcfGd2MSvYpoH6tsfdrK
+XBPO6snrCVzFc+cSAdXZUwee4A+W8Iu0u0VIn4bFGVWgy5bFA/xI
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 903999262 (0x35e1ef1e)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Equifax, OU=Equifax Premium Certificate Authority
+        Validity
+            Not Before: Aug 24 22:54:23 1998 GMT
+            Not After : Aug 24 22:54:23 2018 GMT
+        Subject: C=US, O=Equifax, OU=Equifax Premium Certificate Authority
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:ce:a1:06:8e:06:cc:08:0b:c1:86:a8:de:20:d5:
+                    0d:0e:d1:0d:c4:9f:ea:6a:d9:b3:c2:32:47:40:6f:
+                    8a:88:a4:09:bd:38:2c:1d:e6:cb:e6:a4:f3:36:eb:
+                    da:eb:bc:fc:64:b3:07:f6:2d:bc:aa:ce:9f:19:48:
+                    68:4a:fc:f5:a2:45:7e:09:10:f5:8f:b3:49:5c:23:
+                    06:39:ea:13:8b:b8:0b:cd:91:1d:76:5f:d9:37:a1:
+                    44:fb:5f:90:f2:67:b3:cd:18:99:43:1f:76:12:6b:
+                    02:f2:95:83:38:43:c2:f6:62:34:ca:c9:78:5d:5f:
+                    d2:d8:ba:9a:ff:be:10:60:5b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Equifax/OU=Equifax Premium Certificate Authority/CN=CRL1
+
+            X509v3 Private Key Usage Period: 
+                Not After: Aug 24 22:54:23 2018 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:15:EE:B2:28:59:AB:6E:E5:F8:CF:8B:81:F4:24:E1:AE:3F:75:1B:98
+
+            X509v3 Subject Key Identifier: 
+                15:EE:B2:28:59:AB:6E:E5:F8:CF:8B:81:F4:24:E1:AE:3F:75:1B:98
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0...V3.0c....
+    Signature Algorithm: sha1WithRSAEncryption
+        bd:0b:9c:27:a9:03:db:28:dc:98:a9:4b:d0:d1:8e:a7:a8:1a:
+        5a:91:e0:9c:f1:f7:18:7c:2e:22:9e:36:1f:c9:a8:b5:cd:46:
+        4a:6e:fa:35:07:1b:86:08:eb:9f:e2:a8:f9:9d:41:2d:3a:ae:
+        5c:5c:b6:5f:34:04:eb:fc:2a:60:b0:fb:74:e4:85:e9:65:38:
+        96:ee:15:c7:c6:77:63:12:bd:8a:68:1f:ab:6c:7d:da:ca:5c:
+        13:ce:ea:c9:eb:09:5c:c5:73:e7:12:01:d5:d9:53:07:9e:e0:
+        0f:96:f0:8b:b4:bb:45:48:9f:86:c5:19:55:a0:cb:96:c5:03:
+        fc:48
+
+Equifax Secure CA
+=================
+MD5 Fingerprint: 67:CB:9D:C0:13:24:8A:82:9B:B2:17:1E:D1:1B:EC:D4
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDIDCCAomgAwIBAgIENd70zzANBgkqhkiG9w0BAQUFADBOMQswCQYDVQQGEwJV
+UzEQMA4GA1UEChMHRXF1aWZheDEtMCsGA1UECxMkRXF1aWZheCBTZWN1cmUgQ2Vy
+dGlmaWNhdGUgQXV0aG9yaXR5MB4XDTk4MDgyMjE2NDE1MVoXDTE4MDgyMjE2NDE1
+MVowTjELMAkGA1UEBhMCVVMxEDAOBgNVBAoTB0VxdWlmYXgxLTArBgNVBAsTJEVx
+dWlmYXggU2VjdXJlIENlcnRpZmljYXRlIEF1dGhvcml0eTCBnzANBgkqhkiG9w0B
+AQEFAAOBjQAwgYkCgYEAwV2xWGcIYu6gmi0fCG2RFGiYCh7+2gRvE4RiIcPRfM6f
+BeC4AfBONOziipUEZKzxa1NfBbPLZ4C/QgKO/t0BCezhABRP/PvwDN1Dulsr4R+A
+cJkVV5MW8Q+XarfCaCMczE1ZMKxRHjuvK9buY0V7xdlfUNLjUA86iOe/FP3gx7kC
+AwEAAaOCAQkwggEFMHAGA1UdHwRpMGcwZaBjoGGkXzBdMQswCQYDVQQGEwJVUzEQ
+MA4GA1UEChMHRXF1aWZheDEtMCsGA1UECxMkRXF1aWZheCBTZWN1cmUgQ2VydGlm
+aWNhdGUgQXV0aG9yaXR5MQ0wCwYDVQQDEwRDUkwxMBoGA1UdEAQTMBGBDzIwMTgw
+ODIyMTY0MTUxWjALBgNVHQ8EBAMCAQYwHwYDVR0jBBgwFoAUSOZo+SvSspXXR9gj
+IBBPM5iQn9QwHQYDVR0OBBYEFEjmaPkr0rKV10fYIyAQTzOYkJ/UMAwGA1UdEwQF
+MAMBAf8wGgYJKoZIhvZ9B0EABA0wCxsFVjMuMGMDAgbAMA0GCSqGSIb3DQEBBQUA
+A4GBAFjOKer89961zgK5F7WF0bnj4JXMJTENAKaSbn+2kmOeUJXRmm/kEd5jhW6Y
+7qj/WsjTVbJmcVfewCHrPSqnI0kBBIZCe/zuf6IWUrVnZ9NA2zsmWLIodz2uFHdh
+1voqZiegDfqnc1zqcPGUIWVEX/r87yloqaKHee9570+sB3c4
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 903804111 (0x35def4cf)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Equifax, OU=Equifax Secure Certificate Authority
+        Validity
+            Not Before: Aug 22 16:41:51 1998 GMT
+            Not After : Aug 22 16:41:51 2018 GMT
+        Subject: C=US, O=Equifax, OU=Equifax Secure Certificate Authority
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:c1:5d:b1:58:67:08:62:ee:a0:9a:2d:1f:08:6d:
+                    91:14:68:98:0a:1e:fe:da:04:6f:13:84:62:21:c3:
+                    d1:7c:ce:9f:05:e0:b8:01:f0:4e:34:ec:e2:8a:95:
+                    04:64:ac:f1:6b:53:5f:05:b3:cb:67:80:bf:42:02:
+                    8e:fe:dd:01:09:ec:e1:00:14:4f:fc:fb:f0:0c:dd:
+                    43:ba:5b:2b:e1:1f:80:70:99:15:57:93:16:f1:0f:
+                    97:6a:b7:c2:68:23:1c:cc:4d:59:30:ac:51:1e:3b:
+                    af:2b:d6:ee:63:45:7b:c5:d9:5f:50:d2:e3:50:0f:
+                    3a:88:e7:bf:14:fd:e0:c7:b9
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 CRL Distribution Points: 
+                DirName:/C=US/O=Equifax/OU=Equifax Secure Certificate Authority/CN=CRL1
+
+            X509v3 Private Key Usage Period: 
+                Not After: Aug 22 16:41:51 2018 GMT
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:48:E6:68:F9:2B:D2:B2:95:D7:47:D8:23:20:10:4F:33:98:90:9F:D4
+
+            X509v3 Subject Key Identifier: 
+                48:E6:68:F9:2B:D2:B2:95:D7:47:D8:23:20:10:4F:33:98:90:9F:D4
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            1.2.840.113533.7.65.0: 
+                0...V3.0c....
+    Signature Algorithm: sha1WithRSAEncryption
+        58:ce:29:ea:fc:f7:de:b5:ce:02:b9:17:b5:85:d1:b9:e3:e0:
+        95:cc:25:31:0d:00:a6:92:6e:7f:b6:92:63:9e:50:95:d1:9a:
+        6f:e4:11:de:63:85:6e:98:ee:a8:ff:5a:c8:d3:55:b2:66:71:
+        57:de:c0:21:eb:3d:2a:a7:23:49:01:04:86:42:7b:fc:ee:7f:
+        a2:16:52:b5:67:67:d3:40:db:3b:26:58:b2:28:77:3d:ae:14:
+        77:61:d6:fa:2a:66:27:a0:0d:fa:a7:73:5c:ea:70:f1:94:21:
+        65:44:5f:fa:fc:ef:29:68:a9:a2:87:79:ef:79:ef:4f:ac:07:
+        77:38
+
+GTE CyberTrust Global Root
+==========================
+MD5 Fingerprint: CA:3D:D3:68:F1:03:5C:D0:32:FA:B8:2B:59:E8:5A:DB
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIICWjCCAcMCAgGlMA0GCSqGSIb3DQEBBAUAMHUxCzAJBgNVBAYTAlVTMRgwFgYD
+VQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNv
+bHV0aW9ucywgSW5jLjEjMCEGA1UEAxMaR1RFIEN5YmVyVHJ1c3QgR2xvYmFsIFJv
+b3QwHhcNOTgwODEzMDAyOTAwWhcNMTgwODEzMjM1OTAwWjB1MQswCQYDVQQGEwJV
+UzEYMBYGA1UEChMPR1RFIENvcnBvcmF0aW9uMScwJQYDVQQLEx5HVEUgQ3liZXJU
+cnVzdCBTb2x1dGlvbnMsIEluYy4xIzAhBgNVBAMTGkdURSBDeWJlclRydXN0IEds
+b2JhbCBSb290MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVD6C28FCc6HrH
+iM3dFw4usJTQGz0O9pTAipTHBsiQl8i4ZBp6fmw8U+E3KHNgf7KXUwefU/ltWJTS
+r41tiGeA5u2ylc9yMcqlHHK6XALnZELn+aks1joNrI1CqiQBOeacPwGFVw1Yh0X4
+04Wqk2kmhXBIgD8SFcd5tB8FLztimQIDAQABMA0GCSqGSIb3DQEBBAUAA4GBAG3r
+GwnpXtlR22ciYaQqPEh346B8pt5zohQDhT37qw4wxYMWM4ETCJ57NE7fQMh017l9
+3PR2VX2bY1QY6fDq81yx2YtCHrnAlU66+tXifPVoYb+O7AWXX1uw16OFNMQkpw0P
+lZPvy5TYnh+dXIVtx6quTx8itc2VrbqnzPmrC3p/
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 421 (0x1a5)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Global Root
+        Validity
+            Not Before: Aug 13 00:29:00 1998 GMT
+            Not After : Aug 13 23:59:00 2018 GMT
+        Subject: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Global Root
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:95:0f:a0:b6:f0:50:9c:e8:7a:c7:88:cd:dd:17:
+                    0e:2e:b0:94:d0:1b:3d:0e:f6:94:c0:8a:94:c7:06:
+                    c8:90:97:c8:b8:64:1a:7a:7e:6c:3c:53:e1:37:28:
+                    73:60:7f:b2:97:53:07:9f:53:f9:6d:58:94:d2:af:
+                    8d:6d:88:67:80:e6:ed:b2:95:cf:72:31:ca:a5:1c:
+                    72:ba:5c:02:e7:64:42:e7:f9:a9:2c:d6:3a:0d:ac:
+                    8d:42:aa:24:01:39:e6:9c:3f:01:85:57:0d:58:87:
+                    45:f8:d3:85:aa:93:69:26:85:70:48:80:3f:12:15:
+                    c7:79:b4:1f:05:2f:3b:62:99
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: md5WithRSAEncryption
+        6d:eb:1b:09:e9:5e:d9:51:db:67:22:61:a4:2a:3c:48:77:e3:
+        a0:7c:a6:de:73:a2:14:03:85:3d:fb:ab:0e:30:c5:83:16:33:
+        81:13:08:9e:7b:34:4e:df:40:c8:74:d7:b9:7d:dc:f4:76:55:
+        7d:9b:63:54:18:e9:f0:ea:f3:5c:b1:d9:8b:42:1e:b9:c0:95:
+        4e:ba:fa:d5:e2:7c:f5:68:61:bf:8e:ec:05:97:5f:5b:b0:d7:
+        a3:85:34:c4:24:a7:0d:0f:95:93:ef:cb:94:d8:9e:1f:9d:5c:
+        85:6d:c7:aa:ae:4f:1f:22:b5:cd:95:ad:ba:a7:cc:f9:ab:0b:
+        7a:7f
+
+GTE CyberTrust Japan Root CA
+============================
+MD5 Fingerprint: DE:AB:FF:43:2A:65:37:06:9B:28:B5:7A:E8:84:D3:8E
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIICETCCAXoCAU4wDQYJKoZIhvcNAQEEBQAwUTELMAkGA1UEBhMCSlAxHzAdBgNV
+BAoTFkN5YmVyVHJ1c3QgSmFwYW4sIEluYy4xITAfBgNVBAMTGEN5YmVyVHJ1c3Qg
+SkFQQU4gUm9vdCBDQTAeFw05ODA4MDQwNzU3MDBaFw0wMzA4MDQyMzU5MDBaMFEx
+CzAJBgNVBAYTAkpQMR8wHQYDVQQKExZDeWJlclRydXN0IEphcGFuLCBJbmMuMSEw
+HwYDVQQDExhDeWJlclRydXN0IEpBUEFOIFJvb3QgQ0EwgZ8wDQYJKoZIhvcNAQEB
+BQADgY0AMIGJAoGBALet/MpHEHaJ/Wes5HMGfIFLHda1fA5Hr+ymVHWoxP1lr+fI
+sbFsNDWN97lkVygLIVredP7ceC6GRhJMfxEf3JO9X75mmIa4t+xtSdOQ2eF5AFZo
+uq1sHyw7H8ksjEOwBELqgXOmzjN1RQ2KRXIvqldV5AfDQ+J1Og+8PNCEzrrvAgMB
+AAEwDQYJKoZIhvcNAQEEBQADgYEAt6ZkowyAPBzE2O5BO+WGpJ5gXdYBMqhqZC0g
+cEC6ck5m+gdlTgOOC/1W4K07IKcy+rISHoDfHuN6GMxX2+bJNGDvdesQFtCkLnDY
+JCO4pXdzQvkHOt0BbAiTBzUmECVgKf8J5WSfabkWSfNc3SRjRpMNsFM2dbxIILsZ
+to/QIv0=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 78 (0x4e)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=JP, O=CyberTrust Japan, Inc., CN=CyberTrust JAPAN Root CA
+        Validity
+            Not Before: Aug  4 07:57:00 1998 GMT
+            Not After : Aug  4 23:59:00 2003 GMT
+        Subject: C=JP, O=CyberTrust Japan, Inc., CN=CyberTrust JAPAN Root CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:b7:ad:fc:ca:47:10:76:89:fd:67:ac:e4:73:06:
+                    7c:81:4b:1d:d6:b5:7c:0e:47:af:ec:a6:54:75:a8:
+                    c4:fd:65:af:e7:c8:b1:b1:6c:34:35:8d:f7:b9:64:
+                    57:28:0b:21:5a:de:74:fe:dc:78:2e:86:46:12:4c:
+                    7f:11:1f:dc:93:bd:5f:be:66:98:86:b8:b7:ec:6d:
+                    49:d3:90:d9:e1:79:00:56:68:ba:ad:6c:1f:2c:3b:
+                    1f:c9:2c:8c:43:b0:04:42:ea:81:73:a6:ce:33:75:
+                    45:0d:8a:45:72:2f:aa:57:55:e4:07:c3:43:e2:75:
+                    3a:0f:bc:3c:d0:84:ce:ba:ef
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: md5WithRSAEncryption
+        b7:a6:64:a3:0c:80:3c:1c:c4:d8:ee:41:3b:e5:86:a4:9e:60:
+        5d:d6:01:32:a8:6a:64:2d:20:70:40:ba:72:4e:66:fa:07:65:
+        4e:03:8e:0b:fd:56:e0:ad:3b:20:a7:32:fa:b2:12:1e:80:df:
+        1e:e3:7a:18:cc:57:db:e6:c9:34:60:ef:75:eb:10:16:d0:a4:
+        2e:70:d8:24:23:b8:a5:77:73:42:f9:07:3a:dd:01:6c:08:93:
+        07:35:26:10:25:60:29:ff:09:e5:64:9f:69:b9:16:49:f3:5c:
+        dd:24:63:46:93:0d:b0:53:36:75:bc:48:20:bb:19:b6:8f:d0:
+        22:fd
+
+GTE CyberTrust Japan Secure Server CA
+=====================================
+MD5 Fingerprint: DD:0D:0D:B4:78:4B:7D:CE:30:0A:A6:35:C6:AB:4C:88
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIICIzCCAYwCAU8wDQYJKoZIhvcNAQEEBQAwWjELMAkGA1UEBhMCSlAxHzAdBgNV
+BAoTFkN5YmVyVHJ1c3QgSmFwYW4sIEluYy4xKjAoBgNVBAMTIUN5YmVyVHJ1c3Qg
+SkFQQU4gU2VjdXJlIFNlcnZlciBDQTAeFw05ODA4MDQwODA2MzJaFw0wMzA4MDQy
+MzU5MDBaMFoxCzAJBgNVBAYTAkpQMR8wHQYDVQQKExZDeWJlclRydXN0IEphcGFu
+LCBJbmMuMSowKAYDVQQDEyFDeWJlclRydXN0IEpBUEFOIFNlY3VyZSBTZXJ2ZXIg
+Q0EwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKwmo6G4b2rALBL52zEFkuf9
++tSBtLjVKtWQ+vBDZfwSFcrs27lh3jNjN0+vADx/kjcbGHPlnzyI8RoTRP558sMm
+lQ8L8J4UByFsV8Jdw+JRsM2LX81fhjj4eZc57Oi/Ui6xXqqprozt7tfIty4xi7Q5
+kjt8gScHGgFEL0lzILbJAgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAaB17Eu5aeSkx
+ygGsi1CpJ5ksAPw4Ghz/wtXwE/4bpzn1gBTrUfrAjXuEG1musTVRbqE+1xvsoJ7f
+4KWCluOxP9io8ct5gI738ESZfhT1I6MR42hLBTZuiOOrhqo4UwNCO9O5+eC/BenT
+X8NKp7b9t12QSfiasq1mpoIAk65g/yA=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 79 (0x4f)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=JP, O=CyberTrust Japan, Inc., CN=CyberTrust JAPAN Secure Server CA
+        Validity
+            Not Before: Aug  4 08:06:32 1998 GMT
+            Not After : Aug  4 23:59:00 2003 GMT
+        Subject: C=JP, O=CyberTrust Japan, Inc., CN=CyberTrust JAPAN Secure Server CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:ac:26:a3:a1:b8:6f:6a:c0:2c:12:f9:db:31:05:
+                    92:e7:fd:fa:d4:81:b4:b8:d5:2a:d5:90:fa:f0:43:
+                    65:fc:12:15:ca:ec:db:b9:61:de:33:63:37:4f:af:
+                    00:3c:7f:92:37:1b:18:73:e5:9f:3c:88:f1:1a:13:
+                    44:fe:79:f2:c3:26:95:0f:0b:f0:9e:14:07:21:6c:
+                    57:c2:5d:c3:e2:51:b0:cd:8b:5f:cd:5f:86:38:f8:
+                    79:97:39:ec:e8:bf:52:2e:b1:5e:aa:a9:ae:8c:ed:
+                    ee:d7:c8:b7:2e:31:8b:b4:39:92:3b:7c:81:27:07:
+                    1a:01:44:2f:49:73:20:b6:c9
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: md5WithRSAEncryption
+        68:1d:7b:12:ee:5a:79:29:31:ca:01:ac:8b:50:a9:27:99:2c:
+        00:fc:38:1a:1c:ff:c2:d5:f0:13:fe:1b:a7:39:f5:80:14:eb:
+        51:fa:c0:8d:7b:84:1b:59:ae:b1:35:51:6e:a1:3e:d7:1b:ec:
+        a0:9e:df:e0:a5:82:96:e3:b1:3f:d8:a8:f1:cb:79:80:8e:f7:
+        f0:44:99:7e:14:f5:23:a3:11:e3:68:4b:05:36:6e:88:e3:ab:
+        86:aa:38:53:03:42:3b:d3:b9:f9:e0:bf:05:e9:d3:5f:c3:4a:
+        a7:b6:fd:b7:5d:90:49:f8:9a:b2:ad:66:a6:82:00:93:ae:60:
+        ff:20
+
+GTE CyberTrust Root 2
+=====================
+MD5 Fingerprint: BA:ED:17:57:9A:4B:FF:7C:F9:C9:1F:A2:CD:1A:D6:87
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIICUDCCAbkCAgGbMA0GCSqGSIb3DQEBBAUAMHAxCzAJBgNVBAYTAlVTMRgwFgYD
+VQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNv
+bHV0aW9ucywgSW5jLjEeMBwGA1UEAxMVR1RFIEN5YmVyVHJ1c3QgUm9vdCAyMB4X
+DTk4MDgxMTExMzUwN1oXDTA4MDgxMTExMjIxNlowcDELMAkGA1UEBhMCVVMxGDAW
+BgNVBAoTD0dURSBDb3Jwb3JhdGlvbjEnMCUGA1UECxMeR1RFIEN5YmVyVHJ1c3Qg
+U29sdXRpb25zLCBJbmMuMR4wHAYDVQQDExVHVEUgQ3liZXJUcnVzdCBSb290IDIw
+gZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANksTE4vaRoj41a6886EwAnAefFE
+XzMfFZF/iogouCRFzI8YzR900bWPcUzWMfZzloSUQMWpg2Akfa9vNLdLTMIJgDtF
+BJ7EPMQndXsADKFkR7UUXYJLUTpYu0RMPdPlBjjoYVyYeLuAs5zacoJioN+cX+v5
+T3fCzGAYAGs0giWzAgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAo2SRbxDt526iQkCU
+eM74FAjR+kOF60bNkhTQ7y4tNjkY2brJJ4gp6UgXb/jBqshhbS39QC11QzCXOfgU
+ZL1v72OoK0LfsloNJex7N9jOkSmCFvnoYqLhdsQCfd0li5jh9g1gjPZZkEBRRNHC
++xkkHhc5a3QhFTPWVdeCHnAsJ6g=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 411 (0x19b)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 2
+        Validity
+            Not Before: Aug 11 11:35:07 1998 GMT
+            Not After : Aug 11 11:22:16 2008 GMT
+        Subject: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 2
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:d9:2c:4c:4e:2f:69:1a:23:e3:56:ba:f3:ce:84:
+                    c0:09:c0:79:f1:44:5f:33:1f:15:91:7f:8a:88:28:
+                    b8:24:45:cc:8f:18:cd:1f:74:d1:b5:8f:71:4c:d6:
+                    31:f6:73:96:84:94:40:c5:a9:83:60:24:7d:af:6f:
+                    34:b7:4b:4c:c2:09:80:3b:45:04:9e:c4:3c:c4:27:
+                    75:7b:00:0c:a1:64:47:b5:14:5d:82:4b:51:3a:58:
+                    bb:44:4c:3d:d3:e5:06:38:e8:61:5c:98:78:bb:80:
+                    b3:9c:da:72:82:62:a0:df:9c:5f:eb:f9:4f:77:c2:
+                    cc:60:18:00:6b:34:82:25:b3
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: md5WithRSAEncryption
+        a3:64:91:6f:10:ed:e7:6e:a2:42:40:94:78:ce:f8:14:08:d1:
+        fa:43:85:eb:46:cd:92:14:d0:ef:2e:2d:36:39:18:d9:ba:c9:
+        27:88:29:e9:48:17:6f:f8:c1:aa:c8:61:6d:2d:fd:40:2d:75:
+        43:30:97:39:f8:14:64:bd:6f:ef:63:a8:2b:42:df:b2:5a:0d:
+        25:ec:7b:37:d8:ce:91:29:82:16:f9:e8:62:a2:e1:76:c4:02:
+        7d:dd:25:8b:98:e1:f6:0d:60:8c:f6:59:90:40:51:44:d1:c2:
+        fb:19:24:1e:17:39:6b:74:21:15:33:d6:55:d7:82:1e:70:2c:
+        27:a8
+
+GTE CyberTrust Root 3
+=====================
+MD5 Fingerprint: DB:81:96:57:AE:64:61:EF:77:A7:83:C4:51:24:3C:87
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIICUDCCAbkCAgGXMA0GCSqGSIb3DQEBBQUAMHAxCzAJBgNVBAYTAlVTMRgwFgYD
+VQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNv
+bHV0aW9ucywgSW5jLjEeMBwGA1UEAxMVR1RFIEN5YmVyVHJ1c3QgUm9vdCAzMB4X
+DTk4MDgxMDE5NTkwOFoXDTA4MDgxMDE5MzYzOVowcDELMAkGA1UEBhMCVVMxGDAW
+BgNVBAoTD0dURSBDb3Jwb3JhdGlvbjEnMCUGA1UECxMeR1RFIEN5YmVyVHJ1c3Qg
+U29sdXRpb25zLCBJbmMuMR4wHAYDVQQDExVHVEUgQ3liZXJUcnVzdCBSb290IDMw
+gZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOHzsSsLztwU2TSXYlASVmOETFP6
+wIXP+sHdD955E39T+6oOYN3iYr/G7k6ZNKpoQzWZ+KP982O9AVRqnrI6lix7eCjG
+WrWNGhUY/eOMLqJQCVtx1g21GB8ZjgQpk5N4q18U53NC8gMMV6IbUDsLu1ngoDoD
+7icbWky5sAjKuRqJAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAheutlCAG6bKiazvy
+ZuvjS7gSJgXl9JGo3IfcmPSUwfRhvdWcbFFzlV7QvdfmRdw8z0aE1ee57ORnY24A
+KHdxXUoF6bl8hszCRLveKUja6t29F58dUQGo6BResVf3/9qPzpX+Le0yEnf/fGph
+la4xcgYI8PnzDY7i76hTXZEDg94=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 407 (0x197)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 3
+        Validity
+            Not Before: Aug 10 19:59:08 1998 GMT
+            Not After : Aug 10 19:36:39 2008 GMT
+        Subject: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 3
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:e1:f3:b1:2b:0b:ce:dc:14:d9:34:97:62:50:12:
+                    56:63:84:4c:53:fa:c0:85:cf:fa:c1:dd:0f:de:79:
+                    13:7f:53:fb:aa:0e:60:dd:e2:62:bf:c6:ee:4e:99:
+                    34:aa:68:43:35:99:f8:a3:fd:f3:63:bd:01:54:6a:
+                    9e:b2:3a:96:2c:7b:78:28:c6:5a:b5:8d:1a:15:18:
+                    fd:e3:8c:2e:a2:50:09:5b:71:d6:0d:b5:18:1f:19:
+                    8e:04:29:93:93:78:ab:5f:14:e7:73:42:f2:03:0c:
+                    57:a2:1b:50:3b:0b:bb:59:e0:a0:3a:03:ee:27:1b:
+                    5a:4c:b9:b0:08:ca:b9:1a:89
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha1WithRSAEncryption
+        85:eb:ad:94:20:06:e9:b2:a2:6b:3b:f2:66:eb:e3:4b:b8:12:
+        26:05:e5:f4:91:a8:dc:87:dc:98:f4:94:c1:f4:61:bd:d5:9c:
+        6c:51:73:95:5e:d0:bd:d7:e6:45:dc:3c:cf:46:84:d5:e7:b9:
+        ec:e4:67:63:6e:00:28:77:71:5d:4a:05:e9:b9:7c:86:cc:c2:
+        44:bb:de:29:48:da:ea:dd:bd:17:9f:1d:51:01:a8:e8:14:5e:
+        b1:57:f7:ff:da:8f:ce:95:fe:2d:ed:32:12:77:ff:7c:6a:61:
+        95:ae:31:72:06:08:f0:f9:f3:0d:8e:e2:ef:a8:53:5d:91:03:
+        83:de
+
+GTE CyberTrust Root 4
+=====================
+MD5 Fingerprint: 33:43:02:B1:B9:E0:73:B1:B1:20:CA:CB:C7:84:03:50
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDVTCCAj0CAgGoMA0GCSqGSIb3DQEBBQUAMHAxCzAJBgNVBAYTAlVTMRgwFgYD
+VQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNv
+bHV0aW9ucywgSW5jLjEeMBwGA1UEAxMVR1RFIEN5YmVyVHJ1c3QgUm9vdCA0MB4X
+DTk4MDgxMzEzNTEwMFoXDTEzMDgxMzIzNTkwMFowcDELMAkGA1UEBhMCVVMxGDAW
+BgNVBAoTD0dURSBDb3Jwb3JhdGlvbjEnMCUGA1UECxMeR1RFIEN5YmVyVHJ1c3Qg
+U29sdXRpb25zLCBJbmMuMR4wHAYDVQQDExVHVEUgQ3liZXJUcnVzdCBSb290IDQw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC6nSJuf9pmPDlCsaMqb9P3
+vK6sMVrXEZBHuZ0ZLvnzGyKgw+GnusT8XgqUS5haSybkH/Tc8/6OiNxsLXx3hyZQ
+wF5OqCih6hdpT03GAQ7amg0GViYVtqRdejWvje14Uob5OKuzAdPaBZaxtlCrwKGu
+F1P6QzkgcWUj223Etu2YRYPX0vbiqWv7+XXM78WrcZY16N+OkZuoEHUft84Tjmuz
+lneXGpEvxyxpmfAPKmgAmHZEG4wo0uuO9IO0f6QlXmw72cZo1WG41F4xB7VbkDVS
+V3sXIO0tuB6OiDk+Usvf8FyxZbulErSQY79xnTLB2r9QSpW+BjrEK+vNmHZETQvl
+AgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAEOvHIfJSbpliTRJPOoHO0eiedSgO5Bs
+3n+oVMPoTEAyvMjsHOXZrEC6/Iw/wnOc9GTq36ntTlvIAWDuOW1DJ/N/qgjS/k5v
+FDJNfeQ0gKU1xNZGULQ7oC1lH09lfjQoLcCndn0xyQ0zFvYgGSARULsDzHBtlrfv
+TKfaNhXPu03UltyITWyY7blz/ihXoO1k+AqBKXP29pcyhzm0ge/ZTRoHNPe6QjXe
+V9xc1vfF6wonDIGmwtBoTv2SW0iD9haKjzZb7TFsP0F6cfeSPzGkCkBM84biYcE8
+SYEtpbjvupcPvCsdm4ny0o4eTYbywqv2LZnAGyoNobZP+SxYTT19Nwo=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 424 (0x1a8)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 4
+        Validity
+            Not Before: Aug 13 13:51:00 1998 GMT
+            Not After : Aug 13 23:59:00 2013 GMT
+        Subject: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 4
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:ba:9d:22:6e:7f:da:66:3c:39:42:b1:a3:2a:6f:
+                    d3:f7:bc:ae:ac:31:5a:d7:11:90:47:b9:9d:19:2e:
+                    f9:f3:1b:22:a0:c3:e1:a7:ba:c4:fc:5e:0a:94:4b:
+                    98:5a:4b:26:e4:1f:f4:dc:f3:fe:8e:88:dc:6c:2d:
+                    7c:77:87:26:50:c0:5e:4e:a8:28:a1:ea:17:69:4f:
+                    4d:c6:01:0e:da:9a:0d:06:56:26:15:b6:a4:5d:7a:
+                    35:af:8d:ed:78:52:86:f9:38:ab:b3:01:d3:da:05:
+                    96:b1:b6:50:ab:c0:a1:ae:17:53:fa:43:39:20:71:
+                    65:23:db:6d:c4:b6:ed:98:45:83:d7:d2:f6:e2:a9:
+                    6b:fb:f9:75:cc:ef:c5:ab:71:96:35:e8:df:8e:91:
+                    9b:a8:10:75:1f:b7:ce:13:8e:6b:b3:96:77:97:1a:
+                    91:2f:c7:2c:69:99:f0:0f:2a:68:00:98:76:44:1b:
+                    8c:28:d2:eb:8e:f4:83:b4:7f:a4:25:5e:6c:3b:d9:
+                    c6:68:d5:61:b8:d4:5e:31:07:b5:5b:90:35:52:57:
+                    7b:17:20:ed:2d:b8:1e:8e:88:39:3e:52:cb:df:f0:
+                    5c:b1:65:bb:a5:12:b4:90:63:bf:71:9d:32:c1:da:
+                    bf:50:4a:95:be:06:3a:c4:2b:eb:cd:98:76:44:4d:
+                    0b:e5
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha1WithRSAEncryption
+        43:af:1c:87:c9:49:ba:65:89:34:49:3c:ea:07:3b:47:a2:79:
+        d4:a0:3b:90:6c:de:7f:a8:54:c3:e8:4c:40:32:bc:c8:ec:1c:
+        e5:d9:ac:40:ba:fc:8c:3f:c2:73:9c:f4:64:ea:df:a9:ed:4e:
+        5b:c8:01:60:ee:39:6d:43:27:f3:7f:aa:08:d2:fe:4e:6f:14:
+        32:4d:7d:e4:34:80:a5:35:c4:d6:46:50:b4:3b:a0:2d:65:1f:
+        4f:65:7e:34:28:2d:c0:a7:76:7d:31:c9:0d:33:16:f6:20:19:
+        20:11:50:bb:03:cc:70:6d:96:b7:ef:4c:a7:da:36:15:cf:bb:
+        4d:d4:96:dc:88:4d:6c:98:ed:b9:73:fe:28:57:a0:ed:64:f8:
+        0a:81:29:73:f6:f6:97:32:87:39:b4:81:ef:d9:4d:1a:07:34:
+        f7:ba:42:35:de:57:dc:5c:d6:f7:c5:eb:0a:27:0c:81:a6:c2:
+        d0:68:4e:fd:92:5b:48:83:f6:16:8a:8f:36:5b:ed:31:6c:3f:
+        41:7a:71:f7:92:3f:31:a4:0a:40:4c:f3:86:e2:61:c1:3c:49:
+        81:2d:a5:b8:ef:ba:97:0f:bc:2b:1d:9b:89:f2:d2:8e:1e:4d:
+        86:f2:c2:ab:f6:2d:99:c0:1b:2a:0d:a1:b6:4f:f9:2c:58:4d:
+        3d:7d:37:0a
+
+GTE CyberTrust Root 5
+=====================
+MD5 Fingerprint: 7D:6C:86:E4:FC:4D:D1:0B:00:BA:22:BB:4E:7C:6A:8E
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDtjCCAp6gAwIBAgICAbYwDQYJKoZIhvcNAQEFBQAwcDELMAkGA1UEBhMCVVMx
+GDAWBgNVBAoTD0dURSBDb3Jwb3JhdGlvbjEnMCUGA1UECxMeR1RFIEN5YmVyVHJ1
+c3QgU29sdXRpb25zLCBJbmMuMR4wHAYDVQQDExVHVEUgQ3liZXJUcnVzdCBSb290
+IDUwHhcNOTgwODE0MTQ1MDAwWhcNMTMwODE0MjM1OTAwWjBwMQswCQYDVQQGEwJV
+UzEYMBYGA1UEChMPR1RFIENvcnBvcmF0aW9uMScwJQYDVQQLEx5HVEUgQ3liZXJU
+cnVzdCBTb2x1dGlvbnMsIEluYy4xHjAcBgNVBAMTFUdURSBDeWJlclRydXN0IFJv
+b3QgNTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALwSbj+KfHqXAewe
+uzlaAvR4RKJIG457SVJ6uHtHs6+Um2+7lvoramVcuByUc76/iQoigO5X/IwFu3Cf
+lzkE2qOHXKjlyq/AM5rVN1xLrOSA0KYjYPv9ci6UncfOwgQy73hgXe2thw9FZR48
+mgqavl0dmezn8tHGehfZrZtUln/EfGC/haoVNR1A2hG87FQhKC0joajwzy3N3fx+
+D17hZQdWywe00lboXjHMGGPEhtIthc+Tkqtt/mg5+95zvYb45EZ66p8My/QZ/mO8
+0Sx7iDM29uThnAxTgWAc2i6rlqkWiBNQmbK9Vd8VMH7o5Zj7cH5stQf8/Ea30O03
+ln4y/iECAwEAAaNaMFgwEgYDVR0TAQH/BAgwBgEB/wIBBTAOBgNVHQ8BAf8EBAMC
+AQYwFwYDVR0gBBAwDjAMBgoqhkiG+GMBAgEDMBkGA1UdDgQSBBB2CkkhOEyf3vjE
+ScdxcZGdMA0GCSqGSIb3DQEBBQUAA4IBAQBBOtQYW9q43iEc4Y4J5fFoNP/elvQH
+9ac886xKsZv6kvqb7eYyIapKdsXcTzjl39WG5NXIdn2Y17HNj021kSNsi4rr6nzv
+FJTExvAfSi0ycWMrY5EmAgm2gB3t4sy4f9uHY8jh0GwmsTUdQGYQG82VVBgzYewT
+T9oT95mvPtDPjqZyorPDBZrJJ32SzH5SjbOrcG2eiZ9N6xp1wpiq1QIW1wyKvyXk
+6y28mOlYOBl8uTf+2+KZCHMGx5eDan0QAS8yuRcFSmXmL86+XlOmgumaUwqEdC2D
+ysiUFnZflGEo8IWnObvXi9moshMdVAk0JH0ggX1mfqKQdFwQxr3sqxvC
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 438 (0x1b6)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 5
+        Validity
+            Not Before: Aug 14 14:50:00 1998 GMT
+            Not After : Aug 14 23:59:00 2013 GMT
+        Subject: C=US, O=GTE Corporation, OU=GTE CyberTrust Solutions, Inc., CN=GTE CyberTrust Root 5
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:bc:12:6e:3f:8a:7c:7a:97:01:ec:1e:bb:39:5a:
+                    02:f4:78:44:a2:48:1b:8e:7b:49:52:7a:b8:7b:47:
+                    b3:af:94:9b:6f:bb:96:fa:2b:6a:65:5c:b8:1c:94:
+                    73:be:bf:89:0a:22:80:ee:57:fc:8c:05:bb:70:9f:
+                    97:39:04:da:a3:87:5c:a8:e5:ca:af:c0:33:9a:d5:
+                    37:5c:4b:ac:e4:80:d0:a6:23:60:fb:fd:72:2e:94:
+                    9d:c7:ce:c2:04:32:ef:78:60:5d:ed:ad:87:0f:45:
+                    65:1e:3c:9a:0a:9a:be:5d:1d:99:ec:e7:f2:d1:c6:
+                    7a:17:d9:ad:9b:54:96:7f:c4:7c:60:bf:85:aa:15:
+                    35:1d:40:da:11:bc:ec:54:21:28:2d:23:a1:a8:f0:
+                    cf:2d:cd:dd:fc:7e:0f:5e:e1:65:07:56:cb:07:b4:
+                    d2:56:e8:5e:31:cc:18:63:c4:86:d2:2d:85:cf:93:
+                    92:ab:6d:fe:68:39:fb:de:73:bd:86:f8:e4:46:7a:
+                    ea:9f:0c:cb:f4:19:fe:63:bc:d1:2c:7b:88:33:36:
+                    f6:e4:e1:9c:0c:53:81:60:1c:da:2e:ab:96:a9:16:
+                    88:13:50:99:b2:bd:55:df:15:30:7e:e8:e5:98:fb:
+                    70:7e:6c:b5:07:fc:fc:46:b7:d0:ed:37:96:7e:32:
+                    fe:21
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:5
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Certificate Policies: 
+                Policy: 1.2.840.113763.1.2.1.3
+
+            X509v3 Subject Key Identifier: 
+                76:0A:49:21:38:4C:9F:DE:F8:C4:49:C7:71:71:91:9D
+    Signature Algorithm: sha1WithRSAEncryption
+        41:3a:d4:18:5b:da:b8:de:21:1c:e1:8e:09:e5:f1:68:34:ff:
+        de:96:f4:07:f5:a7:3c:f3:ac:4a:b1:9b:fa:92:fa:9b:ed:e6:
+        32:21:aa:4a:76:c5:dc:4f:38:e5:df:d5:86:e4:d5:c8:76:7d:
+        98:d7:b1:cd:8f:4d:b5:91:23:6c:8b:8a:eb:ea:7c:ef:14:94:
+        c4:c6:f0:1f:4a:2d:32:71:63:2b:63:91:26:02:09:b6:80:1d:
+        ed:e2:cc:b8:7f:db:87:63:c8:e1:d0:6c:26:b1:35:1d:40:66:
+        10:1b:cd:95:54:18:33:61:ec:13:4f:da:13:f7:99:af:3e:d0:
+        cf:8e:a6:72:a2:b3:c3:05:9a:c9:27:7d:92:cc:7e:52:8d:b3:
+        ab:70:6d:9e:89:9f:4d:eb:1a:75:c2:98:aa:d5:02:16:d7:0c:
+        8a:bf:25:e4:eb:2d:bc:98:e9:58:38:19:7c:b9:37:fe:db:e2:
+        99:08:73:06:c7:97:83:6a:7d:10:01:2f:32:b9:17:05:4a:65:
+        e6:2f:ce:be:5e:53:a6:82:e9:9a:53:0a:84:74:2d:83:ca:c8:
+        94:16:76:5f:94:61:28:f0:85:a7:39:bb:d7:8b:d9:a8:b2:13:
+        1d:54:09:34:24:7d:20:81:7d:66:7e:a2:90:74:5c:10:c6:bd:
+        ec:ab:1b:c2
+
+GTE CyberTrust Root CA
+======================
+MD5 Fingerprint: C4:D7:F0:B2:A3:C5:7D:61:67:F0:04:CD:43:D3:BA:58
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIB+jCCAWMCAgGjMA0GCSqGSIb3DQEBBAUAMEUxCzAJBgNVBAYTAlVTMRgwFgYD
+VQQKEw9HVEUgQ29ycG9yYXRpb24xHDAaBgNVBAMTE0dURSBDeWJlclRydXN0IFJv
+b3QwHhcNOTYwMjIzMjMwMTAwWhcNMDYwMjIzMjM1OTAwWjBFMQswCQYDVQQGEwJV
+UzEYMBYGA1UEChMPR1RFIENvcnBvcmF0aW9uMRwwGgYDVQQDExNHVEUgQ3liZXJU
+cnVzdCBSb290MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC45k+625h8cXyv
+RLfTD0bZZOWTwUKOx7pJjTUteueLveUFMVnGsS8KDPufpz+iCWaEVh43KRuH6X4M
+ypqfpX/1FZSj1aJGgthoTNE3FQZor734sLPwKfWVWgkWYXcKIiXUT0Wqx73llt/5
+1KiOQswkwB6RJ0q1bQaAYznEol44AwIDAQABMA0GCSqGSIb3DQEBBAUAA4GBABKz
+dcZfHeFhVYAA1IFLezEPI2PnPfMD+fQ2qLvZ46WXTeorKeDWanOB5sCJo9Px4KWl
+IjeaY8JIILTbcuPI9tl8vrGvU9oUtCG41tWW4/5ODFlitppK+ULdjG+BqXH/9Apy
+bW1EDp3zdHSo1TRJ6V6e6bR64eVaH4QwnNOfpSXY
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 419 (0x1a3)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=US, O=GTE Corporation, CN=GTE CyberTrust Root
+        Validity
+            Not Before: Feb 23 23:01:00 1996 GMT
+            Not After : Feb 23 23:59:00 2006 GMT
+        Subject: C=US, O=GTE Corporation, CN=GTE CyberTrust Root
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:b8:e6:4f:ba:db:98:7c:71:7c:af:44:b7:d3:0f:
+                    46:d9:64:e5:93:c1:42:8e:c7:ba:49:8d:35:2d:7a:
+                    e7:8b:bd:e5:05:31:59:c6:b1:2f:0a:0c:fb:9f:a7:
+                    3f:a2:09:66:84:56:1e:37:29:1b:87:e9:7e:0c:ca:
+                    9a:9f:a5:7f:f5:15:94:a3:d5:a2:46:82:d8:68:4c:
+                    d1:37:15:06:68:af:bd:f8:b0:b3:f0:29:f5:95:5a:
+                    09:16:61:77:0a:22:25:d4:4f:45:aa:c7:bd:e5:96:
+                    df:f9:d4:a8:8e:42:cc:24:c0:1e:91:27:4a:b5:6d:
+                    06:80:63:39:c4:a2:5e:38:03
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: md5WithRSAEncryption
+        12:b3:75:c6:5f:1d:e1:61:55:80:00:d4:81:4b:7b:31:0f:23:
+        63:e7:3d:f3:03:f9:f4:36:a8:bb:d9:e3:a5:97:4d:ea:2b:29:
+        e0:d6:6a:73:81:e6:c0:89:a3:d3:f1:e0:a5:a5:22:37:9a:63:
+        c2:48:20:b4:db:72:e3:c8:f6:d9:7c:be:b1:af:53:da:14:b4:
+        21:b8:d6:d5:96:e3:fe:4e:0c:59:62:b6:9a:4a:f9:42:dd:8c:
+        6f:81:a9:71:ff:f4:0a:72:6d:6d:44:0e:9d:f3:74:74:a8:d5:
+        34:49:e9:5e:9e:e9:b4:7a:e1:e5:5a:1f:84:30:9c:d3:9f:a5:
+        25:d8
+
+GlobalSign Partners CA
+======================
+MD5 Fingerprint: 3C:75:CD:4C:BD:A9:D0:8A:79:4F:50:16:37:84:F4:2B
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDnjCCAoagAwIBAgILAgAAAAAA1ni50a8wDQYJKoZIhvcNAQEEBQAwVzELMAkG
+A1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNVBAsTB1Jv
+b3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw05OTAxMjgxMjAw
+MDBaFw0wOTAxMjgxMjAwMDBaMF8xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9i
+YWxTaWduIG52LXNhMRQwEgYDVQQLEwtQYXJ0bmVycyBDQTEfMB0GA1UEAxMWR2xv
+YmFsU2lnbiBQYXJ0bmVycyBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBANIs+DKsShJ6N8gpkaWujG4eDsA0M4jlM3EWHHiEaMMYNFAuFj6xlIJPsZqf
+APjGETXGaXuYAq0ABohs50wzKACIJ0Yfh7NxdWO8MruI3mYYDlAGk7T2vBQ3MD0i
+3z3/dX7ZChrFn7P80KyzCHqJ0wHoAFznSgs9TXsmordiBovaRt2TFz8/WwJLC7aI
+IBGSAK27xy7U40Wu9YlafI2krYVkMsAnjMbyioCShiRWWY10aKKDQrOePVBBhm8g
+bvb9ztMZ4zLMj+2aXm0fKPVSrG4YXvg90ZLlumwBiEsK8i3eZTMFQqBMqjF2vv2/
+gXj5cRxGXi0VlS0wWY5MQdFiqz0CAwEAAaNjMGEwDgYDVR0PAQH/BAQDAgAGMB0G
+A1UdDgQWBBRDJI1wFQhiVZxPDEAXXYZeD6JM+zAfBgNVHSMEGDAWgBRge2YaRQ2X
+yolQL30EzTSo//z9SzAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBBAUAA4IB
+AQBm7bSIaRGZgiGDrKFti5uErQ8tyB6Mynt+rarUjt4H1p5Fx6W4nAc5YCVVGsBP
+GeXPFylJiRg1ZuXrKEBOV8mvs+S4IAWjO5VQkUmUKX0s5YhBpUWIXp2CJ/fS71u1
+T5++/jVlLFVkn+FR2iJhd7pYTo/GeVlZbjCAok+QbiELrdBoOZAQm+0iZW8eETjm
+f4zS8zltR9Uh6Op1OkHRrfYWnV0LIb3zH2MGJR3BHzVxLOsgGdXBsOw95W/tAgc/
+E3tmktZEwZj3X1CLelvCb22w0fjldKBAN6MlD+Q9ymQxk5BcMHu5OTGaXkzNuUFP
+UOQ9OK7IZtnHO11RR6ybq/Kt
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            02:00:00:00:00:00:d6:78:b9:d1:af
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA
+        Validity
+            Not Before: Jan 28 12:00:00 1999 GMT
+            Not After : Jan 28 12:00:00 2009 GMT
+        Subject: C=BE, O=GlobalSign nv-sa, OU=Partners CA, CN=GlobalSign Partners CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:d2:2c:f8:32:ac:4a:12:7a:37:c8:29:91:a5:ae:
+                    8c:6e:1e:0e:c0:34:33:88:e5:33:71:16:1c:78:84:
+                    68:c3:18:34:50:2e:16:3e:b1:94:82:4f:b1:9a:9f:
+                    00:f8:c6:11:35:c6:69:7b:98:02:ad:00:06:88:6c:
+                    e7:4c:33:28:00:88:27:46:1f:87:b3:71:75:63:bc:
+                    32:bb:88:de:66:18:0e:50:06:93:b4:f6:bc:14:37:
+                    30:3d:22:df:3d:ff:75:7e:d9:0a:1a:c5:9f:b3:fc:
+                    d0:ac:b3:08:7a:89:d3:01:e8:00:5c:e7:4a:0b:3d:
+                    4d:7b:26:a2:b7:62:06:8b:da:46:dd:93:17:3f:3f:
+                    5b:02:4b:0b:b6:88:20:11:92:00:ad:bb:c7:2e:d4:
+                    e3:45:ae:f5:89:5a:7c:8d:a4:ad:85:64:32:c0:27:
+                    8c:c6:f2:8a:80:92:86:24:56:59:8d:74:68:a2:83:
+                    42:b3:9e:3d:50:41:86:6f:20:6e:f6:fd:ce:d3:19:
+                    e3:32:cc:8f:ed:9a:5e:6d:1f:28:f5:52:ac:6e:18:
+                    5e:f8:3d:d1:92:e5:ba:6c:01:88:4b:0a:f2:2d:de:
+                    65:33:05:42:a0:4c:aa:31:76:be:fd:bf:81:78:f9:
+                    71:1c:46:5e:2d:15:95:2d:30:59:8e:4c:41:d1:62:
+                    ab:3d
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Subject Key Identifier: 
+                43:24:8D:70:15:08:62:55:9C:4F:0C:40:17:5D:86:5E:0F:A2:4C:FB
+            X509v3 Authority Key Identifier: 
+                keyid:60:7B:66:1A:45:0D:97:CA:89:50:2F:7D:04:CD:34:A8:FF:FC:FD:4B
+
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+    Signature Algorithm: md5WithRSAEncryption
+        66:ed:b4:88:69:11:99:82:21:83:ac:a1:6d:8b:9b:84:ad:0f:
+        2d:c8:1e:8c:ca:7b:7e:ad:aa:d4:8e:de:07:d6:9e:45:c7:a5:
+        b8:9c:07:39:60:25:55:1a:c0:4f:19:e5:cf:17:29:49:89:18:
+        35:66:e5:eb:28:40:4e:57:c9:af:b3:e4:b8:20:05:a3:3b:95:
+        50:91:49:94:29:7d:2c:e5:88:41:a5:45:88:5e:9d:82:27:f7:
+        d2:ef:5b:b5:4f:9f:be:fe:35:65:2c:55:64:9f:e1:51:da:22:
+        61:77:ba:58:4e:8f:c6:79:59:59:6e:30:80:a2:4f:90:6e:21:
+        0b:ad:d0:68:39:90:10:9b:ed:22:65:6f:1e:11:38:e6:7f:8c:
+        d2:f3:39:6d:47:d5:21:e8:ea:75:3a:41:d1:ad:f6:16:9d:5d:
+        0b:21:bd:f3:1f:63:06:25:1d:c1:1f:35:71:2c:eb:20:19:d5:
+        c1:b0:ec:3d:e5:6f:ed:02:07:3f:13:7b:66:92:d6:44:c1:98:
+        f7:5f:50:8b:7a:5b:c2:6f:6d:b0:d1:f8:e5:74:a0:40:37:a3:
+        25:0f:e4:3d:ca:64:31:93:90:5c:30:7b:b9:39:31:9a:5e:4c:
+        cd:b9:41:4f:50:e4:3d:38:ae:c8:66:d9:c7:3b:5d:51:47:ac:
+        9b:ab:f2:ad
+
+GlobalSign Primary Class 1 CA
+=============================
+MD5 Fingerprint: 5C:AC:59:01:A4:86:53:CB:10:66:B5:D6:D6:71:FF:01
+PEM Data:
+-----BEGIN CERTIFICATE-----
+MIIDrDCCApSgAwIBAgILAgAAAAAA1ni4N88wDQYJKoZIhvcNAQEEBQAwVzELMAkG
+A1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNVBAsTB1Jv
+b3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw05ODA5MTUxMjAw
+MDBaFw0wOTAxMjgxMjAwMDBaMG0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9i
+YWxTaWduIG52LXNhMRswGQYDVQQLExJQcmltYXJ5IENsYXNzIDEgQ0ExJjAkBgNV
+BAMTHUdsb2JhbFNpZ24gUHJpbWFyeSBDbGFzcyAxIENBMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAvSA1R9Eo1gijEjkjRw29cCFSDlcxlaY0V2vsfkN5
+wwZSSM28taGZvdgfMrzP125ybS53IpCCTkuPmgwBQprZcFm2nR/mY9EMrR1O+IWB
++a7vn6ZSYUR5GnVF4GFWRW1CjD1yy6akErea9dZg0GBQs46mpuy09BLNf6jO77Ph
+hTD+csTm53eznlhB1lGDiAfGtmlPNt7RC0g/vdafIXRkbycGPkv9Dqabv6RIV4yQ
+7okYCwKBGL5n/lNgiCe6o3M0S1pWtN5zBe2Yll3sSudA/EsJYuvQ4zFPhdF6q1ln
+K/uID+uqg701/WEn7GYOQlf3acIM7/xqwm5J2o9BOK5IqQIDAQABo2MwYTAOBgNV
+HQ8BAf8EBAMCAAYwHQYDVR0OBBYEFPzgZvZaNZnrQB7SuB5DvJiOH4rDMB8GA1Ud
+IwQYMBaAFGB7ZhpFDZfKiVAvfQTNNKj//P1LMA8GA1UdEwEB/wQFMAMBAf8wDQYJ
+KoZIhvcNAQEEBQADggEBAJujCETO8pCdcfMyswVqterPKZjeVT6gFn0GekTWr9L6
+E1iM+BzHqx20G+9paJhcCDmP4Pf7SMwh57gz2wWqNCRsSuXpe2Deg7MfCr5BdfzM
+MEi3wSYdBDOqtnjtKsu6VpcybvcxlS5G8hTuJ8f3Yom5XFrTOIpk9Te08bM0ctXV
+IT1L13iT1zFmNR6j2EdJbxyt4YB/+JgkbHOsDsIadwKjJge3x2tdvILVKkgdY89Q
+Mqb7HBhHFQpbDFw4JJoEmKgISF98NIdjqy2NTAB3lBt2uvUWGKMVry+U9ikAdsEV
+F9PpN0121MtLKVkkrNpKoOpj3l9Usfrz0UXLxWS0cyE=
+-----END CERTIFICATE-----
+Certificate Ingredients:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            02:00:00:00:00:00:d6:78:b8:37:cf
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA
+        Validity
+            Not Before: Sep 15 12:00:00 1998 GMT
+            Not After : Jan 28 12:00:00 2009 GMT
+        Subject: C=BE, O=GlobalSign nv-sa, OU=Primary Class 1 CA, CN=GlobalSign Primary Class 1 CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:bd:20:35:47:d1:28:d6:08:a3:12:39:23:47:0d:
+                    bd:70:21:52:0e:57:31:95:a6:34:57:6b:ec:7e:43:
+                    79:c3:06:52:48:cd:bc:b5:a1:99:bd:d8:1f:32:bc:
+                    cf:d7:6e:72:6d:2e:77:22:90:82:4e:4b:8f:9a:0c:
+                    01:42:9a:d9:70:59:b6:9d:1f:e6:63:d1:0c:ad:1d:
+                    4e:f8:85:81:f9:ae:ef:9f:a6:52:61:44:79:1a:75:
+                    45:e0:61:56:45:6d:42:8c:3d:72:cb:a6:a4:12:b7:
+                    9a:f5:d6:60:d0:60:50:b3:8e:a6:a6:ec:b4:f4:12:
+                    cd:7f:a8:ce:ef:b3:e1:85:30:fe:72:c4:e6:e7:77:
+                    b3:9e:58:41:d6:51:83:88:07:c6:b6:69:4f:36:de:
+                    d1:0b:48:3f:bd:d6:9f:21:74:64:6f:27:06:3e:4b:
+                    fd:0e:a6:9b:bf:a4:48:57:8c:90:ee:89:18:0b:02:
+                    81:18:be:67:fe:53:60:88:27:ba:a3:73:34:4b:5a:
+                    56:b4:de:73:05:ed:98:96:5d:ec:4a:e7:40:fc:4b:
+                    09:62:eb:d0:e3:31:4f:85:d1:7a:ab:59:67:2b:fb:
+                    88:0f:eb:aa:83:bd:35:fd:61:27:ec:66:0e:42:57:
+                    f7:69:c2:0c:ef:fc:6a:c2:6e:49:da:8f:41:38:ae:
+                    48:a9
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Subject Key Identifier: 
+                FC:E0:66:F6:5A:35:99:EB:40:1E:D2:B8:1E:43:BC:98:8E:1F:8A:C3
+            X509v3 Authority Key Identifier: 
+                keyid:60:7B:66:1A:45:0D:97:CA:89:50:2F:7D:04:CD:34:A8:FF:FC:FD:4B
+
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+    Signature Algorithm: md5WithRSAEncryption
+        9b:a3:08:44:ce:f2:90:9d:71:f3:32:b3:05:6a:b5:ea:cf:29:
+        98:de:55:3e:a0:16:7d:06:7a:44:d6:af:d2:fa:13:58:8c:f8:
+        1c:c7:ab:1d:b4:1b:ef:69:68:98:5c:08:39:8f:e0:f7:fb:48:
+        cc:21:e7:b8:33:db:05:aa:34:24:6c:4a:e5:e9:7b:60:de:83:
+        b3:1f:0a:be:41:75:fc:cc:30:48:b7:c1:26:1d:04:33:aa:b6:
+        78:ed:2a:cb:ba:56:97:32:6e:f7:31:95:2e:46:f2:14:ee:27:
+        c7:f7:62:89:b9:5c:5a:d3:38:8a:64:f5:37:b4:f1:b3:34:72:
+        d5:d5:21:3d:4b:d7:78:93:d7:31:66:35:1e:a3:d8:47:49:6f:
+        1c:ad:e1:80:7f:f8:98:24:6c:73:ac:0e:c2:1a:77:02:a3:26:
+        07:b7:c7:6b:5d:bc:82:d5:2a:48:1d:63:cf:50:32:a6:fb:1c:
+        18:47:15:0a:5b:0c:5c:38:24:9a:04:98:a8:08:48:5f:7c:34:
+        87:63:ab:2d:8d:4c:00:77:94:1b:76:ba:f5:16:18:a3:15:a

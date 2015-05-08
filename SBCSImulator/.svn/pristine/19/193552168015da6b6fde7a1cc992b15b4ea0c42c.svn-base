@@ -1,0 +1,1506 @@
+#!/usr/bin/perl
+
+################################################################################
+################################################################################
+###
+###	cdrmon
+###
+###	CDR monitor
+###	Copyright (C) 1998-2009, GENBAND Inc.
+################################################################################
+################################################################################
+
+## Preliminary
+#use strict;
+use English;
+
+my $CurrentVersion = sprintf "%vd", $PERL_VERSION;
+
+if ($CurrentVersion lt "5.6")
+{
+	use lib "/usr/local/nextone/lib/perl5/site_perl/5.005";
+}
+else
+{
+	use lib "/usr/local/nextone/lib/perl5/site_perl";
+}
+
+#use lib "/usr/local/nextone/lib/perl5/site_perl";
+
+if ($ENV{BASE})
+{
+	use lib "$ENV{BASE}/lib/perl5/site_perl";
+}
+
+
+use File::Tail;
+use Getopt::Std;
+use XML::Simple;
+use Data::Dumper;
+use Sys::Syslog;
+use POSIX qw(tmpnam);
+use Date::EzDate;
+use File::Basename;
+use Statistics::Descriptive;
+
+use DBI;
+use Math::BigInt;
+use File::Basename;
+use Config::Simple;
+
+$mProgName = basename($0);
+$mVersion = "v0.1, 06/09/2002";
+
+### Variables for remote version of cdrpp - where it contacts a database to read cdrs
+
+my $mydir = dirname($0);
+my $CONFFILE = 'nars.cfg';
+my $maxrows = 1000;                        # Read in atmost maxrows from DB
+my $done = 0;                              # Wait in an infinite loop until done
+my $last_rec = Math::BigInt->new(0);       # Rec_num of last record read
+my $poll_int = 60;						   # Interval at which database is checked
+
+# sql statements
+my $sql_read = "SELECT * FROM cdrs WHERE Processed=0 ORDER BY Rec_num LIMIT ";
+my $sql_update = "UPDATE cdrs SET Processed=1 WHERE Rec_num<";
+
+# It is important that the cdrfields be listed in the same order as
+# the actual cdr's as that is how they are constructed
+
+my @cdrf = (
+                'Date_Time',
+                'Date_Time_Int',
+                'Duration',
+                'Orig_IP',
+                'Orig_Line',
+                'Term_IP',
+                'Term_Line',
+                'User_ID',
+                'Call_E164',
+                'Call_DTMF',
+                'Call_Type',
+                'Call_Parties',
+                'Disc_Code',
+                'Err_Type',
+                'Err_Desc',
+                'Fax_Pages',
+                'Fax_Pri',
+                'ANI',
+                'DNIS',
+                'Bytes_Sent',
+                'Bytes_Recv',
+                'Seq_Num',
+                'GW_Stop',
+                'Call_ID',
+                'Hold_Time',
+                'Orig_GW',
+                'Orig_Port',
+                'Term_GW',
+                'Term_Port',
+                'ISDN_Code',
+                'Last_Call_Number'
+            );
+
+my %cdrfields = map { $_ => 1 } @cdrf;
+$cdrfields{'Rec_num'} = 1;    # We want this internal value also
+
+$attr = {
+            'PrintError' => 0,
+            'RaiseError' => 0,
+            'AutoCommit' => 0,
+        };
+
+###
+
+getopts "vhf:rt:";
+
+if ($opt_v)
+{
+	PrintVersion ();
+	exit 0;
+}
+
+if ($opt_h)
+{
+	PrintHelp ();
+	exit 0;
+}
+
+
+##
+## Parameters
+##
+$tailparam = 0;
+if ($opt_t)
+{
+	$tailparam = $opt_t;
+}
+
+## Config file
+$ConfigFile = "alarms.conf";
+
+
+## cdr parser
+$CdrFile = "data.cdr";
+
+if ($opt_f)
+{
+	$CdrFile = $opt_f;
+}
+
+$remote = $opt_r ? $opt_r : 0;
+
+##
+## Setup Signal Handlers
+##
+$SIG{CHLD} = 'IGNORE';
+$SIG{TERM}=$SIG{HUP}=$SIG{INT}=$SIG{PIPE} = sub {$done = 1;};
+
+
+## ReadConfig file
+
+my $conf = ParseConfigFile ($ConfigFile);
+
+## Open logging
+openlog ( "ALRM", 'cons,pid', "cdrmon");
+
+##
+## Create DSTAT {Duration Stat} objects.
+##
+CreateStatObjects ();
+
+
+## Reset counters.
+ResetCounters ();
+
+
+$CdrP = File::Tail->new (name       => $CdrFile,
+			maxinterval => 60,
+			adjustafter => 10,
+			tail        => $tailparam);
+			
+
+my $lines;
+my $rin = '';
+my $connected = 0;
+my $buffer_var; 
+
+
+##
+## now choose the method for reading cdrs
+##
+
+
+if (!$remote) {
+	my $line;
+	## Loop forever around the given file.
+
+	while (defined ($line = $CdrP->read) ) {
+		ProcessLine ($line, $conf);
+	}
+}
+else {
+	my @dbi_login = GetDBILogin();
+	my $dbh = DBI->connect(@dbi_login,$attr)
+         or die "Client : Error connecting to database ... $DBI::errstr\n";
+
+	my $sth = $dbh->prepare($sql_read.$maxrows);
+	my ($rth, $a);
+	my $line;
+
+	while (!$done) {
+        ##### Read the data from the database
+
+		unless ($connected) {    
+			$sock = OpenClient();
+			vec($rin, $sock->fileno, 1) = 1;
+		}
+	
+		# Check if there is some data on the socket
+		$nfound = select($rout=$rin, undef, undef, 1);
+
+		if ($nfound) {
+		    if (vec($rout, $sock->fileno, 1)) {
+				if ($line = $sock->getline) {
+            		if ($msg = ReadMsg($line)) {
+                		ProcessMsg($msg);        
+            		}
+        		}
+        		else {     # Connection closed
+            		vec($rin, $sock->fileno, 1) = 0;
+            		$sock->close;
+            		$connected=0;
+        		}
+    		}
+		}
+
+		# Process the cdrs
+        if ($sth->execute()) {
+            do  {
+                $a = $sth->fetchall_arrayref(\%cdrfields, $maxrows);
+                foreach $row (@$a) {
+                    my $cdr='';
+    
+                    foreach $key (@cdrf) {
+                        $cdr .= "$row->{$key}:";
+                    }
+                    chop($cdr);            # remove the last ':'
+    
+					ProcessLine($cdr, $conf);
+
+                    if ($debug) {
+						print STDOUT $cdr . "\n";
+					}
+                }
+    
+                $lastrec = $row->{'Rec_num'};
+            } until (!@$a);
+        }
+        else {
+            print "$DBI::errstr \n";
+        }
+    
+        ##### Mark the cdr records read as processed
+    
+        $rth = $dbh->prepare($sql_update.$lastrec);
+    
+        if ($rth->execute()) {
+        }
+        else {
+            print "$DBI::errstr \n";
+        }
+    
+    	sleep $poll_int;
+    }
+
+	$dbh->disconnect;
+}
+
+sub ProcessLine ($ $)
+{
+	my ($in, $conf) = @_;
+
+
+			##
+			## MIND Format
+			##
+			(
+				$lgwstime, 
+				$lgwtimet, 
+				$duration, 
+				$srcip, 
+				$srcport, 
+				$dstip, 
+				$dstport, 
+				$userid, 
+				$dstnum, 
+				$dialednum, 
+				$ctype, 
+				$cparties, 
+				$cdisconnect, 
+				$errorcode, 
+				$errordesc, 
+				$fpages, 
+				$fprio, 
+				$ani, 
+				$dnis, 
+				$nbsent, 
+				$nbrecd, 
+				$seqno, 
+				$lgwstoptime, 
+				$callid, 
+## Extensions
+				$xpdd,
+				$srcregid,
+				$srcuport,
+				$dstregid,
+				$dstuport,
+				$isdncode,
+				$x1calledpn
+			) = split /;/ ;
+
+
+			my $uftime = UnformatTime($duration);
+			my $pddtime = UnformatTime ($xpdd);
+
+			$StatAll->add_data ($uftime);
+			$StatPddAll->add_data ($pddtime);
+
+			$totduration += SumDuration ($duration);
+
+			if (! $errorcode)
+			{
+				$StatGood->add_data ($uftime);
+				$StatPddGood->add_data ($pddtime);
+			}
+			else
+			{
+				$StatPddErr->add_data ($pddtime);
+			}
+
+			## Add when it happened into the stats table.
+			## Also, make sure that it is the lowest time for the "dataset".
+			my $difftimet = $lgwtimet - $gstartet;
+
+			##
+			## Dest gws.
+			##
+			ProcessGW ("dst", $dstip, $difftimet, $duration, $errorcode, $errordesc, $pddtime, $dstregid, $dstport);
+			##
+			## Source gateways, next.
+			##
+			ProcessGW ("src", $srcip, $difftimet, $duration, $errorcode, $errordesc, $pddtime, $srcregid, $srcport);
+
+
+			## Process time when the event happened;
+			ProcessTOD ($difftimet, $duration, $errorcode, $errordesc);
+
+			if ($ctype eq "IF")
+			{
+				ProcessFax ($difftimet, $duration, $errorcode, $errordesc);
+			}
+
+		Analyze ($logdesc, $in, $conf);
+
+}
+
+
+sub Analyze ($ $ $)
+{
+	my ($logdesc, $line, $conf) = @_;
+	my $qual;
+	my $key;
+
+	my $i = $conf->{EV};
+	my $j;
+
+	foreach $j (sort keys %$i)
+	{
+		$qual      = $i->{$j}{QUAL}[0];
+		$key       = $i->{$j}{KEY}[0];
+		$actions   = $i->{$j}{ACTION};
+
+		## Clean up what we read.
+		for ($key)
+		{
+			s/^\s+\"// ; 
+			s/\"\s+$// ; 
+		}
+
+		if ($qual =~ m/cdrdesc/)
+		{
+			if ($key =~ m/local-disconnect/)
+			{
+				pLD ($i->{$j}, $key);
+			}
+
+			if ($key =~ m/asr/)
+			{
+				pASR ($i->{$j}, $key);
+			}
+		}
+
+	}
+
+}
+
+
+sub pLD ($ $)
+{
+	my ($r, $key) = @_;
+	my	$eq_cond   = $r->{EQUALS}[0];
+	my	$lt_cond   = $r->{LT}[0];
+	my	$gt_cond   = $r->{GT}[0];
+	my	$time_avg  = $r->{TIME_AVERAGE}[0];
+	my 	$actions   = $r->{ACTION};
+
+	my 	$trigger = 0;
+
+	for ($eq_cond)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+	for ($lt_cond)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+	for ($gt_cond)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+	for ($time_avg)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+
+	my $startet = $DSTAT{ALL}->min();
+	my $endet = $DSTAT{ALL}->max();
+	my $last12hours = $endet - (12 * 3600);
+	my $last6hours = $endet - (6 * 3600);
+	my $last3hours = $endet - (3 * 3600);
+	my $last2hours = $endet - (2 * 3600);
+	my $lasthour = $endet - 3600;
+	my $lasthalf = $endet - 1800;
+	my $lastten = $endet - 600;
+	my $lastfive = $endet - 300;
+	my $date = `date`;
+	chomp ($date);
+	my $message;
+
+	## $time_avg is always in minutes
+	$startet = $endet - ($time_avg * 60);
+
+	my	$calls = $DSTAT{ALL}->get_freq_over_range ($startet, $endet);
+	my	$localdisc = $DSTAT{LD}->get_freq_over_range ($startet, $endet);
+	my	$gcalls = $DSTAT{G}->get_freq_over_range ($startet, $endet);
+	my 	$asr;
+	my $metric;
+	my $infer;
+
+	if ($calls > 0)
+	{
+		$asr = int ($gcalls*100/$calls);
+		$metric = int ($localdisc*100/$calls);
+	}
+
+	my ($month, $day, $dtime, $host) = GetWhen (" ");
+
+	if ($lt_cond)
+	{
+		if ($metric < $lt_cond)
+		{
+			$infer = "Event: -- $key : $metric LESS THAN $lt_cond percent over $time_avg minutes -- on $host occurred at $month"."/"." $day, $dtime";
+
+			$trigger += 1;
+		}
+		else {
+			$trigger = 0;
+		}	
+	}
+
+
+	if ($gt_cond)
+	{
+		if ($metric > $gt_cond)
+		{
+			$infer = "Event: -- $key : $metric GREATER THAN $gt_cond percent over $time_avg minutes -- on $host occurred at $month"."/"." $day, $dtime";
+
+			$trigger += 1;
+		}
+		else {
+			$trigger = 0;
+		}	
+	}
+
+
+	if ($eq_cond)
+	{
+		if ($metric = $eq_cond)
+		{
+			$infer = "Event: -- $key : $metric EQUALS $eq_cond percent over $time_avg minutes -- on $host occurred at $month"."/"." $day, $dtime";
+			$trigger += 1;
+		}
+		else {
+			$trigger = 0;
+		}	
+	}
+
+
+$message = <<eEOF;
+
+$infer
+
+was inferred from:
+$CdrFile
+
+------------------------------------------
+More information is given below:
+
+Time Duration            = $time_avg minutes
+Total number of calls    = $calls
+Local-disconnected calls = $localdisc
+Normal calls             = $gcalls
+Effective ASR            = $asr
+
+***********************************************************************
+Message generated by $mProgName, $mVersion on $date
+***********************************************************************
+eEOF
+
+
+		if ($trigger == 1)
+		{
+			DoActionsCdr ($message, $actions);
+		}
+
+}
+
+# whenever conditions are met, trigger is incremented by 1
+# else, it is set to 0.  
+# However, action is taken only when trigger is 1.
+# This ensures that action is only taken once, if an alarm
+# keeps repeating
+sub pASR ($ $)
+{
+	my ($r, $key) = @_;
+	my	$eq_cond   = $r->{EQUALS}[0];
+	my	$lt_cond   = $r->{LT}[0];
+	my	$gt_cond   = $r->{GT}[0];
+	my	$time_avg  = $r->{TIME_AVERAGE}[0];
+	my 	$actions   = $r->{ACTION};
+
+	my 	$trigger = 0;
+
+	for ($eq_cond)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+	for ($lt_cond)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+	for ($gt_cond)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+	for ($time_avg)
+	{
+		s/^\s+\"// ; 
+		s/\"\s+$// ; 
+	}
+
+	my $startet = $DSTAT{ALL}->min();
+	my $endet = $DSTAT{ALL}->max();
+	my $last12hours = $endet - (12 * 3600);
+	my $last6hours = $endet - (6 * 3600);
+	my $last3hours = $endet - (3 * 3600);
+	my $last2hours = $endet - (2 * 3600);
+	my $lasthour = $endet - 3600;
+	my $lasthalf = $endet - 1800;
+	my $lastten = $endet - 600;
+	my $lastfive = $endet - 300;
+	my $date = `date`;
+	chomp ($date);
+	my $message;
+
+	## $time_avg is always in minutes
+	$startet = $endet - ($time_avg * 60);
+
+	my	$calls = $DSTAT{ALL}->get_freq_over_range ($startet, $endet);
+	my	$gcalls = $DSTAT{G}->get_freq_over_range ($startet, $endet);
+	my	$errcalls = $DSTAT{ERR}->get_freq_over_range ($startet, $endet);
+	my	$localdisc = $DSTAT{LD}->get_freq_over_range ($startet, $endet);
+	my	$shorts = $DSTAT{SHORT}->get_freq_over_range ($startet, $endet);
+	my	$abandoned = $DSTAT{AB}->get_freq_over_range ($startet, $endet);
+	my	$busy = $DSTAT{BUSY}->get_freq_over_range ($startet, $endet);
+	my	$noroute = $DSTAT{NR}->get_freq_over_range ($startet, $endet);
+	my	$destunreach = $DSTAT{DU}->get_freq_over_range ($startet, $endet);
+
+	my 	$asr = 0;
+	my  $metric = 0;
+	my  $infer;
+
+	if ($calls > 0)
+	{
+		$asr = int ($gcalls*100/$calls);
+		$metric = $asr;
+	}
+
+	my ($month, $day, $dtime, $host) = GetWhen (" ");
+
+	if ($lt_cond)
+	{
+		if ($metric < $lt_cond)
+		{
+			$infer = "Event: -- $key : $metric LESS THAN $lt_cond percent over $time_avg minutes -- on $host occurred at $month"."/"." $day, $dtime";
+
+			$trigger += 1;
+		}
+		else {
+			$trigger = 0;
+		}
+	}
+
+
+
+	if ($gt_cond)
+	{
+		if ($metric > $gt_cond)
+		{
+			$infer = "Event: -- $key : $metric GREATER THAN $gt_cond percent over $time_avg minutes -- on $host occurred at $month"."/"." $day, $dtime";
+
+			$trigger += 1;
+		}
+		else {
+			$trigger = 0;
+		}
+	}
+
+
+
+	if ($eq_cond)
+	{
+		if ($metric = $eq_cond)
+		{
+			$infer = "Event: -- $key : $metric EQUALS $eq_cond percent over $time_avg minutes -- on $host occurred at $month"."/"." $day, $dtime";
+			$trigger += 1;
+		}
+		else {
+			$trigger = 0;
+		}
+	}
+
+
+$message = <<eEOF;
+
+$infer
+
+was inferred from:
+$CdrFile
+
+------------------------------------------
+More information is given below:
+
+Time Duration            = $time_avg minutes
+Total number of calls    = $calls
+Normal calls             = $gcalls
+
+Local-disconnected calls = $localdisc
+Errored calls            = $errorcalls
+Short calls (< 60 s)     = $shorts
+Abandoned calls          = $abandoned
+Busy                     = $busy
+No route to destination  = $noroute
+Destination Unreachable  = $destunreach
+
+Effective ASR            = $asr
+
+***********************************************************************
+Message generated by $mProgName, $mVersion on $date
+***********************************************************************
+eEOF
+
+
+		if ($trigger == 1)
+		{
+			DoActionsCdr ($message, $actions);
+		}
+
+}
+
+
+sub DoActionsCdr ($ $)
+{
+	my ($message, $actionref) = @_;
+
+	my $NotifyFile = './mail.pl -s AlarmReport!';
+##	my $MessageFile = tmpnam ();
+	my $MessageFile = "tout";
+	open (T, "> $MessageFile") or die "unable to open file";
+
+	print T "$message\n";
+
+	close (T);
+
+	my $j;
+	for $j (0..$#$actionref)
+	{
+		for (@$actionref[$j])
+		{
+			s/^\s+\"// ; 
+			s/\"\s+$// ; 
+		}
+		print "Notification[$j]....@$actionref[$j] \n";
+		syslog ('Debug', "Notification[$j]....@$actionref[$j] \n");
+		system ("@$actionref[$j]");
+
+	}
+
+}
+
+##
+## Old/original routine
+##
+sub DoActionsLogdesc ($ $ $)
+{
+	my ($log, $line, $infer, $conf) = @_;
+	my $date = `date`;
+	chomp ($date);
+
+
+my $message;
+
+$message = <<eEOF;
+
+$infer
+
+was inferred from:
+$log
+
+------------------------------------------
+More detailed information is given below:
+$line
+
+***********************************************************************
+Message generated by $mProgName, $mVersion on $date
+***********************************************************************
+eEOF
+
+
+	my $NotifyFile = './mail.pl -s AlarmReport!';
+	my $MessageFile = "tout";
+	open (T, "> $MessageFile") or die "unable to open file";
+
+	print T "$message\n";
+
+	close (T);
+
+	print "Doing notification...\n";
+	system ("$NotifyFile $MessageFile");
+
+	## second notification
+	$NotifyFile = './phone.pl';
+	system ("$NotifyFile");
+
+}
+
+sub GetWhen ($)
+{
+	my ($in) = @_;
+	my $month;
+	my $day;
+	my $dtime;
+	my $hostname;
+
+	if ( $in =~ m/^(\w+)\s+(\d+)\s+(\d+:\d+:\d+)\s+(\w+)\s+(\w+\[\d+\]):\s+\[ID\s(\d+)\slocal1\.(\w+)\] (.*)$/ )
+	{
+		$month = $1;
+		$day = $2;
+		$dtime = $3;
+		$hostname = $4;
+		my $gisdesc = $5;
+		my $threadid = $6;
+		my $debugdesc = $7;
+		my $logdesc = $8;
+
+		return ($month, $day, $dtime, $hostname);
+	}
+	else
+	{
+		($day, $month) = (localtime)[3,4];
+		$month += 1;	## Convert from Unix month to regular month
+		$dtime = sprintf("%2d:%2d", (localtime)[2,1]);
+		$hostname = `hostname`;
+		chop $hostname;
+
+		return ($month, $day, $dtime, $hostname);
+	}
+
+}
+
+
+sub PrintHelp ()
+{
+	print <<eEOF
+$mProgName, $mVersion
+Options are:
+<cdrfile>      - scan <cdrfile>
+-h                - prints this
+-v                - prints out version
+-r				  - sends alarms to remote server
+eEOF
+;
+}
+
+sub PrintVersion ()
+{
+	print "$mProgName, $mVersion \n";
+	print "Copyright 1998-2009, GENBAND Inc.\n";
+}
+
+
+
+##
+## Parses given config file and returns hashref pointing to data.
+##
+sub ParseConfigFile ($)
+{
+	my ($arg) = @_;
+	## Basic engine for doing work.
+	##
+	my $xs = new XML::Simple();
+
+	## Forcearray changes the whole paradigm.
+	my $ref = $xs->XMLin( $arg, forcearray => 1 );
+
+###	For debug only.
+###	print Dumper ($ref);
+
+	return $ref;
+}
+
+
+sub CreateStatObjects ()
+{
+	## Global
+	## Works for 1 file.
+
+	## This creates DSTAT objects.
+
+	$DSTAT{ALL} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{G} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{ERR} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{SHORT} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{AB} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{LD} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{BUSY} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{DU} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTAT{NR} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+
+	## This creates DSTATFAX objects.
+	$DSTATFAX{ALL} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{G} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{ERR} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{SHORT} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{AB} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{LD} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{BUSY} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{DU} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$DSTATFAX{NR} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+
+
+	$StatAll     = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$StatGood    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$StatPddAll  = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$StatPddGood = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$StatPddErr  = Statistics::Descriptive::Full->new(fixedsize => 5000);
+}
+
+
+
+sub CreateNewTimeStatObjects ()
+{
+	$tmpstat{ALL}    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{G}      = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{ERR}    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{SHORT}  = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{AB}     = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{LD}     = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{BUSY}   = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{DU}     = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{NR}     = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstat{PDD}    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+
+	$tmpstatfax{ALL}   = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{G}     = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{ERR}   = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{SHORT} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{AB}    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{LD}    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{BUSY}  = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{DU}    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{NR}    = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$tmpstatfax{PDD}   = Statistics::Descriptive::Full->new(fixedsize => 5000);
+
+
+	return (%tmpstat, %tmpstatfax);
+}
+
+sub CreateNewPDDStatObjects ()
+{
+	$gwpddstat{ALL}  = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$gwpddstat{GOOD} = Statistics::Descriptive::Full->new(fixedsize => 5000);
+	$gwpddstat{ERR}  = Statistics::Descriptive::Full->new(fixedsize => 5000);
+
+	return (%gwpddstat);
+}
+
+
+sub ProcessGW ($ $ $ $ $ $ $ $ $)
+{
+	my ($dir, $dstip, $difftimet, $dur, $errcode, $errdesc, $pdd, $regid, $uport) = @_;
+	my $match = 0;
+	my $gcalls = 0;
+	my $errcalls = 0;
+	my $status;
+	my $i;
+	my $tdur;
+	my %gwtstat, %gwtstatfax;
+	my $listref;
+	my $abandoned = 0; 
+	my $nr = 0;
+	my $ld = 0; 
+	my $du = 0;
+	my $busy = 0;
+	my %gwpddstat;
+
+	if ($dir eq "dst")
+	{
+		$listref = \@gwlist;
+	}
+	elsif ($dir eq "src")
+	{
+		$listref = \@srcgwlist;
+	}
+
+
+	for $i ( 0 .. $#$listref )
+	{
+		if ($$listref[$i]{gwip} eq $dstip)
+		{
+			$match = 1;
+
+			## Add the ALL stuff.
+			$$listref[$i]{gwtstat}{ALL}->add_data ($difftimet);
+			$$listref[$i]{gwtstat}{PDD}->add_data ($difftimet);
+
+			if ($dur)
+			{
+				$tdur = UnformatTime ($dur);
+			}
+
+			$status = $errcode ? $errcode : 0;
+			## if err'd
+			if ($status)
+			{
+				$$listref[$i]{errcalls} += 1;
+				$$listref[$i]{gwtstat}{ERR}->add_data ($difftimet);
+				## Add PDD information
+				$$listref[$i]{gwpddstat}{ERR}->add_data($pdd);
+			}
+			else
+			{
+				$$listref[$i]{gcalls} += 1;
+				$$listref[$i]{gwtstat}{G}->add_data ($difftimet);
+				## Add PDD information
+				$$listref[$i]{gwpddstat}{GOOD}->add_data($pdd);
+
+				## Add the good duration info.
+				$$listref[$i]{gwstatgood}->add_data ($tdur);
+			}
+
+			## Add duration data;
+			if ($dur)
+			{
+				$$listref[$i]{gwstat}->add_data ($tdur);
+
+				if (($tdur > 0) && ($tdur < 60))
+				{
+					$$listref[$i]{shorts} += 1;
+					$$listref[$i]{gwtstat}{SHORT}->add_data ($difftimet);
+				}
+
+				## Add PDD information
+				$$listref[$i]{gwpddstat}{ALL}->add_data($pdd);
+			}
+
+			if (defined $errdesc)
+			{
+				if ($errdesc eq "abandoned")
+				{
+					$$listref[$i]{abandoned} += 1;
+					$$listref[$i]{gwtstat}{AB}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "local-disconnect")
+				{
+					$$listref[$i]{localdisc} += 1;
+					$$listref[$i]{gwtstat}{LD}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "busy")
+				{
+					$$listref[$i]{busy} += 1;
+					$$listref[$i]{gwtstat}{BUSY}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "dest-unreach")
+				{
+					$$listref[$i]{destunreach} += 1;
+					$$listref[$i]{gwtstat}{DU}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "no-route")
+				{
+					$$listref[$i]{noroute} += 1;
+					$$listref[$i]{gwtstat}{NR}->add_data ($difftimet);
+				}
+			}
+			last;
+		}
+	}
+
+	if ($match == 0)
+	{
+		$status = $errcode ? $errcode : 0;
+
+		##
+		## Create the massive objects;
+		##
+		(%gwtstat, %gwtstatfax) = CreateNewTimeStatObjects ();
+
+		$gwstat = Statistics::Descriptive::Full->new(fixedsize => 5000);
+		$gwstatgood = Statistics::Descriptive::Full->new(fixedsize => 5000);
+
+		(%gwpddstat) = CreateNewPDDStatObjects ();
+
+
+		if ($dur)
+		{
+			$tdur = UnformatTime ($dur);
+		}
+
+		##
+		if ($status)
+		{
+			$gcalls = 0;
+			$errcalls = 1;
+			$gwtstat{ERR}->add_data ($difftimet);
+
+			if (defined $errdesc)
+			{
+				if ($errdesc eq "abandoned")
+				{
+					$abandoned += 1;
+					$gwtstat{AB}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "local-disconnect")
+				{
+					$ld += 1;
+					$gwtstat{LD}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "busy")
+				{
+					$busy += 1;
+					$gwtstat{BUSY}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "dest-unreach")
+				{
+					$du += 1;
+					$gwtstat{DU}->add_data ($difftimet);
+				}
+				elsif ($errdesc eq "no-route")
+				{
+					$nr += 1;
+					$gwtstat{NR}->add_data ($difftimet);
+				}
+			}
+
+			$gwpddstat{ERR}->add_data ($pdd);
+		}
+		else
+		{
+			$gcalls = 1;
+			$errcalls = 0;
+			$gwtstat{G}->add_data ($difftimet);
+
+			$gwpddstat{GOOD}->add_data ($pdd);
+
+			## Add the good call duration
+			$gwstatgood->add_data ($tdur);
+		}
+
+		if ($dur)
+		{
+			$gwstat->add_data ($tdur);
+			$gwtstat{ALL}->add_data ($difftimet);
+
+			## Short duration calls.
+			if (($tdur > 0) && ($tdur < 60))
+			{
+				$short = 1;
+				$gwtstat{SHORT}->add_data ($difftimet);
+			}
+		}
+
+		if ($dur)
+		{
+			$gwpddstat{ALL}->add_data ($pdd);
+			$gwtstat{PDD}->add_data ($difftimet);
+
+		}
+
+		push @$listref, { 
+		gwip      => $dstip, 
+		regid     => $regid,
+		uport     => $uport,
+		gcalls    => $gcalls, 
+		errcalls  => $errcalls, 
+		shorts    => $short, 
+		abandoned => $abandoned, 
+		noroute   => $nr, 
+		destunreach => $du, 
+		busy      => $busy, 
+		localdisc => $ld, 
+		gwstat    => $gwstat,
+		gwstatgood => $gwstatgood,
+		gwpddstat => \%gwpddstat,
+		gwtstat   => \%gwtstat,
+		gwtstatfax => \%gwtstatfax };
+	}
+}
+
+
+sub ProcessTOD ($ $ $ $)
+{
+	my ($difft, $dur, $errcode, $errdesc) = @_;
+	my $match = 0;
+	my $gcalls = 0;
+	my $errcalls = 0;
+	my $status;
+	my $i;
+	my $tdur;
+
+	$DSTAT{ALL}->add_data ($difft);
+
+	$status = $errcode ? $errcode : 0;
+	## if err'd
+	if ($status)
+	{
+		$DSTAT{ERR}->add_data ($difft);
+	}
+	else
+	{
+		$DSTAT{G}->add_data ($difft);
+	}
+
+	## Add duration data;
+	if ($dur)
+	{
+		$tdur = UnformatTime ($dur);
+		$srcgwlist[$i]{gwstat}->add_data ($tdur);
+
+		if (($tdur > 0) && ($tdur < 60))
+		{
+			$DSTAT{SHORT}->add_data ($difft);
+		}
+	}
+
+	if (defined $errdesc)
+	{
+		if ($errdesc eq "abandoned")
+		{
+			$DSTAT{AB}->add_data ($difft);
+		}
+		elsif ($errdesc eq "local-disconnect")
+		{
+			$DSTAT{LD}->add_data ($difft);
+		}
+		elsif ($errdesc eq "busy")
+		{
+			$DSTAT{BUSY}->add_data ($difft);
+		}
+		elsif ($errdesc eq "dest-unreach")
+		{
+			$DSTAT{DU}->add_data ($difft);
+		}
+		elsif ($errdesc eq "no-route")
+		{
+			$DSTAT{NR}->add_data ($difft);
+		}
+	}
+	
+
+}
+
+sub ProcessFax ($ $ $ $)
+{
+	my ($difft, $dur, $errcode, $errdesc) = @_;
+	my $match = 0;
+	my $gcalls = 0;
+	my $errcalls = 0;
+	my $status;
+	my $i;
+	my $tdur;
+
+	$DSTATFAX{ALL}->add_data ($difft);
+
+	$status = $errcode ? $errcode : 0;
+	## if err'd
+	if ($status)
+	{
+		$DSTATFAX{ERR}->add_data ($difft);
+	}
+	else
+	{
+		$DSTATFAX{G}->add_data ($difft);
+	}
+
+	## Add duration data;
+	if ($dur)
+	{
+		$tdur = UnformatTime ($dur);
+		$srcgwlist[$i]{gwstat}->add_data ($tdur);
+
+		if (($tdur > 0) && ($tdur < 60))
+		{
+			$DSTATFAX{SHORT}->add_data ($difft);
+		}
+	}
+
+	if (defined $errdesc)
+	{
+		if ($errdesc eq "abandoned")
+		{
+			$DSTATFAX{AB}->add_data ($difft);
+		}
+		elsif ($errdesc eq "local-disconnect")
+		{
+			$DSTATFAX{LD}->add_data ($difft);
+		}
+		elsif ($errdesc eq "busy")
+		{
+			$DSTATFAX{BUSY}->add_data ($difft);
+		}
+		elsif ($errdesc eq "dest-unreach")
+		{
+			$DSTATFAX{DU}->add_data ($difft);
+		}
+		elsif ($errdesc eq "no-route")
+		{
+			$DSTATFAX{NR}->add_data ($difft);
+		}
+	}
+}
+
+sub SumDuration ()
+{
+	my ($dur) = @_;
+	my $hours;
+	my $mins;
+	my $secs;
+	my $retval;
+
+	($hours, $mins, $secs) = split (':', $dur);
+
+	$retval += ($hours * 3600) + ($mins * 60) + $secs;
+
+	## Count zero duration calls.
+	if ($retval == 0)
+	{
+		$ZeroDuration++;
+	}
+
+	return $retval;
+}
+
+sub ResetCounters ()
+{
+	$linecounter = 0;
+	$totduration = 0;
+
+	$AverageDuration = 0;
+	$ZeroDuration = 0;
+	$ASR = 0;
+}
+
+sub FormatTime ($)
+{
+	my ($tot) = @_;
+	my $hours;
+	my $mins;
+	my $secs;
+	my $hoursres;
+
+	{
+	use integer;
+
+	$hours = $tot / 3600;
+	$hoursres = $tot % 3600;
+	$mins = $hoursres / 60;
+	$secs = $hoursres % 60;
+
+#	print "$tot => $hours"."H:"."$mins"."M:$secs \n";
+
+	}
+
+	return ($hours, $mins, $secs);
+
+}
+
+sub UnformatTime ($)
+{
+	my ($dur) = @_;
+	my $h;
+	my $m;
+	my $s;
+	my $retval = 0;
+
+	($h, $m, $s) = split (':', $dur);
+
+	$retval += ($h * 3600) + ($m * 60) + $s;
+	
+	return $retval;
+}
+
+################################################################################
+# Send an alrm to alarmd 
+################################################################################
+sub SendAlarm($ $ $ $) {
+    ($alarmid, $logdesc, $line, $infer) = @_;
+    my $hdr = "START_MSG\n";
+    my $ftr = "END_MSG\n";
+
+    unless ($connected) {
+        print "Not connected to server. Cannot send alarm - $infer";
+        return 0;
+    }
+
+    my $snd = "ALARM: $alarmid\n".
+              "LOGDESC: $logdesc\n".
+              "LINE: $line\n".
+              "INFER: $infer\n";
+
+    rc = $sock->print("$hdr"."$snd"."$ftr");            
+    if (!$rc) {
+		printf("Error sending data to server: %s", $sock->error());
+		vec($rin, $sock->fileno, 1) = 0;
+		$sock->close;
+		$connected=0;
+    }    
+    return $rc;
+}
+
+################################################################################
+# Get the server name from the $CONFFILE file 
+################################################################################
+sub GetServerName() {
+    my $line;
+
+    open (NARS_CFG, "<$CONFFILE")
+        or die "Fatal:: Cannot open $CONFFILE to read server name - $!";
+
+    while ($line = <NARS_CFG>) {
+        if (($line !~ /^#/) && ($line =~ /host=(\S+)/)) {
+            close(NARS_CFG);
+            return $1;
+        }
+    }
+
+    close(NARS_CFG);
+    return '';
+}
+
+################################################################################
+# Get the server name from the $CONFFILE file 
+################################################################################
+sub GetDBILogin() {
+	# read the nars config file
+	my $config;
+
+	if (-f "$mydir/$CONFFILE" && -T "$mydir/$CONFFILE") {
+    	$config = new Config::Simple(filename=>"$CONFFILE", mode=>O_RDONLY);
+	} else {
+   		die("Cannot read config file $mydir/$CONFFILE");
+	}
+
+	my %cfg = $config->param_hash();
+
+	# if the password is just a '.', it means password is empty
+	$cfg{'.dbpass'} = "" if ($cfg{'.dbpass'} eq '.');
+
+	return ($cfg{'.dburl'}, $cfg{'.dbuser'}, $cfg{'.dbpass'});
+}
+
+################################################################################
+# Open a connection to the NARS alarmd server
+# Alarms are sent to the alarmd server through this connection
+# Notifications that the conf file has changes are also made
+# through this file
+################################################################################
+sub OpenClient() {
+    my ($host, $sock, $attempt);
+
+    $attempt = 5;    
+    $host = GetServerName();
+
+    do {
+        $sock = IO::Socket::INET6->new('PeerAddr' =>    $host,
+                                      'Peerport' => 2000,
+                                      'Proto' => 'tcp')
+            or print "Cannot open socket: $!\n";
+
+        if ($sock) {
+            $sock->setvbuf($buffer_var, _IOLBF, 1024)
+                or print "setvbuf on socked failed: $!\n";
+        }    
+        $attempt--;
+        sleep 5;
+    } until ($sock || ($attempt <= 0));
+
+    $connected = 1;
+    return $sock;
+}
+
+################################################################################
+# ReadMsg composes a message when you are reading line by line and returns it 
+################################################################################
+sub ReadMsg ($) {
+    my ($line) = @_;
+    my $msg;
+
+    if ($line =~ /^START_MSG/) {
+        $lines = [];        
+    }
+    elsif ($line =~ /^END_MSG/) {
+        $msg = $lines;
+        undef $lines;
+        return $msg    ;
+    }
+    elsif (defined $lines) {
+        push(@$lines, $line);    
+    }
+    
+    return 0;
+}
+
+################################################################################
+# Message is an array of lines which contains either predetermined directives 
+# or perl statements.
+# Anything that does not resolve to a predetermined directive is considered a 
+# perl statement.
+################################################################################
+sub ProcessMsg ($) {
+    my ($msg) = @_;
+
+    foreach $line (@$msg) {
+        if ($line =~ /^READ_CONF_FILE$/) {
+# Since, we are on the local machine we do not need to copy file from the DB 
+#            &ReadConfFile();
+            $conf = ParseConfigFile($ConfigFile);
+        }
+        else {
+            eval($line) or print "Error executing - $line: $!\n";
+        }
+    }
+}
+
+################################################################################
+# ReadConfFile() is a function which reads the alarms.conf file from the database
+# and writes it into the local file 
+################################################################################
+sub ReadConfFile () {
+	my @dbi_info = GetDBILogin();
+    my $dbh = DBI->connect(@dbi_info) or die "$DBI::errstr\n";
+
+    my $sth = $dbh->prepare("SELECT file FROM alarms_conf WHERE filename = ?");
+
+    $sth->execute($ConfigFile);
+    my ($blob) = $sth->fetchrow_array;
+    $sth->finish;
+
+    $blob =~ s/^\'/\"/;
+    $blob =~ s/\'$/\"/;
+
+    open(DATA, ">$ConfigFile")
+        or die "Cannot open file $ConfigFile: $!\n";
+
+    eval("print DATA ".$blob);
+
+    close(DATA);
+
+    $dbh->disconnect;
+}

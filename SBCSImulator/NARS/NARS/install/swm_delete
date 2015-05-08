@@ -1,0 +1,58 @@
+#!/bin/bash
+
+SWM_ROOT=/usr/libexec/nxinstall/swm
+if [ -f "${SWM_ROOT}/swm_common" ]; then
+    logger -t SWM -p local7.notice "[error] $0 cannot find ${SWM_ROOT}/swm_common.  Quit."
+    exit 1
+fi
+
+source ${SWM_ROOT}/swm_common
+
+Id="$1"
+if [ -z "$Id" ]; then
+    log error "$0 wrong parameters."
+    exit 1
+fi
+
+VERSION="$2"
+if [ -z "$VERSION" ]; then
+    log error "$0 wrong parameters."
+    exit 1
+fi
+
+
+iServerPreDelete()
+{
+    #Check if it is the current running version
+    CURRENT_VERSION=`cat /usr/local/nextone/.aloidindex`
+    if [ "$VERSION" == "$CURRENT_VERSION" ]; then
+        log error "[$Id] $0 iServer-$VERSION is the current version and cannot be deleted."
+        exit 1
+    fi
+
+    #Check if iserver is installed
+    if [ ! -d "/opt/nxtn/iserver-$VERSION" ]; then
+        log error "[$Id] $0 iServer-$VERSION is not installed."
+        exit 1
+    fi
+}
+
+iServerDelete()
+{
+    rm -rf /opt/nxtn/iserver-$VERSION &>/dev/null
+}
+
+
+PSFDelete()
+{
+    rpm -e --allmatches --nodeps `rpm -qa | grep psf.*-$VERSION` &>/dev/null
+    rm -rf "/opt/nxtn/psf-$VERSION" &>/dev/null
+}
+
+iServerPreDelete
+
+iServerDelete
+
+PSFDelete
+
+exit 0

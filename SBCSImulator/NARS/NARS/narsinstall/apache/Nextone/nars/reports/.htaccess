@@ -1,0 +1,8 @@
+AuthUserFile "C:/Documents and Settings/ptyagi/My Documents/My Webs/.htpasswd"
+AuthName "NARS Login"
+AuthType Basic
+
+<Limit GET POST>
+require valid-user
+</Limit>
+

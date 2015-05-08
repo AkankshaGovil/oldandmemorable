@@ -1,0 +1,184 @@
+#!/usr/bin/perl
+
+$path = $ENV{'PATH'};
+$ENV{'PATH'} = "/bin:/sbin:/usr/bin:/usr/sbin:$path";
+
+$prog = `basename $0`;
+chomp($prog);
+
+sub nxauth_usage
+{
+    my $USAGE = <<eof;
+usage: $prog { -c <subcommand> | -m <PAM_module> } [ OPTIONS... ] [ -h ]
+    $prog runs in two modes:
+    1) Subcommand mode (-c):
+       -c <subcommand>: subcommand name, currently only 'passwd' command is supported, i.e. only '-c passwd' is recognized
+       OPTIONS: options for subcommand, currently the following 'passwd' command's options are supported:
+                -l: lock the specified user account
+                -i <inact>: set the number of inactive days 
+                -w <warn>: set the number of warning days 
+                -x <max>: set the number of expiry days 
+                -u <username>: the account name working on, if this argument is not present, <username> will be your login name
+    2) PAM module mode (-m):
+       -m <PAM_module>: PAM module name, currently only 'pam_time' module is supported, i.e. only '-m time' is recognized
+       OPTIONS: options for PAM module, currently the following 'pam_time' module's option is supported:
+                -u <users>: a logic list of users
+                -t <times>: a logic list of day-of-week and time-of-day range, the format is:
+                            [Mo[Tu[We[Th[Fr[Sa[Su[Wk[Wd[Al]]]]]]]]]][00-23][00-59]-[00-23][00-59]
+                -l: list all existing time-of-day access control rules
+                -d: delete the time-of-day access control rule for user(s) specified by '-u <users>'
+eof
+    print $USAGE and exit 0;
+}
+
+sub error
+{
+    die ("Try '$prog -h' for more information.\n");
+}
+
+sub nxrole_check
+{
+    my ($logname, $username) = @_;
+
+    my $f_group = "/etc/group";
+    my $ret = 0;
+
+    open (FH, "< $f_group") or die "Couldn't open $f_group for reading: $!\n";
+    while (<FH>) {
+        if ( /$logname/ && /^useradmin/ ) {
+            $ret = 1;
+            last;
+        } elsif ( /$username/ && /^root/ ) {
+            close (FH) or die "Couldn't close $f_group: $!\n";
+            die ("$prog: Permission denied (1)!\n");
+        }
+    }
+    close (FH) or die "Couldn't close $f_group: $!\n";
+
+    return $ret;
+}
+
+sub nxauth_conf
+{
+    my $prod = $_[0];
+
+    my $logname = "";
+    my $username = "";
+    my $isuadm = 0;
+
+    use Getopt::Std;
+
+    getopts("c:m:u:li:w:x:t:dh", \%auth_opts) or nxauth_usage();
+
+    nxauth_usage() if ( $auth_opts{h} );
+
+    print "$prog: Options conflict (-c|-m)!\n" and error() if ( $auth_opts{c} ne "" && $auth_opts{m} ne "" );
+
+    $logname = getlogin;
+    $username = $auth_opts{u} if ( $auth_opts{u} ne "" );
+    $username = $logname if $username eq "";
+
+    if ( $prod eq "msx" ) {
+        $isuadm = nxrole_check($logname, $username);
+    } elsif ( $prod eq "rsm" ) {
+        $isuadm = 1;
+    }
+
+    if ( $auth_opts{c} ne "" ) {
+        my $command = $auth_opts{c};
+        if ( $command eq "passwd" ) {
+            print "$prog: Invalid option!\n" and error() if ( $auth_opts{t} ne "" || $auth_opts{d} );
+
+            if ( $auth_opts{l} || $auth_opts{i} ne "" || $auth_opts{w} ne "" || $auth_opts{x} ne "" ) {
+                die ("$prog: Permission denied (2)!\n") unless $isuadm;
+                die ("$prog: Operation denied (1)!\n") unless $username ne $logname;
+
+                if ( $auth_opts{l} ) {
+                    @args = ("$command", "-l", "\"$username\"");
+                } elsif ( $auth_opts{i} ne "" ) {
+                    @args = ("$command", "-i", "\"$auth_opts{i}\"", "\"$username\"");
+                } elsif ( $auth_opts{w} ne "" ) {
+                    @args = ("$command", "-w", "\"$auth_opts{w}\"", "\"$username\"");
+                } elsif ( $auth_opts{x} ne "" ) {
+                    @args = ("$command", "-x", "\"$auth_opts{x}\"", "\"$username\"");
+                }
+            } else {
+                die ("$prog: Permission denied (3)!\n") unless $isuadm || $username eq $logname;
+
+                # assign password
+                @args = ("$command", "\"$username\"");
+
+                # unlock user locked by pam_tally
+                @args_tally = ("/sbin/pam_tally", "--user", "\"$username\"", "--reset", "--quiet") if $isuadm && -x "/sbin/pam_tally";
+            }
+        } else {
+            print "$prog: Unknown subcommand '$auth_opts{c}'!\n" and error();
+        }
+    } elsif ( $auth_opts{m} ne "" ) {
+        die ("$prog: Permission denied (4)!\n") unless $isuadm;
+
+        my $f_time = "/etc/security/time.conf";
+
+        if ( $auth_opts{m} eq "time" ) {
+            print "$prog: Invalid option!\n" and error() if ( $auth_opts{i} ne "" || $auth_opts{w} ne "" || $auth_opts{x} ne "" );
+
+            print "$prog: Less options!\n" and error() unless ( $auth_opts{t} ne "" || $auth_opts{d} || $auth_opts{l} );
+
+            if ( $auth_opts{l} ) {
+                open (FH, "< $f_time") or die "Couldn't open $f_time for reading: $!\n";
+                print "User(s)\t\tTimes\n";
+                while (<FH>) {
+                    if ( ! (/^#/ || /^[\s+]$/ ) ) {
+                        my ($services, $ttys, $users, $times) = split (/;/);
+                        print "$users\t\t$times";
+                    }
+                }
+                close (FH) or die "Couldn't close $f_time: $!\n";
+            } else {
+                open (FH, "+< $f_time") or die "Couldn't open $f_time for updating: $!\n";
+                flock (FH, 2) or die "Couldn't flock $f_time: $!\n";
+                my @out = '';
+                while (<FH>) {
+                    my ($services, $ttys, $users, $times) = split (/;/);
+                    push (@out, $_) if ( /^#/ || /^[\s+]$/ || $users ne $username );
+                }
+                push (@out, "*;*;$username;$auth_opts{t}\n") unless $auth_opts{d};
+                seek (FH, 0, 0) or die "Couldn't seek to start of $f_time: $!\n";
+                print FH @out or die "Couldn't print to $f_time: $!\n";
+                truncate (FH, tell(FH)) or die "Couldn't truncate $f_time: $!\n";
+                close (FH) or die "Couldn't close $f_time: $!\n";
+            }
+            exit 0;
+        } else {
+            print "$prog: Unknown PAM module '$auth_opts{m}'!\n" and error();
+        }
+    } else {
+        error();
+    }
+}
+
+sub nxwrap
+{
+    @args = ("$prog", "@ARGV");
+}
+
+if ( $prog eq "nxrole" ) {
+    die ("Couldn't run this program directly!\n");
+} elsif ( $prog eq "passwd" ) {
+    die ("$prog: this command is deprecated, using 'nxauth_config' instead.\n");
+} elsif ( $prog eq "rsmauth_config" ) {
+    nxauth_conf("rsm");
+} elsif ( $prog eq "nxauth_config" ) {
+    nxauth_conf("msx");
+} elsif ( $prog eq "whoami" ) {
+    print $ENV{'LOGNAME'}, "\n";
+} else {
+    nxwrap();
+}
+
+system("@args");
+$ret = $? >> 8;
+
+system ("@args_tally") and $ret = $? >> 8 if $ret == 0 && @args_tally;
+
+exit $ret;

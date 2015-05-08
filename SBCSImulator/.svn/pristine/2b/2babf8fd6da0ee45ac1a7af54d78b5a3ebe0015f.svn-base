@@ -1,0 +1,45 @@
+
+<DB>
+
+<EV>
+<EVENT> "array overflow" </EVENT>
+<QUAL> "logdesc" </QUAL>
+<EQUALS> "Array full" </EQUALS>
+<ACTION> "mail.pl -s Alarm_Report tout" </ACTION>
+<ACTION> "echo Success" </ACTION>
+<RESET> "sleep 10" </RESET>
+<RESET> "/bin/cp /dev/null /var/adm/iserverout.log" </RESET>
+</EV>
+
+
+<EV>
+<EVENT> "iServer Restart" </EVENT>
+<QUAL> "logdesc" </QUAL>
+<EQUALS> "GENBAND iServer started" </EQUALS>
+<ACTION> "notify.pl tout" </ACTION>
+<ACTION> "echo Fatal: restart of iServer" </ACTION>
+</EV>
+
+
+<EV>
+<EVENT> "Local disconnect" </EVENT>
+<QUAL> cdrdesc </QUAL>
+<KEY> local-disconnect </KEY>
+<TIME_AVERAGE> "5"  </TIME_AVERAGE>
+<LT> "75" </LT>
+<ACTION> "mail.pl -s LD_Report tout" </ACTION>
+<ACTION> "echo Warn" </ACTION>
+</EV>
+
+
+<EV>
+<EVENT> "ASR" </EVENT>
+<QUAL> cdrdesc </QUAL>
+<KEY> asr </KEY>
+<TIME_AVERAGE> "30" </TIME_AVERAGE>
+<LT> "50" </LT>
+<ACTION> "mail.pl -s ASR_Report tout" </ACTION>
+</EV>
+
+
+</DB>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="Generics.xsl" ?>
+
+<!-- This is the generics file for a build. It contains a description of the dependencies for install and also the versions of the components included -->
+<Package xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="#local">
+    <xs:schema id="local" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+        <xs:element name="Package">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="Product"/>
+                    <xs:element ref="Version"/>
+                    <xs:element ref="ReleaseDate"/>
+                    <xs:element ref="CompressedSize"/>
+                    <xs:element ref="UncompressedSize"/>
+                    <xs:element ref="Details"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="Product" type="xs:NCName"/>
+        <xs:element name="Details">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="PatchVersion"/>
+                    <xs:element ref="PatchDetails"/>
+                    <xs:element ref="Software"/>
+                    <xs:element ref="Required-Hardware"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="PatchVersion" type="xs:NMTOKEN"/>
+        <xs:element name="PatchDetails" type="xs:string"/>
+        <xs:element name="Software">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="MinimumOSVersion"/>
+                    <xs:element ref="CompatibleVersion"/>
+                    <xs:element ref="ComponentDetails"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="MinimumOSVersion">
+            <xs:complexType/>
+        </xs:element>
+        <xs:element name="CompatibleVersion">
+            <xs:complexType/>
+        </xs:element>
+        <xs:element name="Required-Hardware">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="ComponentDetails"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="Version" type="xs:string"/>
+        <xs:element name="ReleaseDate" type="xs:string"/>
+        <xs:element name="CompressedSize" type="xs:string"/>
+        <xs:element name="UncompressedSize" type="xs:string"/>
+        <xs:element name="ComponentDetails">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" ref="Component"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="Component">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="Name"/>
+                    <xs:choice>
+                        <xs:element ref="Version"/>
+                        <xs:element ref="Value"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="Name" type="xs:NCName"/>
+        <xs:element name="Value" type="xs:NCName"/>
+    </xs:schema>
+    
+    <Product>SBC</Product>
+    <Version>8.0.1.0rc0</Version>
+    <ReleaseDate>2012/01/23</ReleaseDate>
+    <!-- The compressed size of the software.tar file -->
+    <CompressedSize>913353870</CompressedSize>
+    <!-- The uncompressed size of the software.tar file -->
+    <UncompressedSize>2108461971</UncompressedSize>
+    <Details>
+        <PatchVersion></PatchVersion>
+        <PatchDetails></PatchDetails>
+        <Software>
+            <MinimumOSVersion><!-- The minimum version of the OS required by this software --></MinimumOSVersion>
+            <CompatibleVersion><!-- minimum version required for upgrade, this assumes all intermediate versions are compatible--></CompatibleVersion>
+            <ComponentDetails>
+                <Component>
+                    <Name>iServer</Name>
+                    <Version>8.0.1.0rc0</Version>
+                </Component>
+                <Component>
+                    <Name>RSMLite</Name>
+                    <Version>8.0.1.0d1</Version>
+                </Component>
+                <Component>
+                    <Name>RSMAgent</Name>
+                    <Version>8.0.0.2</Version>
+                </Component>
+                <Component>
+                    <Name>nxlinux</Name>
+                    <Version>5.1.2-7</Version>
+                </Component>
+                <Component>
+                    <Name>swmpreinstall</Name>
+                    <Version>1.2-8</Version>
+                </Component>
+		<Component>
+                    <Name>swmpreinstall64</Name>
+                    <Version>1.2-9</Version>
+                </Component>
+            </ComponentDetails>
+        </Software>
+        <Required-Hardware>
+            <ComponentDetails>
+                <Component>
+                    <Name>PlatformType </Name>
+                    <Version>Jarrell</Version>
+                </Component>
+                <Component>
+                    <Name>MediaCard</Name>
+                    <Version>NP</Version>
+                </Component>
+            </ComponentDetails>
+        </Required-Hardware>
+    </Details>
+</Package>
+

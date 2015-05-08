@@ -1,0 +1,8 @@
+000=
+001=Connection failure with RSM
+003=Cdrserver Process not responding/hung
+004=Cdrserver Process unavailable/not running
+005=IO failure: Unable to read CDR file
+006=IO failure: Unable to read lastseen/cfg file
+007=Wrong configuration of RSM agent
+008=RSM sending negative/error acknowledgement

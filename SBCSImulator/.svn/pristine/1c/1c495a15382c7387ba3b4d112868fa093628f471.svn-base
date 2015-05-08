@@ -1,0 +1,1490 @@
+#VERSION 4.2d13
+#VERSION 4.2d13
+#VERSION 4.2d12
+#VERSION 4.2d12
+
+#VERSION 4.2d11
+use bn;
+ALTER TABLE msws
+ADD COLUMN ReadPassword varchar(16) NOT NULL default '',
+ADD COLUMN WritePassword varchar(16) NOT NULL default '';
+
+#VERSION 4.2d11
+
+
+
+#VERSION 4.2d10
+ALTER TABLE accesslist
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE actions
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE alarms
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE ANI
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+ALTER TABLE ANIroutenames
+DROP COLUMN bs,
+ADD COLUMN BuySell char(1) NOT NULL default '';
+
+ALTER TABLE buysummary
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE callingplans
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE callingroutes
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE carriers
+DROP COLUMN BuySell,
+ADD COLUMN `Priority` int(11) NOT NULL default '0',
+ADD COLUMN `ANI` varchar(32) NOT NULL default '',
+ADD COLUMN `StripPrefix` varchar(32) NOT NULL default '',
+ADD COLUMN `PrefixDigits` mediumint(9) NOT NULL default '0',
+ADD COLUMN `AddbackDigits` varchar(16) NOT NULL default '',
+ADD COLUMN `RatingAddback` varchar(16) NOT NULL default '',
+ADD COLUMN `EndpointId` bigint(20) NOT NULL default '-1',
+ADD COLUMN `flag` tinyint(2) NOT NULL default '0',
+ADD COLUMN `DurMin` mediumint(9) NOT NULL default '0',
+ADD COLUMN `DurIncr` mediumint(9) NOT NULL default '0',
+ADD COLUMN `Rate` float(10,4) NOT NULL default '0.0000',
+ADD COLUMN `Country` varchar(64) NOT NULL default '',
+ADD COLUMN `ConnectionCharge` float(10,4) NOT NULL default '0.0000',
+ADD COLUMN `EffectiveStartDate` datetime default '0000-00-00 00:00:00',
+ADD COLUMN `EffectiveEndDate` datetime default '0000-00-00 00:00:00',
+ADD COLUMN `Period` varchar(32) NOT NULL default '',
+ADD COLUMN `status` tinyint(2) NOT NULL default '0',
+ADD COLUMN `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+ADD COLUMN `LastModified` datetime NOT NULL default '0000-00-00 00:00:00',
+DROP INDEX Carrier,
+ADD UNIQUE KEY `ep_para` (`EndpointId`,`StripPrefix`,`AddbackDigits`,`ANI`),
+ADD UNIQUE KEY `carrier_key` (`Carrier`,`RegionCode`,`EndpointId`,`EffectiveStartDate`,`EffectiveEndDate`,`Period`),
+ADD KEY `CarrierRegion` (`Carrier`,`RegionCode`),
+ADD KEY `Region` (`RegionCode`),
+ADD KEY `ANI` (`ANI`),
+ADD KEY `Endpoint` (`EndpointId`),
+ADD KEY `Carrier` (`Carrier`,`RegionCode`,`ServiceType`);
+
+
+
+ALTER TABLE cdcprofiles
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE ivms-cdr-table
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE cdrfiles
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE cdrsummary
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE cpbindings
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE dbdiff
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+ALTER TABLE deletedcallplans
+DROP PRIMARY KEY,
+DROP COLUMN Id,
+ADD COLUMN `EndpointId` bigint(20) NOT NULL,
+ADD PRIMARY KEY (EndpointId);
+
+ALTER TABLE endpoints
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE events
+CHANGE COLUMN `DateTime` `DateTime` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE groups
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE iedgegroups
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00',
+DROP COLUMN `Version`;
+
+
+ALTER TABLE license
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE msws
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE periods
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE PipeLine
+CHANGE COLUMN `ModifiedTime` `ModifiedTime` datetime NOT NULL default '0000-00-00 00:00:00';
+
+DROP TABLE IF EXISTS `rates`;
+
+
+
+
+ALTER TABLE realms
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE regions
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+DROP TABLE IF EXISTS `routes`;
+
+ALTER TABLE sellsummary
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE services
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE subnets
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+
+ALTER TABLE systemalarms
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+ALTER TABLE trails
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00';
+
+ALTER TABLE triggers
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+ALTER TABLE users
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+ALTER TABLE vnet
+CHANGE COLUMN `Created` `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+CHANGE COLUMN `LastModified` `LastModified` datetime NOT NULL default '0000-00-00 00:00:00';
+
+#VERSION 4.2d10
+
+#VERSION 4.2d9
+
+DROP TABLE IF EXISTS 1iDNISroutenames;
+CREATE TABLE 1iDNISroutenames LIKE iDNISroutenames;
+
+DROP TABLE IF EXISTS `1eDNISroutenames`;
+CREATE TABLE `1eDNISroutenames` LIKE eDNISroutenames;
+
+ALTER TABLE callingroutes
+CHANGE COLUMN `CPName` `CPName` varchar(59) default '',
+CHANGE COLUMN `TRName` `TRName` varchar(27) default '';
+
+ALTER TABLE cdcprofiles
+CHANGE COLUMN   Preferred `Preferrred` blob NOT NULL;
+
+#VERSION 4.2d9
+
+#VERSION 4.2d8
+
+#VERSION 4.2d8
+
+#VERSION 4.2d7
+
+DROP TABLE IF EXISTS `systemalarms`;
+
+#VERSION 4.2d7
+
+#VERSION 4.2d6
+
+ALTER TABLE accesslist
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+CHANGE COLUMN `OwnerGroupId` `OwnerGroupId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE actions
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE alarms
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+CHANGE COLUMN `Status` `Status` tinyint(1) NOT NULL default '0';
+
+ALTER TABLE ANI
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+DROP TABLE IF EXISTS `ANIroutenames`;
+
+ALTER TABLE cpbindings
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP FOREIGN KEY `cpbindings_ibfk_2`,
+DROP FOREIGN KEY `cpbindings_ibfk_3`,
+DROP INDEX Name,
+ADD UNIQUE KEY `Name` (ClusterId,CPName,CRName);
+
+ALTER TABLE callingplans
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP INDEX Name,
+ADD UNIQUE KEY `Name` (`ClusterId`,`Name`);
+
+ALTER TABLE callingroutes
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP COLUMN `RegionCode`,
+ADD COLUMN `TmpsrcPrefix` varchar(47) default NULL,
+DROP INDEX  ClusterId_CRName,
+ADD UNIQUE KEY `ClusterId_CRName` (`ClusterId`,`Name`);
+
+
+
+DROP TABLE IF EXISTS `carriers`;
+
+DROP TABLE IF EXISTS `carrierplans`;
+CREATE TABLE  `carrierplans` (
+  `CarrierplanId` bigint(20) NOT NULL auto_increment,
+  `PartitionId` tinyint(1) NOT NULL default '-1',
+  `Id` bigint(20) NOT NULL default '-1',
+  `BuySell` char(1) NOT NULL default '',
+  `Carrier` varchar(32) NOT NULL default '',
+  `RouteGroup` varchar(32) NOT NULL default '',
+  `Plan` varchar(32) NOT NULL default '',
+  `Description` varchar(64) NOT NULL default '',
+  `ANI` varchar(32) NOT NULL default '',
+  `StripPrefix` varchar(32) NOT NULL default '',
+  `PrefixDigits` mediumint(9) NOT NULL default '0',
+  `AddbackDigits` varchar(16) NOT NULL default '',
+  `RatingAddback` varchar(16) NOT NULL default '',
+  `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `LastModified` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`CarrierplanId`),
+  UNIQUE KEY `EpId_Flag` (`Id`,`BuySell`),
+  KEY `Carrier` (`Carrier`),
+  KEY `Route` (`RouteGroup`),
+  KEY `Plan` (`Plan`),
+  CONSTRAINT `carrierplans_ibfk_1` FOREIGN KEY (`Id`) REFERENCES `endpoints` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+ALTER TABLE cdcprofiles
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP INDEX Name,
+ADD UNIQUE KEY `Name` (`ClusterId`,`Name`);
+
+ALTER TABLE ivms-cdr-table
+CHANGE COLUMN Status `Status` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE CollectorType
+CHANGE COLUMN   TransportType `TransportType` tinyint(1) NOT NULL default '0';
+
+
+
+
+DROP TABLE IF EXISTS `deletedcallplans`;
+
+
+DROP TABLE IF EXISTS `eDNISroutenames`;
+
+ALTER TABLE endpoints
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+CHANGE COLUMN `SipUri` `SipUri` blob NOT NULL,
+CHANGE COLUMN `SipContact` `SipContact` blob NOT NULL,
+CHANGE COLUMN `TechPrefix` `TechPrefix` varchar(63) character set latin1 collate latin1_bin NOT NULL default '',
+CHANGE COLUMN `PeerGkId` `PeerGkId` blob NOT NULL,
+CHANGE COLUMN `H235Password` `H235Password` varchar(64) character set latin1 collate latin1_bin NOT NULL default '',
+CHANGE COLUMN `CdcPrflName` `CdcPrflName` varchar(32) default NULL,
+CHANGE COLUMN Flag `Flag` tinyint(1) NOT NULL default '0',
+DROP INDEX Ep_Sno_Port,
+ADD UNIQUE KEY `Ep_Sno_Port` (ClusterId,SerialNumber,Port);
+
+ALTER TABLE events
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE filters
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE groups
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+CHANGE COLUMN `EnforceVPort` `EnforceVPort` tinyint(1) NOT NULL default '0';
+
+DROP TABLE IF EXISTS `iDNISroutenames`;
+
+ALTER TABLE iedgegroups
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+ADD COLUMN `XFactor` smallint(6) NOT NULL default '0',
+DROP INDEX IEdgeGroupName,
+ADD UNIQUE KEY `IEdgeGroupName` (`ClusterId`,`Name`);
+
+
+ALTER TABLE msws
+CHANGE COLUMN  `AutosyncMaster` `AutosyncMaster` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE periods
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+DROP TABLE IF EXISTS `plans`;
+CREATE TABLE  `plans` (
+  `PlanId` bigint(20) NOT NULL auto_increment,
+  `PartitionId` tinyint(1) NOT NULL default '-1',
+  `Plan` varchar(32) NOT NULL default '',
+  `CostCode` varchar(64) NOT NULL default '',
+  `DurMin` mediumint(9) NOT NULL default '0',
+  `DurIncr` mediumint(9) NOT NULL default '0',
+  `Rate` float(10,4) NOT NULL default '0.0000',
+  `Country` varchar(64) NOT NULL default '',
+  `ConnectionCharge` float(10,4) NOT NULL default '0.0000',
+  `EffectiveStartDate` datetime default NULL,
+  `EffectiveEndDate` datetime default NULL,
+  `PeriodId` bigint(20) NOT NULL default '-1',
+  `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `LastModified` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`PlanId`),
+  UNIQUE KEY `Group_Plan_CostCode_StartDate_EndDate_Period` (`PartitionId`,`Plan`,`CostCode`,`EffectiveStartDate`,`EffectiveEndDate`,`PeriodId`),
+  KEY `PeriodId` (`PeriodId`),
+  KEY `Plan_Cost_Time` (`Plan`,`CostCode`,`PeriodId`),
+  FOREIGN KEY (`PeriodId`) REFERENCES `periods` (`PeriodId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+
+ALTER TABLE realms
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP COLUMN `FwdSrcIP`,
+DROP INDEX RealmName,
+ADD UNIQUE KEY `RealmName` (`ClusterId`,`Name`) ;
+
+
+ALTER TABLE regions
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+DROP TABLE IF EXISTS `routes`;
+CREATE TABLE  `routes` (
+  `RouteId` bigint(20) NOT NULL auto_increment,
+  `PartitionId` tinyint(1) NOT NULL default '-1',
+  `RouteGroup` varchar(32) NOT NULL default '',
+  `RegionCode` varchar(32) NOT NULL default '',
+  `CostCode` varchar(64) NOT NULL default '',
+  `Description` varchar(64) NOT NULL default '',
+  `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `LastModified` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`RouteId`),
+  UNIQUE KEY `Group_Route_Region` (`PartitionId`,`RouteGroup`,`RegionCode`),
+  KEY `CostCode` (`CostCode`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `routesnames`;
+CREATE TABLE  `routesnames` (
+  `PartitionId` tinyint(1) NOT NULL default '-1',
+  `CallPlanNames` longblob,
+  `CallRouteNames` longblob,
+  `CallBindingNames` longblob,
+  `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `LastModified` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`PartitionId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `ratesummary`;
+CREATE TABLE  `ratesummary` (
+  `RateSummaryId` bigint(20) NOT NULL auto_increment,
+  `PartitionId` tinyint(1) NOT NULL default '-1',
+  `CarrierplanId` bigint(20) NOT NULL default '-1',
+  `EndpointId` bigint(20) NOT NULL default '-1',
+  `RouteId` bigint(20) NOT NULL default '-1',
+  `PlanId` bigint(20) NOT NULL default '-1',
+  `RouteGroup` varchar(32) NOT NULL default '',
+  `Plan` varchar(32) NOT NULL default '',
+  `RegionCode` varchar(32) NOT NULL default '',
+  `Carrier` varchar(32) NOT NULL default '',
+  `CostCode` varchar(64) NOT NULL default '',
+  `BuySell` char(1) NOT NULL default '',
+  `Rate` float(10,4) NOT NULL default '0.0000',
+  `EffectiveStartDate` datetime default NULL,
+  `EffectiveEndDate` datetime default NULL,
+  `PeriodId` bigint(20) NOT NULL default '-1',
+  `Period` varchar(32) NOT NULL default '',
+  `Zone` varchar(32) default NULL,
+  `StartWeekDays` mediumint(9) NOT NULL default '-1',
+  `EndWeekDays` mediumint(9) NOT NULL default '-1',
+  `StartTime` time default NULL,
+  `EndTime` time default NULL,
+  `Realmname` varchar(31) character set latin1 collate latin1_bin NOT NULL default '',
+  `SerialNumber` varchar(67) character set latin1 collate latin1_bin NOT NULL default '',
+  `port` int(11) NOT NULL default '0',
+  `flag` tinyint(1) NOT NULL default '0',
+  `StripPrefix` varchar(32) NOT NULL default '',
+  `AddbackDigits` varchar(16) NOT NULL default '',
+  `ANI` varchar(32) NOT NULL default '',
+  `Valid` tinyint(1) NOT NULL default '1',
+  `Created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `LastModified` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`RateSummaryId`),
+  UNIQUE KEY `RateSummary_key` (`PartitionId`,`RegionCode`,`EndpointId`,`BuySell`,`RouteGroup`,`Plan`,`PeriodId`),
+  KEY `Carrier` (`Carrier`),
+  KEY `Region` (`RegionCode`),
+  KEY `CostCode` (`CostCode`),
+  KEY `Plan` (`Plan`),
+  KEY `Period` (`Period`),
+  KEY `PartitionId` (`PartitionId`),
+  KEY `CarrierPlanId` (`CarrierplanId`),
+  KEY `Endpoint` (`EndpointId`),
+  KEY `PeriodId` (`PeriodId`),
+  KEY `RouteId` (`RouteId`),
+  KEY `PlanId` (`PlanId`),
+  KEY `CarrierplanId_2` (`CarrierplanId`),
+  FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`PartitionId`) ON DELETE CASCADE,
+  FOREIGN KEY (`CarrierplanId`) REFERENCES `carrierplans` (`CarrierplanId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`EndpointId`) REFERENCES `endpoints` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`RouteId`) REFERENCES `routes` (`RouteId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`PlanId`) REFERENCES `plans` (`PlanId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`PeriodId`) REFERENCES `periods` (`PeriodId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE services
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE sessions
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE subnets
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP INDEX SubnetName,
+ADD UNIQUE KEY `SubnetName` (`ClusterId`,`Name`);
+
+ALTER TABLE trails
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE triggers
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP INDEX ClusterId_name,
+ADD UNIQUE KEY `ClusterId_name` (`ClusterId`,`Name`);
+
+ALTER TABLE users
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE vnet
+CHANGE COLUMN `PartitionId` `PartitionId` tinyint(1) NOT NULL default '-1',
+DROP INDEX ClusterId_name,
+ADD UNIQUE KEY `ClusterId_name` (`ClusterId`,`Name`);
+
+DROP TABLE IF EXISTS 1carriers_buy;
+
+DROP TABLE IF EXISTS 1carriers_sell;
+
+DROP TABLE IF EXISTS 1carriers_buy_old;
+
+DROP TABLE IF EXISTS 1carriers_sell_old;
+
+DROP TABLE IF EXISTS 1ANIroutenames;
+
+DROP TABLE IF EXISTS 1iDNISroutenames;
+
+DROP TABLE IF EXISTS 1eDNISroutenames;
+
+#VERSION 4.2d6
+
+#VERSION 4.2d5
+
+DROP TABLE IF EXISTS `dbdiff`;
+
+ALTER TABLE accesslist DROP FOREIGN KEY `accesslist_ibfk_1`, DROP FOREIGN KEY `accesslist_ibfk_2`;
+ALTER TABLE callingplans DROP FOREIGN KEY `callingplans_ibfk_1`;
+ALTER TABLE callingroutes DROP FOREIGN KEY `callingroutes_ibfk_1`;
+ALTER TABLE cdcprofiles DROP FOREIGN KEY `cdcprofiles_ibfk_1`;
+ALTER TABLE endpoints DROP FOREIGN KEY `endpoints_ibfk_1`;
+ALTER TABLE filters DROP FOREIGN KEY `filters_ibfk_1`;
+ALTER TABLE iedgegroups DROP FOREIGN KEY `iedgegroups_ibfk_1`;
+ALTER TABLE ratesummary DROP FOREIGN KEY `ratesummary_ibfk_1`;
+ALTER TABLE realms DROP FOREIGN KEY `realms_ibfk_1`;
+ALTER TABLE subnets DROP FOREIGN KEY `subnets_ibfk_1`;
+ALTER TABLE triggers DROP FOREIGN KEY `triggers_ibfk_1`;
+ALTER TABLE users DROP FOREIGN KEY `users_ibfk_1`;
+ALTER TABLE vnet DROP FOREIGN KEY `vnet_ibfk_1`;
+ALTER TABLE cpbindings DROP FOREIGN KEY `cpbindings_ibfk_1`;
+
+
+
+
+
+
+
+ALTER TABLE groups 
+CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP PRIMARY KEY,
+ADD PRIMARY KEY(GroupId);
+
+
+
+
+
+
+
+
+
+ALTER TABLE accesslist CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+ADD CONSTRAINT `accesslist_ibfk_1` FOREIGN KEY `accesslist_ibfk_1` (GroupId) REFERENCES groups (GroupId) ON DELETE CASCADE,
+ADD CONSTRAINT `accesslist_ibfk_2` FOREIGN KEY (OwnerGroupId) REFERENCES groups (GroupId) ON DELETE CASCADE;
+
+ALTER TABLE filters CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+ADD CONSTRAINT `filters_ibfk_1` FOREIGN KEY `filters_ibfk_1`(GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+ALTER TABLE actions CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+ALTER TABLE carrierplans CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+ALTER TABLE alarms CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+ALTER TABLE events CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+ALTER TABLE ANI CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX `ANI_Call_GroupId`,
+ADD UNIQUE KEY `ANI_Call_GroupId` (`ANI`,`CallNumber`,`GroupId`);
+
+ALTER TABLE iedgegroups ADD CONSTRAINT `iedgegroups_ibfk_1` FOREIGN KEY `iedgegroups_ibfk_1`(PartitionId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE msws
+DROP COLUMN `AutosyncMaster` ;
+
+ALTER TABLE periods CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE plans CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE ratesummary CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+ADD CONSTRAINT `ratesummary_ibfk_1` FOREIGN KEY `ratesummary_ibfk_1`(GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE realms
+ADD CONSTRAINT `realms_ibfk_1` FOREIGN KEY `realms_ibfk_1`(PartitionId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE regions CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId);
+
+ALTER TABLE routes CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE routesnames CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE services CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE sessions CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE subnets
+ADD CONSTRAINT `subnets_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE trails CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+
+ALTER TABLE triggers
+ADD CONSTRAINT `triggers_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE users CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY `users_ibfk_1`(GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE vnet
+ADD CONSTRAINT `vnet_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE cpbindings
+ADD CONSTRAINT `cpbindings_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER TABLE callingplans
+ADD CONSTRAINT `callingplans_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE callingroutes
+ADD CONSTRAINT `callingroutes_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE cdcprofiles
+ADD CONSTRAINT `cdcprofiles_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE endpoints
+ADD CONSTRAINT `endpoints_ibfk_1` FOREIGN KEY (`PartitionId`) REFERENCES `groups` (`GroupId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+
+#VERSION 4.2d5
+
+#VERSION 4.2d4
+
+ALTER TABLE callingplans DROP FOREIGN KEY `callingplans_ibfk_1`;
+ALTER TABLE callingplans CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+ALTER TABLE callingplans DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+ADD CONSTRAINT `callingplans_ibfk_1` FOREIGN KEY `callingplans_ibfk_1`(GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE,
+DROP COLUMN PcpName,
+DROP COLUMN Version;
+
+ALTER TABLE callingroutes DROP FOREIGN KEY `callingroutes_ibfk_1`;
+ALTER TABLE callingroutes CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1';
+ALTER TABLE callingroutes DROP INDEX PartitionId,
+ADD KEY GroupId(GroupId),
+ADD CONSTRAINT `callingroutes_ibfk_1` FOREIGN KEY `callingroutes_ibfk_1`(GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE,
+ADD UNIQUE KEY `Name` (`ClusterId`,`Name`),
+DROP INDEX ClusterId_CRName,
+DROP COLUMN TmpsrcPrefix,
+DROP COLUMN LastUseTime,
+DROP COLUMN CPName,
+DROP COLUMN TRName,
+DROP COLUMN StartTime,
+DROP COLUMN EndTime,
+DROP COLUMN Version;
+
+ALTER TABLE carrierplans
+DROP FOREIGN KEY carrierplans_ibfk_1;
+
+ALTER TABLE ratesummary
+DROP FOREIGN KEY ratesummary_ibfk_3;
+
+ALTER TABLE endpoints DROP FOREIGN KEY `endpoints_ibfk_1`;
+
+ALTER TABLE endpoints
+CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+CHANGE Id EndpointId bigint(20) NOT NULL auto_increment,
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+DROP INDEX Ep_Sno_Port,
+ADD COLUMN `proxyValid` tinyint(4) default NULL,
+ADD COLUMN `isProxied` tinyint(4) default NULL,
+ADD COLUMN `isProxying` tinyint(4) default NULL,
+ADD COLUMN `callForwarded` tinyint(4) default NULL,
+ADD COLUMN `currentCalls` int(11) default NULL,
+DROP COLUMN MSWName ,
+DROP COLUMN CrId ,
+DROP COLUMN RealmId ,
+DROP COLUMN Redirectprotocol ,
+DROP COLUMN SFlags ,
+DROP COLUMN NSFlags ,
+DROP COLUMN RejectTime ,
+DROP COLUMN RasIp  ,
+DROP COLUMN Ports ,
+DROP COLUMN NPorts  ,
+DROP COLUMN CfgPorts ,
+DROP COLUMN NCfgPorts  ,
+DROP COLUMN QVal ,
+DROP COLUMN Dfags ,
+DROP COLUMN MirrorProxyToHost ,
+DROP COLUMN MirrorProxyFromHost ,
+DROP COLUMN OBPHost  ,
+DROP COLUMN OBPRegistrationTime ,
+DROP COLUMN OBPRegistrationXFactor  ,
+DROP COLUMN ResolvedUriIps ,
+DROP COLUMN CdcPrflName ,
+DROP COLUMN Pt2833,
+DROP COLUMN AgeTime  ,
+DROP COLUMN MpxyNonRegToHost ,
+DROP COLUMN MpxyNonRegFromHost ,
+DROP COLUMN PolicyKey  ,
+DROP COLUMN ElemKey ,
+DROP COLUMN Ecaps2  ,
+DROP COLUMN ClirData  ,
+DROP COLUMN CallDuration  ,
+DROP COLUMN Version ,
+ADD CONSTRAINT FOREIGN KEY `endpoints_ibfk_1`(GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY(EndpointId),
+ADD UNIQUE KEY `Ep_Port` (`serialNumber`,`port`,ClusterId);
+
+ALTER TABLE carrierplans
+DROP INDEX EpId_Flag,
+CHANGE COLUMN Id EndpointId bigint(20) NOT NULL default '-1',
+ADD UNIQUE EpId_Flag (EndpointId,BuySell),
+ADD CONSTRAINT carrierplans_ibfk_1 FOREIGN KEY carrierplans_ibfk_1 (EndpointId) REFERENCES endpoints(EndpointId) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE PipeLine
+DROP COLUMN `LastCDRProcessed`,
+DROP COLUMN `LastExecStatus`;
+
+ALTER TABLE CollectorParams
+DROP INDEX `PipeLineID`,
+ADD UNIQUE KEY `Index` (`PipeLineID`,`Name`,`Value`);
+
+ALTER TABLE ConsumerParams
+DROP INDEX `PipelineID`,
+ADD UNIQUE KEY `Index`(`PipeLineID`,`Name`,`Value`);
+
+ALTER TABLE cpbindings DROP FOREIGN KEY `cpbindings_ibfk_1`;
+ALTER TABLE cpbindings CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+ADD CONSTRAINT `cpbindings_ibfk_1` FOREIGN KEY `cpbindings_ibfk_1`(GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE ON UPDATE CASCADE,
+DROP COLUMN Version ;
+
+ALTER TABLE filters DROP FOREIGN KEY filters_ibfk_2;
+
+ALTER TABLE users
+DROP INDEX User_Pass,
+DROP INDEX User_Group,
+CHANGE COLUMN UserName User varchar(32) NOT NULL default '',
+CHANGE COLUMN PasswordId Password varchar(32) default NULL,
+ADD KEY User_Pass (User,Password),
+ADD UNIQUE User_Group (User,GroupId);
+
+ALTER TABLE filters
+DROP INDEX Group_User_Name,
+DROP INDEX UserName,
+CHANGE COLUMN UserName User varchar(32) NOT NULL default '',
+ADD UNIQUE Group_User_Name (GroupId, User, FilterName),
+ADD INDEX User (User),
+ADD CONSTRAINT filters_ibfk_2 FOREIGN KEY filters_ibfk_2 (User) REFERENCES users(User) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE iedgegroups DROP FOREIGN KEY `iedgegroups_ibfk_1`;
+ALTER TABLE iedgegroups CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+ADD COLUMN `CallsIn` int(11) NOT NULL default '0',
+ADD COLUMN `CallsOut` int(11) NOT NULL default '0',
+ADD COLUMN `CallsTotal` int(11) NOT NULL default '0',
+ADD COLUMN `DndTime` bigint(20) NOT NULL default '0',
+DROP COLUMN  XFactor,
+TYPE = MyISAM;
+
+ALTER TABLE msws
+DROP COLUMN MswUsername,
+DROP COLUMN MswPassword,
+DROP COLUMN MswPort,
+DROP COLUMN MswDB,
+TYPE=MyISAM;
+
+ALTER TABLE ratesummary
+ADD CONSTRAINT ratesummary_ibfk_3 FOREIGN KEY ratesummary_ibfk_3 (EndpointId) REFERENCES endpoints(EndpointId) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE realms DROP FOREIGN KEY `realms_ibfk_1`;
+ALTER TABLE realms CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+DROP PRIMARY KEY,
+DROP INDEX RealmName,
+CHANGE COLUMN RealmId RealmId bigint(20) NOT NULL auto_increment,
+CHANGE COLUMN Id Id bigint(20) default NULL,
+DROP COLUMN Flags,
+DROP COLUMN RealmPanasonic,
+DROP COLUMN Sig1qPriority,
+DROP COLUMN Med1qPriority,
+DROP COLUMN SigIPTOS,
+DROP COLUMN MedIPTOS,
+DROP COLUMN Version,
+ADD PRIMARY KEY  (RealmId),
+ADD UNIQUE RealmName (ClusterId,Name),
+TYPE=MyISAM;
+
+ALTER TABLE sessions
+CHANGE COLUMN UserName User varchar(32) NOT NULL,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY  (`User`,`GroupId`),
+ADD UNIQUE KEY `SessionId` (`SessionId`);
+
+ALTER TABLE subnets DROP FOREIGN KEY `subnets_ibfk_1`;
+ALTER TABLE subnets CHANGE PartitionId GroupId tinyint(1) NOT NULL default '-1',
+DROP INDEX PartitionId, ADD INDEX GroupId(GroupId),
+DROP PRIMARY KEY,
+DROP INDEX SubnetName,
+CHANGE COLUMN Id SubnetId bigint(20) NOT NULL auto_increment,
+DROP COLUMN Version,
+ADD UNIQUE KEY `SubnetName` (`Name`),
+ADD PRIMARY KEY (SubnetId),
+TYPE=MyISAM;
+
+DROP TABLE IF EXISTS `triggers`;
+
+DROP TABLE IF EXISTS `vnet`;
+
+DROP TABLE IF EXISTS `cdcprofiles`;
+
+#VERSION 4.2d4
+
+#VERSION 4.2d3
+use bn;
+
+DROP TABLE IF EXISTS ratesummary;
+
+ALTER TABLE endpoints DROP INDEX Ep_Port,
+ADD UNIQUE KEY Ep_Port (serialNumber,Port);
+
+ALTER TABLE cdrfiles
+DROP INDEX SrcFileName;
+
+ALTER TABLE services
+DROP COLUMN   Name ;
+
+ALTER TABLE iedgegroups
+DROP INDEX IEdgeGroupName,
+ADD   UNIQUE KEY IEdgeGroupName (Name);
+
+
+ALTER TABLE carrierplans DROP FOREIGN KEY `carrierplans_ibfk_1`;
+ALTER TABLE carrierplans Type=MyISAM;
+
+ALTER TABLE routes
+Type=MyISAM;
+
+
+
+
+
+ALTER TABLE plans DROP FOREIGN KEY `plans_ibfk_1`;
+ALTER TABLE plans
+Type=MyISAM;
+
+#VERSION 4.2d3
+#VERSION 4.2d1
+use bn;
+ALTER TABLE `trails` DROP COLUMN `sid`;
+ALTER TABLE cdrfiles
+ADD index SrcFileName (SrcFileName);
+
+#VERSION 4.2d1
+#VERSION 4.1c1
+use bn;
+alter table carrierplans type=MyISAM;
+alter table plans type=MyISAM;
+alter table routes type=MyISAM;
+alter table periods type=MyISAM;
+
+
+DROP TABLE IF EXISTS ratesummary;
+
+
+
+#VERSION 4.1c1
+#VERSION 4.1t5
+alter table cdrfiles drop index SrcFileName;
+use bn;
+
+#VERSION 4.1t5
+#VERSION 4.1t4
+DROP TABLE IF EXISTS callingplans;
+
+
+DROP TABLE IF EXISTS cpbindings;
+
+DROP TABLE IF EXISTS callingroutes;
+
+
+ALTER TABLE `carrierplans` DROP COLUMN `RatingAddback`;
+
+DROP TABLE IF EXISTS cdrsummary;
+CREATE TABLE cdrsummary (
+  CdrSummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  CDRFileId int(11) unsigned NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  DiscCode char(2) NOT NULL default '',
+  RegionCode varchar(32) default NULL,
+  ErrorIdLeg1 mediumint(9) default NULL,
+  ISDNCode mediumint(9) NOT NULL default '0',
+  CallCount int(11) NOT NULL default '0',
+  Duration bigint(11) NOT NULL default '0',
+  PDD int(11) NOT NULL default '0',
+  BuyCarrier varchar(32) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  SrcPacketsReceived int(11) NOT NULL default '0',
+  SrcPacketsLost int(11) NOT NULL default '0',
+  SrcPDV int(11) NOT NULL default '0',
+  SrcRFactor smallint(6) NOT NULL default '0',
+  DstPacketsReceived int (11) NOT NULL default '0',
+  DstPacketsLost int(11) NOT NULL default '0',
+  DstPDV int(11) NOT NULL default '0',
+  DstRFactor smallint(6) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (CdrSummaryId),
+  KEY DateTimeInt (DateTimeInt),
+  KEY CDRFileId (CDRFileId)
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+#VERSION 4.1t4
+#VERSION 4.1t3
+use bn;
+alter table routesnames modify CallPlanNames blob, modify CallRouteNames blob, modify CallBindingNames blob;
+#VERSION 4.1t3
+#VERSION 4.1t2
+use bn;
+
+alter table cdrlogs modify CDRLogId int(11) unsigned NOT NULL;
+alter table ivms-cdr-table modify CDRLogId int(11) unsigned NOT NULL default '0';
+alter table activitylogs modify CdrLogId int(11) unsigned NOT NULL;
+
+alter table ivms-cdr-table modify CDRFileId int(11) unsigned NOT NULL default '0';
+alter table cdrfiles modify CDRFileId int(11) unsigned NOT NULL auto_increment;
+DROP TABLE IF EXISTS cdrsummary;
+CREATE TABLE cdrsummary (
+  CdrSummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  CDRFileId int(11) unsigned NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  DiscCode char(2) NOT NULL default '',
+  RegionCode varchar(32) default NULL,
+  ErrorIdLeg1 mediumint(9) default NULL,
+  ISDNCode mediumint(9) NOT NULL default '0',
+  CallCount int(11) NOT NULL default '0',
+  Duration bigint(11) NOT NULL default '0',
+  PDD int(11) NOT NULL default '0',
+  BuyCarrier varchar(32) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  SrcPacketsReceived int(11) NOT NULL default '0',
+  SrcPacketsLost int(11) NOT NULL default '0',
+  SrcPDV int(11) NOT NULL default '0',
+  SrcRFactor smallint(6) NOT NULL default '0',
+  DstPacketsReceived int (11) NOT NULL default '0',
+  DstPacketsLost int(11) NOT NULL default '0',
+  DstPDV int(11) NOT NULL default '0',
+  DstRFactor smallint(6) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (CdrSummaryId),
+  KEY DateTimeInt (DateTimeInt),
+  KEY CDRFileId (CDRFileId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+DROP TABLE IF EXISTS sellsummary;
+CREATE TABLE sellsummary (
+  SellSummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  OrigDesc varchar(64) NOT NULL default '',
+  RegionCode varchar(32) NOT NULL default '',
+  DestCountry varchar(64) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  SellPlan varchar(32) NOT NULL default '',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  Duration bigint(11) NOT NULL default '0',
+  PDD int(11) NOT NULL default '0',
+  SellRate float(10,4) NOT NULL default '0.0000',
+  BuyPrice double(20,4) NOT NULL default '0.0000',
+  SellPrice double(20,4) not null default '0.0000',
+  CallCount int(11) NOT NULL default '0',
+  BillableCount int(11) NOT NULL default '0',
+  SellConnectCharge float(10,4) NOT NULL default '0.0000',
+  SellRoundedSec bigint(11) NOT NULL default '0',
+  BuyConnectCharge float(10,4) NOT NULL default '0.0000',
+  BuyRoundedSec bigint(11) NOT NULL default '0',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  SellSummaryId (SellSummaryId),
+  KEY DateTimeInt (DateTimeInt)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS buysummary;
+CREATE TABLE buysummary (
+  BuySummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  DestDesc varchar(64) NOT NULL default '',
+  RegionCode varchar(32) NOT NULL default '',
+  OrigCountry varchar(64) NOT NULL default '',
+  BuyCarrier varchar(32) NOT NULL default '',
+  BuyPlan varchar(32) NOT NULL default '',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  Duration bigint(11) NOT NULL default '0.0000',
+  PDD int(11) NOT NULL default '0',
+  BuyRate float(10,4) NOT NULL default '0.0000',
+  BuyPrice double(20,4) NOT NULL default '0.0000',
+  SellPrice double(20,4) NOT NULL default '0.0000',
+  CallCount int(11) NOT NULL default '0',
+  BillableCount int(11) NOT NULL default '0',
+  BuyConnectCharge float(10,4) NOT NULL default '0.0000',
+  BuyRoundedSec bigint(11) NOT NULL default '0',
+  SellConnectCharge float(10,4) NOT NULL default '0.0000',
+  SellRoundedSec bigint(11) NOT NULL default '0',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  BuySummaryId (BuySummaryId),
+  KEY DateTimeInt (DateTimeInt)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+## now update the cdrlogs table to reset the summarizer bit for every cdr table entry
+
+#VERSION 4.1t2
+#VERSION 4.1t1
+alter table endpoints modify subnetip int(11)  default NULL;
+alter table endpoints modify subnetmask int(11)  default NULL;
+alter table endpoints modify natip int(11)  default NULL;
+alter table iedgegroups modify MaxIn int(11) NOT NULL;
+alter table iedgegroups modify MaxOut int(11) NOT NULL;
+alter table iedgegroups modify MaxTotal int(11) NOT NULL ;
+alter table iedgegroups modify CallsIn int(11) NOT NULL ;
+alter table iedgegroups modify CallsOut int(11) NOT NULL;
+alter table iedgegroups modify CallsTotal int(11) NOT NULL;
+alter table iedgegroups modify MaxBwIn int(11) NOT NULL;
+alter table iedgegroups modify MaxBwOut int(11) NOT NULL;
+alter table iedgegroups modify MaxBwTotal int(11) NOT NULL;
+alter table iedgegroups modify Timeout int(11) NOT NULL;
+alter table iedgegroups modify Imr smallint(6) NOT NULL;
+alter table iedgegroups modify Emr smallint(6) NOT NULL;
+alter table iedgegroups modify DndTime bigint(20) NOT NULL;
+alter table subnets modify IPaddress int(11) unsigned  default NULL;
+alter table subnets modify Mask int(11) unsigned default NULL;
+#VERSION 4.1t1
+#VERSION 4.1d6
+alter table ivms-cdr-table modify PeerProtocol smallint(6) NOT NULL default '0';
+#VERSION 4.1d6
+#VERSION 4.1d5
+#VERSION 4.1d5
+#VERSION 4.1d4
+delete from services where type='Archive' and Parameters='<?xml version=\"1.0\"?>\n\n<archiveentry type=\"PROVISIONAL\" action=\"BACKUP\" id=\"\">\n  <dir>/home/nextone/provBkup</dir>\n  <enddate></enddate>\n  <age>7</age>\n  <schedule>\n    <days>254</days>\n <hh>04</hh>\n    <mm>00</mm>\n    <ss>00</ss>\n    <reps>9999</reps>\n    <sname day=\"1\">archiver_1115157506995</sname>\n   <sname day=\"2\">archiver_1115157507039</sname>\n    <sname day=\"3\">archiver_1115157507059</sname>\n    <sname day=\"4\">archiver_1115157507079</sname>\n    <sname day=\"5\">archiver_1115157507100</sname>\n    <sname day=\"6\">archiver_1115157507121</sname>\n    <sname day=\"7\">archiver_1115157507141</sname>\n  </schedule>\n</archiveentry>\n\n' and groupid=1 and created='2005-05-03 17:58:27';
+alter table iedgegroups drop column Timeout;
+#VERSION 4.1d4
+#VERSION 4.1d3
+#VERSION 4.1d3
+#VERSION 4.1d2
+use bn;
+
+DROP TABLE IF EXISTS subnets;
+
+
+alter table iedgegroups drop column MaxBwIn;
+alter table iedgegroups drop column MaxBwOut;
+alter table iedgegroups drop column MaxBwTotal;
+alter table iedgegroups drop column Imr;
+alter table iedgegroups drop column Emr;
+alter table endpoints drop column bandwidth;
+alter table endpoints drop column callingpartyType;
+alter table ivms-cdr-table drop column SrcSipRespcode;
+alter table ivms-cdr-table drop column PeerProtocol;
+alter table ivms-cdr-table drop column SrcPrivateIp;
+alter table ivms-cdr-table drop column DstPrivateIp;
+alter table ivms-cdr-table drop column SrcIgrpName;
+alter table ivms-cdr-table drop column DstIgrpName;
+#VERSION 4.1d2
+
+#VERSION 4.0c1
+#VERSION 4.0c1
+
+#VERSION 4.0t6
+#VERSION 4.0t6
+#VERSION 4.0t5
+#VERSION 4.0t5
+#VERSION 4.0t4
+DROP TABLE IF EXISTS tablestatus;
+
+alter table sessions drop column ip;
+
+delete from users  where user='root' and groupId=1;
+
+#VERSION 4.0t4
+#VERSION 4.0t3
+use bn;
+###
+alter table cdrlogs modify CDRLogId smallint(6) NOT NULL auto_increment;
+alter table ivms-cdr-table modify CDRLogId int(11) unsigned NOT NULL default '0';
+alter table activitylogs modify CdrLogId smallint(6) NOT NULL;
+
+alter table ivms-cdr-table modify CDRFileId smallint(6) NOT NULL ;
+alter table cdrfiles modify CDRFileId smallint(6) NOT NULL auto_increment;
+alter table cdrsummary modify CDRFileId smallint(6) NOT NULL default '0';
+
+#VERSION 4.0t3
+#VERSION 4.0t2
+use bn;
+alter table msws DROP INDEX MSWIp;
+#VERSION 4.0t2
+#VERSION 4.0t1
+#VERSION 4.0t1
+#VERSION 4.0d11
+##
+## drop the old buy and sell summary tables and create the new schema for them
+use bn;
+DROP TABLE IF EXISTS sellsummary;
+CREATE TABLE sellsummary (
+  SellSummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  OrigDesc varchar(64) NOT NULL default '',
+  RegionCode varchar(32) NOT NULL default '',
+  OrigCountry varchar(64) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  SellPlan varchar(32) NOT NULL default '',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  Duration float(10,4) NOT NULL default '0.0000',
+  PDD int(11) NOT NULL default '0',
+  SellRate float(10,4) NOT NULL default '0.0000',
+  BuyPrice float(10,4) NOT NULL default '0.0000',
+  SellPrice float(10,4) NOT NULL default '0.0000',
+  CallCount int(11) NOT NULL default '0',
+  BillableCount int(11) NOT NULL default '0',
+  SellConnectCharge float(10,4) NOT NULL default '0.0000',
+  SellRoundedSec float(10,4) NOT NULL default '0.0000',
+  BuyConnectCharge float(10,4) NOT NULL default '0.0000',
+  BuyRoundedSec float(10,4) NOT NULL default '0.0000',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  SellSummaryId (SellSummaryId),
+  KEY DateTimeInt (DateTimeInt)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS cdrsummary;
+CREATE TABLE cdrsummary (
+  CdrSummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  CDRFileId smallint(6) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  DiscCode char(2) NOT NULL default '',
+  RegionCode varchar(32) default NULL,
+  ErrorIdLeg1 mediumint(9) default NULL,
+  ISDNCode mediumint(9) NOT NULL default '0',
+  CallCount int(11) NOT NULL default '0',
+  Duration int(11) NOT NULL default '0',
+  PDD int(11) NOT NULL default '0',
+  BuyCarrier varchar(32) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  SrcPacketsReceived int(11) NOT NULL default '0',
+  SrcPacketsLost int(11) NOT NULL default '0',
+  SrcPDV int(11) NOT NULL default '0',
+  SrcRFactor smallint(6) NOT NULL default '0',
+  DstPacketsReceived int (11) NOT NULL default '0',
+  DstPacketsLost int(11) NOT NULL default '0',
+  DstPDV int(11) NOT NULL default '0',
+  DstRFactor smallint(6) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (CdrSummaryId),
+  KEY DateTimeInt (DateTimeInt),
+  KEY CDRFileId (CDRFileId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+
+DROP TABLE IF EXISTS buysummary;
+CREATE TABLE buysummary (
+  BuySummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  DestDesc varchar(64) NOT NULL default '',
+  RegionCode varchar(32) NOT NULL default '',
+  DestCountry varchar(64) NOT NULL default '',
+  BuyCarrier varchar(32) NOT NULL default '',
+  BuyPlan varchar(32) NOT NULL default '',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  Duration float(10,4) NOT NULL default '0.0000',
+  PDD int(11) NOT NULL default '0',
+  BuyRate float(10,4) NOT NULL default '0.0000',
+  BuyPrice float(10,4) NOT NULL default '0.0000',
+  SellPrice float(10,4) NOT NULL default '0.0000',
+  CallCount int(11) NOT NULL default '0',
+  BillableCount int(11) NOT NULL default '0',
+  BuyConnectCharge float(10,4) NOT NULL default '0.0000',
+  BuyRoundedSec float(10,4) NOT NULL default '0.0000',
+  SellConnectCharge float(10,4) NOT NULL default '0.0000',
+  SellRoundedSec float(10,4) NOT NULL default '0.0000',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  BuySummaryId (BuySummaryId),
+  KEY DateTimeInt (DateTimeInt)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+##
+### now update the cdrlogs table to reset the summarizer bit for every cdr table entry
+
+
+DROP TABLE IF EXISTS accesslist;
+alter table plans modify costcode varchar(32) NOT NULL default '';
+alter table routes modify costcode varchar(32) NOT NULL default '';
+alter table actions DROP INDEX Name;
+alter table actions DROP COLUMN Name ;
+
+
+#VERSION 4.0d11
+#VERSION 3.2.1d10
+use bn;
+
+delete from groups where groupid=1;
+
+#VERSION 3.2.1d10
+#VERSION 3.2.1d9
+#VERSION 3.2.1d9
+#VERSION 3.2.1d8
+use bn;
+alter table carrierplans drop column  GroupId;
+#VERSION 3.2.1d8
+#VERSION 3.2.1d7
+use bn;
+DROP TABLE IF EXISTS CollectorType;
+
+
+DROP TABLE IF EXISTS ConsumerType;
+
+
+DROP TABLE IF EXISTS MappingType;
+
+
+DROP TABLE IF EXISTS PipeLine;
+
+
+DROP TABLE IF EXISTS CollectorParams;
+
+
+DROP TABLE IF EXISTS ConsumerParams;
+
+
+alter table ivms-cdr-table drop column CallDstCustId ;
+alter table ivms-cdr-table drop column CallZoneData;
+alter table ivms-cdr-table drop column CallDstNumType;
+alter table ivms-cdr-table drop column CallSrcNumType;
+alter table ivms-cdr-table drop column OrigISDNCauseCode ;
+alter table ivms-cdr-table drop column SrcPacketsReceived ;
+alter table ivms-cdr-table drop column SrcPacketsLost;
+alter table ivms-cdr-table drop columndd SrcPacketsDiscarded ;
+alter table ivms-cdr-table drop column SrcPDV ;
+alter table ivms-cdr-table drop column SrcCodec;
+alter table ivms-cdr-table drop column SrcLatency;
+alter table ivms-cdr-table drop column SrcRFactor;
+alter table ivms-cdr-table drop column DstPacketsReceived;
+alter table ivms-cdr-table drop column DstPacketsLost;
+alter table ivms-cdr-table drop column DstPacketsDiscarded;
+alter table ivms-cdr-table drop column DstPDV;
+alter table ivms-cdr-table drop column DstCodec;
+alter table ivms-cdr-table drop column DstLatency;
+alter table ivms-cdr-table drop column DstRFactor;
+
+alter table endpoints change ClusterId MSWId smallint(6) NOT NULL default '-1' after GroupId;
+
+alter table endpoints change ClusterId MSWId smallint(6) NOT NULL default '-1' after GroupId;
+
+alter table realms change ClusterId MSWId smallint(6) NOT NULL default '-1' after GroupId;
+
+alter table iedgegroups change ClusterId MSWId smallint(6) NOT NULL default '-1'after GroupId;
+
+alter table cdrsummary  drop column SrcPacketsReceived;
+alter table cdrsummary  drop column SrcPacketsLost;
+alter table cdrsummary  drop column SrcPDV;
+alter table cdrsummary  drop column SrcRFactor;
+alter table cdrsummary  drop column DstPacketsReceived;
+alter table cdrsummary  drop column DstPacketsLost;
+alter table cdrsummary  drop column DstPDV;
+alter table cdrsummary  drop column DstRFactor;
+
+#VERSION 3.2.1d7
+#VERSION 3.2.1d6
+use bn;
+DROP TABLE IF EXISTS routesnames;
+
+#VERSION 3.2.1d6
+#VERSION 3.2.1d5
+#VERSION 3.2.1d5
+#VERSION 3.2.1d4
+use bn;
+DROP TABLE IF EXISTS ANI;
+
+
+alter table carrierplans DROP COLUMN ANI;
+
+alter table groups DROP COLUMN Cap;
+
+alter table endpoints modify ipaddr int(11)  default NULL;
+
+alter table groups DROP COLUMN EnforceVPort;
+alter table msws drop column EnforceVPort;
+alter table msws DROP COLUMN  Flag;
+
+alter table msws add UNIQUE KEY MSWIp (MSWIp);
+
+alter table msws drop index MSWName;
+
+alter table realms DROP COLUMN MSWId;
+
+DROP TABLE IF EXISTS trails;
+
+
+alter table iedgegroups DROP COLUMN MSWId;
+
+
+#VERSION 3.2.1d4
+#VERSION 3.2.1d3
+use bn;
+alter table carrierplans DROP COLUMN StripPrefix;
+DROP TABLE IF EXISTS iedgegroups;
+#VERSION 3.2.1d3
+#VERSION 3.2.1d2
+use bn;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+
+DROP TABLE IF EXISTS endpoints;
+rename table   oldbn.endpoints to endpoints;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+
+
+
+#insert into endpoints (
+#  EndpointId,
+#  GroupId,
+#  port,
+#  Created,
+#  LastModified
+#) select 
+#  EndpointId,
+#  GroupId,
+#  Port,
+#  Created,
+#  LastModified
+#from oldbn.endpoints;
+
+alter table msws DROP COLUMN ClusterId;
+alter table msws DROP COLUMN ReadPassword;
+alter table msws DROP COLUMN WritePassword;
+alter table msws drop INDEX MSWIp;
+alter table msws add UNIQUE KEY MSWName (MSWName, MSWIp);
+
+DROP TABLE IF EXISTS realms;
+
+#VERSION 3.2.1d2
+#VERSION 3.2.1d1
+#VERSION 3.2.1d1
+#VERSION 3.1.1c20
+#VERSION 3.1.1c20
+#VERSION 3.1.1c19
+#VERSION 3.1.1c19
+#VERSION 3.1.1c18
+#VERSION 3.1.1c18
+#VERSION 3.1.1c17
+#VERSION 3.1.1c17
+#VERSION 3.1.1c16
+use bn;
+delete from ivms-cdr-table using ivms-cdr-table, cdrlogs where ivms-cdr-table.datetimeint = cdrlogs.enddateint and ivms-cdr-table.cdrlogid=cdrlogs.cdrlogid;
+#VERSION 3.1.1c16
+#VERSION 3.1.1c15
+#VERSION 3.1.1c15
+#VERSION 3.1.1c14
+#VERSION 3.1.1c14
+#VERSION 3.1.1c13
+#VERSION 3.1.1c13
+#VERSION 3.1.1c12
+#VERSION 3.1.1c12
+#VERSION 3.1.1c11
+#VERSION 3.1.1c11
+#VERSION 3.1.1c10
+#VERSION 3.1.1c10
+#VERSION 3.1.1c9
+#VERSION 3.1.1c9
+#VERSION 3.1.1c8
+#VERSION 3.1.1c8
+#VERSION 3.1.1c7
+#VERSION 3.1.1c7
+#VERSION 3.1.1c6
+#VERSION 3.1.1c6
+#VERSION 3.1.1c5
+#VERSION 3.1.1c5
+#VERSION 3.1.1c4
+#VERSION 3.1.1c4
+#VERSION 3.1.1c3
+#VERSION 3.1.1c3
+#VERSION 3.1.1c2
+#VERSION 3.1.1c2
+#VERSION 3.1.1c1
+#VERSION 3.1.1c1
+#VERSION 3.1.1t1
+#VERSION 3.1.1t1
+#VERSION 3.1.1d16
+#VERSION 3.1.1d16
+#VERSION 3.1.1d15
+#VERSION 3.1.1d15
+#VERSION 3.1.1d14
+use bn;
+alter table plans drop index group_plan_costcode_period;
+alter table plans add UNIQUE KEY Group_Plan_CostCode_Period (GroupId,Plan,CostCode,PeriodId);
+alter table users drop index Group_Plan_CostCode_Period;
+alter table users DROP index Group_Plan_CostCode_StartDate_EndDate_Period;
+alter table sessions DROP COLUMN GroupId;
+alter table sessions drop PRIMARY KEY;
+alter table sessions add PRIMARY KEY (User);
+alter table sessions drop index SessionId ;
+alter table sessions add KEY SessionId (SessionId);
+#VERSION 3.1.1d14
+#VERSION 3.1.1d13
+#VERSION 3.1.1d13

@@ -1,0 +1,957 @@
+
+#######################################################################################
+#
+# This file contains the table schemas used in ivms and the SQL commands to create them
+# The SQL commands are mysql database compatible. Execute this file using:
+#           mysql < ivms-tables.sql
+# to create the initial database structure.
+#
+# Use MyISAM table type for tables with frequent SELECTs than UPDATE/INSERTs
+# Use InnoDB table type for tables with frequent UPDATE/INSERTs
+#
+#######################################################################################
+#
+#
+#
+DROP DATABASE IF EXISTS %DBNAME%;
+CREATE DATABASE %DBNAME%;
+use %DBNAME%;
+
+# 
+# Alarm related tables
+#
+DROP TABLE IF EXISTS actions;
+CREATE TABLE actions (
+  ActionId bigint(20) NOT NULL auto_increment,
+  Name varchar(32) NOT NULL default '',
+  GroupId tinyint(1) NOT NULL default '-1',
+  Type varchar(32) NOT NULL default '',
+  Field1 varchar(254) default NULL,
+  Field2 varchar(254) default NULL,
+  Field3 varchar(254) default NULL,
+  Field4 varchar(254) default NULL,
+  Field5 varchar(254) default NULL,
+  Field6 varchar(254) default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (ActionId),
+  UNIQUE KEY Name (Name)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS alarms;
+CREATE TABLE alarms (
+  AlarmId bigint(20) NOT NULL auto_increment,
+  ActionId varchar(64) NOT NULL default '',
+  GroupId tinyint(1) NOT NULL default '-1',
+  Status tinyint(1) NOT NULL default '0',
+  Type varchar(32) NOT NULL default '',
+  Event blob NOT NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (AlarmId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS events;
+CREATE TABLE events (
+  AlarmId bigint(20) NOT NULL default '0',
+  GroupId tinyint(1) NOT NULL default '-1',
+  DateTime datetime NOT NULL default '0000-00-00 00:00:00',
+  Location varchar(254) default NULL,
+  Inference varchar(254) default NULL,
+  Description varchar(254) default NULL,
+  KEY DateTime (DateTime)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+
+#
+# rating information tables
+#
+DROP TABLE IF EXISTS ANI;
+CREATE TABLE ANI (
+  ANIId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ANI varchar(32) NOT NULL default '',
+  CallNumber  varchar(32) NOT NULL default '',
+  Prefix varchar(32) NOT NULL default '',
+  PrefixLength mediumint(9) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (ANIId),
+  UNIQUE KEY ANI_Call_GroupId (ANI,CallNumber,GroupId),
+  KEY ANI (ANI)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS carrierplans;
+CREATE TABLE carrierplans (
+  CarrierplanId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  EndpointId bigint(20) NOT NULL default '-1',
+  BuySell char(1) NOT NULL default '',
+  Carrier varchar(32) NOT NULL default '',
+  RouteGroup varchar(32) NOT NULL default '',
+  Plan varchar(32) NOT NULL default '',
+  Description varchar(64) NOT NULL default '',
+  ANI varchar(32) NOT NULL default '',
+  StripPrefix varchar(32) NOT NULL default '',
+  PrefixDigits mediumint(9) NOT NULL default '0',
+  AddbackDigits varchar(16) NOT NULL default '',
+  RatingAddback varchar(16) NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (CarrierplanId),
+  UNIQUE KEY EpId_Flag (EndpointId,BuySell),
+  KEY Carrier (Carrier),
+  KEY Route (RouteGroup),
+  KEY Plan (Plan),
+  FOREIGN KEY (EndpointId) REFERENCES endpoints(EndpointId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS routes;
+CREATE TABLE routes (
+  RouteId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  RouteGroup varchar(32) NOT NULL default '',
+  RegionCode  varchar(32) NOT NULL default '',
+  CostCode varchar(64) NOT NULL default '',
+  Description varchar(64) NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (RouteId),
+  UNIQUE KEY Group_Route_Region (GroupId,RouteGroup,RegionCode),
+  KEY CostCode (CostCode)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS regions;
+CREATE TABLE regions (
+  RegionId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  RegionCode varchar(32) NOT NULL default '',
+  DialCode varchar(64) NOT NULL default '',
+  Description varchar(64) NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (RegionId),
+  UNIQUE KEY Group_Region_Dial (GroupId,RegionCode,DialCode),
+  KEY Dial (DialCode),
+  KEY GroupId (GroupId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS plans;
+CREATE TABLE plans (
+  PlanId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  Plan varchar(32) NOT NULL default '',
+  CostCode varchar(64) NOT NULL default '',
+  DurMin mediumint(9) NOT NULL default '0',
+  DurIncr mediumint(9) NOT NULL default '0',
+  Rate float(10,4) NOT NULL default '0.0000',
+  Country varchar(64) NOT NULL default '',
+  ConnectionCharge float(10,4) NOT NULL default '0.0000',
+  EffectiveStartDate datetime default NULL,
+  EffectiveEndDate datetime default NULL,
+  PeriodId bigint(20) NOT NULL default '-1',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (PlanId),
+  UNIQUE KEY Group_Plan_CostCode_StartDate_EndDate_Period (GroupId,Plan,CostCode,EffectiveStartDate,EffectiveEndDate,PeriodId),
+  FOREIGN KEY (PeriodId) REFERENCES periods(PeriodId) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY Plan_Cost_Time (Plan,CostCode,PeriodId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS periods;
+CREATE TABLE periods (
+  PeriodId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  Period varchar(32) NOT NULL default '',
+  Zone varchar(32) default NULL,
+  StartWeekDays mediumint(9) NOT NULL default '-1',
+  EndWeekDays mediumint(9) NOT NULL default '-1',
+  StartTime TIME default NULL,
+  EndTime TIME default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY (PeriodId),
+  UNIQUE KEY Group_Period (GroupId,Period)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+
+#
+# user access tables
+#
+
+DROP TABLE IF EXISTS groups;
+CREATE TABLE groups (
+  GroupId tinyint(1) NOT NULL default '-1',
+  GroupName varchar(32) NOT NULL default '',
+  Cap blob,
+  EnforceVPort tinyint(1) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY (GroupId),
+  UNIQUE KEY GroupName (GroupName)
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS endpoints;
+CREATE TABLE endpoints (
+  EndpointId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClusterId smallint(6) NOT NULL default '-1',
+  flag tinyint(1) NOT NULL default '0',
+  realmname varchar(31) binary NOT NULL default '',
+  serialNumber varchar(67) binary NOT NULL default '',
+  port int(11) NOT NULL default '0',
+  extNumber varchar(63) binary NOT NULL default '',
+  phone varchar(63) binary NOT NULL default '',
+  firstName varchar(27) binary NOT NULL default '',
+  lastName varchar(27) binary NOT NULL default '',
+  location varchar(27) binary NOT NULL default '',
+  country varchar(27) binary NOT NULL default '',
+  comments varchar(27) binary NOT NULL default '',
+  customerId varchar(27) binary NOT NULL default '',
+  trunkGroup varchar(63) binary NOT NULL default '',
+  zone varchar(29) binary NOT NULL default '',
+  email varchar(79) binary NOT NULL default '',
+  forwardedPhone varchar(63) binary NOT NULL default '',
+  forwardedVpnPhone varchar(63) binary NOT NULL default '',
+  callingPlanName varchar(59) binary NOT NULL default '',
+  h323Id varchar(127) binary NOT NULL default '',
+  sipUri blob NOT NULL,
+  sipContact blob NOT NULL,
+  techPrefix varchar(63) binary NOT NULL default '',
+  peerGkId blob NOT NULL,
+  h235Password varchar(64) binary NOT NULL default '',
+  vpnName varchar(27) binary NOT NULL default '',
+  ogp varchar(63) binary NOT NULL default '',
+  proxyValid tinyint(4) default NULL,
+  isProxied tinyint(4) default NULL,
+  isProxying tinyint(4) default NULL,
+  callForwarded tinyint(4) default NULL,
+  isCallRollover tinyint(4) default NULL,
+  devType int(11) default NULL,
+  ipaddr int(11) unsigned default '0',
+  forwardedVpnExtLen int(11) default NULL,
+  maxCalls int(11) default NULL,
+  maxInCalls int(11) default NULL,
+  maxOutCalls int(11) default NULL,
+  priority int(11) default NULL,
+  rasPort int(11) default NULL,
+  q931Port int(11) default NULL,
+  callpartyType int(11) default NULL,
+  currentCalls int(11) default NULL,
+  vendor int(11) default NULL,
+  extLen int(11) default NULL,
+  subnetip int(11) unsigned default NULL,
+  subnetmask int(11) unsigned default NULL,
+  maxHunts int(11) default NULL,
+  extCaps int(11) default NULL,
+  caps int(11) default NULL,
+  stateFlags int(11) default NULL,
+  layer1Protocol int(11) default NULL,
+  inceptionTime bigint(20) default NULL,
+  refreshTime bigint(20) default NULL,
+  infotranscap int(11) default NULL,
+  srcingresstg varchar(63) binary NOT NULL default '',
+  igrpname varchar(31) binary NOT NULL default '',
+  dtg varchar(63) binary NOT NULL default '',
+  newsrcdtg varchar(63) binary NOT NULL default '',
+  natip int(11) unsigned default NULL,
+  natport int(11) default NULL,
+  callIdBlock smallint(6) default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00', 
+  bandwidth int(11) NOT NULL default 0,
+  callingpartyType int(11) default NULL,
+  PRIMARY KEY  (EndpointId),  
+  UNIQUE KEY Ep_Port (serialNumber,Port),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+  UserId bigint(20) NOT NULL auto_increment,
+  User varchar(32) NOT NULL default '',
+  GroupId tinyint(1) NOT NULL default '-1',
+  Password varchar(32) default NULL,
+  Cap blob,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (UserId),
+  KEY User_Pass (User,Password),
+  UNIQUE KEY User_Group (User,GroupId),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS filters;
+CREATE TABLE filters (
+  FilterId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  FilterName varchar(80) NOT NULL default '',
+  User varchar(32) NOT NULL default '',
+  TableName varchar(32) NOT NULL default '',
+  Filter blob,
+  PRIMARY KEY  (FilterId),
+  UNIQUE KEY Group_User_Name (GroupId, User, FilterName),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE,
+  INDEX User (User),
+  FOREIGN KEY (User) REFERENCES users(User) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS accesslist;
+CREATE TABLE accesslist (
+  ListId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  OwnerGroupId tinyint(1) NOT NULL default '-1',
+  Realm varchar(31) binary NOT NULL default '',
+  Endpoint varchar(67) binary NOT NULL default '',
+  port int(11) NOT NULL default '-1',
+  RegionCode  varchar(32) NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY (ListId),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON DELETE CASCADE,
+  INDEX OwnerGroupId (OwnerGroupId),
+  FOREIGN KEY (OwnerGroupId) REFERENCES groups(GroupId) ON DELETE CASCADE
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+
+#
+# cdr table
+#
+DROP TABLE IF EXISTS cdrlogs;
+CREATE TABLE cdrlogs (
+  CDRLogId int(11) unsigned NOT NULL auto_increment,
+  CDRTableName varchar(32) NOT NULL default '',
+  StartDateInt int(11) NOT NULL default '0',
+  EndDateInt int(11) default '0',
+  TotalCDRs int(11) default '0',
+  Status int(11) NOT NULL default '-1',
+  CreatedInt int(11) NOT NULL default '0',
+  LastInsertionInt int(11) NOT NULL default '0',
+  LastModifiedInt int(11) NOT NULL default '0',
+  PRIMARY KEY  (CDRLogID),
+  UNIQUE KEY CDRTableName (CDRTableName)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS cdrfiles;
+CREATE TABLE cdrfiles (
+  CDRFileId int(11) unsigned NOT NULL auto_increment,
+  SrcFileName varchar(255) NOT NULL default '',
+  CDRStartDateInt int(11) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY (CDRFileId),
+  KEY SrcFileName (SrcFileName)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS cdr;
+CREATE TABLE cdr (
+  CDRId bigint(20) NOT NULL auto_increment,
+  CDRLogId int(11) unsigned NOT NULL default '0',
+  MSWId smallint(6) NOT NULL default '0',
+  CDRFileId int(11) unsigned NOT NULL default '0',
+  SrcLine int(11) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  CallId varchar(128) NOT NULL default '',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermPort smallint(6) NOT NULL default '0',
+  Duration int(11) NOT NULL default '0',
+  CallDTMF varchar(64) NOT NULL default '',
+  CallE164 varchar(64) NOT NULL default '',
+  LastCallNumber varchar(64) NOT NULL default '',
+  NumberAfterTransit varchar(64) NOT NULL default '',
+  CallType varchar(4) NOT NULL default '',
+  DiscCode char(2) NOT NULL default '',
+  HoldTime mediumint(9) NOT NULL default '0',
+  PDD mediumint(9) NOT NULL default '0',
+  Ani varchar(64) default NULL,
+  NewANI varchar(64) NOT NULL default '',
+  ISDNCode mediumint(9) NOT NULL default '0',
+  ErrorIDLeg1 mediumint(9) default NULL,
+  ErrorIDLeg2 mediumint(9) default NULL,
+  LastEvent varchar(96) default NULL,
+  SeqNum int(11) default NULL,
+  SourceQ931Port mediumint(9) NOT NULL default '0',
+  UserId varchar(32) default NULL,
+  IncomingCallId varchar(128) NOT NULL default '',
+  Protocol smallint(6) NOT NULL default '0',
+  CdrType smallint(6) NOT NULL default '0',
+  HuntAttempts mediumint(9) NOT NULL default '0',
+  OrigTG varchar(32) NOT NULL default '',
+  TermTG varchar(32) NOT NULL default '',
+  H323RASError mediumint(9) NOT NULL default '0',
+  H323H225Error mediumint(9) NOT NULL default '0',
+  SipFinalResponseCode mediumint(9) NOT NULL default '0',
+  TZ varchar(16) NOT NULL default '',
+  OrigNumberType smallint(6) NOT NULL default '0',
+  TermNumberType smallint(6) NOT NULL default '0',
+  DurationMsec bigint(20) NOT NULL default '0',
+  OrigRealm varchar(32) NOT NULL default '',
+  TermRealm varchar(32) NOT NULL default '',
+  CallRoute varchar(64) NOT NULL default '',
+  Status tinyint(1) NOT NULL default '-1',
+  StatusDesc varchar(96) NOT NULL default '',
+  RegionCode varchar(32) default NULL,
+  BillableFlag char(1) NOT NULL default '',
+  ManipDialed varchar(64) NOT NULL default '',
+  OrigDesc varchar(64) NOT NULL default '',
+  OrigCountry varchar(64) NOT NULL default '',
+  DestDesc varchar(64) NOT NULL default '',
+  DestCountry varchar(64) NOT NULL default '',
+  BuyCarrier varchar(32) NOT NULL default '',
+  BuyRate float(10,4) NOT NULL default '0.0000',
+  BuyConnectCharge float(10,4) NOT NULL default '0.0000',
+  BuyRoundedSec int(11) NOT NULL default '0',
+  BuyPrice float(10,4) NOT NULL default '0.0000',
+  BuyPlan varchar(32) NOT NULL default '',
+  BuyRouteGroup varchar(32) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  SellRate float(10,4) NOT NULL default '0.0000',
+  SellConnectCharge float(10,4) NOT NULL default '0.0000',
+  SellRoundedSec int(11) NOT NULL default '0',
+  SellPrice float(10,4) NOT NULL default '0.0000',
+  SellPlan varchar(32) NOT NULL default '',
+  SellRouteGroup varchar(32) NOT NULL default '',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  CallDstCustId varchar(64) NOT NULL default '',
+  CallZoneData  varchar(64) NOT NULL default '',
+  CallDstNumType varchar(64) NOT NULL default '',
+  CallSrcNumType varchar(64) NOT NULL default '',
+  OrigISDNCauseCode varchar(64) NOT NULL default '',
+  SrcPacketsReceived int(11) NOT NULL default '0',
+  SrcPacketsLost int(11) NOT NULL default '0',
+  SrcPacketsDiscarded int(11) NOT NULL default '0',
+  SrcPDV int(11) NOT NULL default '0',
+  SrcCodec varchar(24) NOT NULL default '',
+  SrcLatency int(11) NOT NULL default '0',
+  SrcRFactor smallint(6) NOT NULL default '0',
+  DstPacketsReceived int (11) NOT NULL default '0',
+  DstPacketsLost int(11) NOT NULL default '0',
+  DstPacketsDiscarded int(11) NOT NULL default '0',
+  DstPDV int(11) NOT NULL default '0',
+  DstCodec varchar(24) NOT NULL default '',
+  DstLatency int(11) NOT NULL default '0',
+  DstRFactor smallint(6) NOT NULL default '0',
+  SrcSipRespcode smallint(6) NOT NULL default '0',
+  PeerProtocol varchar(24) NOT NULL default '',
+  SrcPrivateIp int(11) unsigned NOT NULL default '0',
+  DstPrivateIp int(11) unsigned NOT NULL default '0',
+  SrcIgrpName varchar(24) NOT NULL default '',
+  DstIgrpName varchar(24) NOT NULL default '',
+
+  CreatedInt int(11) NOT NULL default '0',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (CDRId),
+  UNIQUE KEY CallId (CallId),
+  KEY CDRLogId (CDRLogId),
+  KEY CDRFileId (CDRFileId),
+  KEY DateTimeInt (DateTimeInt)
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+
+
+#
+# summary tables
+#
+DROP TABLE IF EXISTS cdrsummary;
+CREATE TABLE cdrsummary (
+  CdrSummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  CDRFileId int(11) unsigned NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  DiscCode char(2) NOT NULL default '',
+  RegionCode varchar(32) default NULL,
+  ErrorIdLeg1 mediumint(9) default NULL,
+  ISDNCode mediumint(9) NOT NULL default '0',
+  CallCount int(11) NOT NULL default '0',
+  Duration bigint(11) NOT NULL default '0',
+  PDD int(11) NOT NULL default '0',
+  BuyCarrier varchar(32) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  SrcPacketsReceived int(11) NOT NULL default '0',
+  SrcPacketsLost int(11) NOT NULL default '0',
+  SrcPDV int(11) NOT NULL default '0',
+  SrcRFactor smallint(6) NOT NULL default '0',
+  DstPacketsReceived int (11) NOT NULL default '0',
+  DstPacketsLost int(11) NOT NULL default '0',
+  DstPDV int(11) NOT NULL default '0',
+  DstRFactor smallint(6) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (CdrSummaryId),
+  KEY DateTimeInt (DateTimeInt),
+  KEY CDRFileId (CDRFileId)
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS sellsummary;
+CREATE TABLE sellsummary (
+  SellSummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  OrigDesc varchar(64) NOT NULL default '',
+  RegionCode varchar(32) NOT NULL default '',
+  DestCountry varchar(64) NOT NULL default '',
+  SellCarrier varchar(32) NOT NULL default '',
+  SellPlan varchar(32) NOT NULL default '',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  Duration bigint(11) NOT NULL default '0',
+  PDD int(11) NOT NULL default '0',
+  SellRate float(10,4) NOT NULL default '0.0000',
+  BuyPrice double(20,4) NOT NULL default '0.0000',
+  SellPrice double(20,4) not null default '0.0000',
+  CallCount int(11) NOT NULL default '0',
+  BillableCount int(11) NOT NULL default '0',
+  SellConnectCharge float(10,4) NOT NULL default '0.0000',
+  SellRoundedSec bigint(11) NOT NULL default '0',
+  BuyConnectCharge float(10,4) NOT NULL default '0.0000',
+  BuyRoundedSec bigint(11) NOT NULL default '0',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  SellSummaryId (SellSummaryId),
+  KEY DateTimeInt (DateTimeInt)
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS buysummary;
+CREATE TABLE buysummary (
+  BuySummaryId bigint(20) NOT NULL auto_increment,
+  MSWId smallint(6) NOT NULL default '0',
+  DateTimeInt int(11) NOT NULL default '0',
+  DestDesc varchar(64) NOT NULL default '',
+  RegionCode varchar(32) NOT NULL default '',
+  OrigCountry varchar(64) NOT NULL default '',
+  BuyCarrier varchar(32) NOT NULL default '',
+  BuyPlan varchar(32) NOT NULL default '',
+  OrigIp int(11) unsigned NOT NULL default '0',
+  OrigGw varchar(64) NOT NULL default '',
+  OrigPort smallint(6) NOT NULL default '0',
+  TermIp int(11) unsigned NOT NULL default '0',
+  TermGw varchar(64) NOT NULL default '',
+  TermPort smallint(6) NOT NULL default '0',
+  Duration bigint(11) NOT NULL default '0.0000',
+  PDD int(11) NOT NULL default '0',
+  BuyRate float(10,4) NOT NULL default '0.0000',
+  BuyPrice double(20,4) NOT NULL default '0.0000',
+  SellPrice double(20,4) NOT NULL default '0.0000',
+  CallCount int(11) NOT NULL default '0',
+  BillableCount int(11) NOT NULL default '0',
+  BuyConnectCharge float(10,4) NOT NULL default '0.0000',
+  BuyRoundedSec bigint(11) NOT NULL default '0',
+  SellConnectCharge float(10,4) NOT NULL default '0.0000',
+  SellRoundedSec bigint(11) NOT NULL default '0',
+  MaxDateTimeInt int(11) NOT NULL default '0',
+  MinDateTimeInt int(11) NOT NULL default '0',
+  UserAuth set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64') default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  BuySummaryId (BuySummaryId),
+  KEY DateTimeInt (DateTimeInt)
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+#
+# other tables - license, errors and msws
+#
+DROP TABLE IF EXISTS license;
+CREATE TABLE license (
+  Filename varchar(80) NOT NULL default '',
+  File blob,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (filename)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS errors;
+CREATE TABLE errors (
+  ErrorId mediumint(9) NOT NULL default '0',
+  ErrDesc varchar(64) NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (ErrorId),
+  KEY ErrDesc (ErrDesc)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+
+DROP TABLE IF EXISTS msws;
+CREATE TABLE msws (
+  MSWId smallint(6) NOT NULL auto_increment,
+  ClusterId smallint(6) NOT NULL,
+  MSWName varchar(32) NOT NULL default '',
+  MSWIp int(11) unsigned NOT NULL default '0',
+  ReadPassword varchar(16) NOT NULL default '',
+  WritePassword varchar(16) NOT NULL default '',        
+  Flag  smallint(6) NOT NULL default '0',
+  Description varchar(64) NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (MSWId),
+  UNIQUE KEY MSWName (MSWName),
+  UNIQUE KEY MSWIp (MSWIp)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS activitylogs;
+CREATE TABLE activitylogs (
+  ActivityLogId int(11) NOT NULL auto_increment,
+  ServiceName varchar(32) NOT NULL default '',
+  ServiceId int(11) NOT NULL,
+  Reason varchar(64) NOT NULL,
+  ProcessStartDate datetime NOT NULL,
+  ProcessEndDate datetime NOT NULL,
+  CdrLogId int(11) unsigned NOT NULL,
+  MaxCdrDateInt int(11) NOT NULL default '0',
+  MinCdrDateInt int(11) NOT NULL default '0',
+  TotalCDRs int(11) NOT NULL default '0',
+  AdditionalInfo blob,
+  PRIMARY KEY (ActivityLogId),
+  KEY ProcessStartDate (ProcessStartDate)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS sessions;
+CREATE TABLE sessions (
+  User varchar(32) NOT NULL,
+  GroupId tinyint(1) NOT NULL default '-1',
+  SessionId varchar(64) NOT NULL,
+  ip int(11) unsigned default '0',
+  Created datetime NOT NULL,
+  PRIMARY KEY (User,GroupId),
+  UNIQUE KEY SessionId (SessionId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+CREATE TABLE IF NOT EXISTS tablestatus (
+  tablename varchar(32) NOT NULL default '',
+  status tinyint NOT NULL default 0,
+  PRIMARY KEY  (tablename)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS services;
+CREATE TABLE services (
+  ServiceId bigint(20) NOT NULL auto_increment,
+  Type varchar(32) NOT NULL,
+  Parameters blob,
+  GroupId tinyint(1) NOT NULL default '-1',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (ServiceId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS realms;
+CREATE TABLE realms(
+  RealmId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClusterId smallint(6) NOT NULL default '-1',
+  Name varchar(31) binary NOT NULL default '',
+  IfName varchar(16) binary NOT NULL default '',
+  VipName varchar(16) binary NOT NULL default '',
+  Id bigint(20) default NULL,
+  Rsa bigint(20) default NULL,
+  Mask bigint(20) default NULL,
+  SigPoolId int(11) default NULL,
+  MedPoolId int(11) default NULL,
+  AddrType int(11) default NULL,
+  AdminStatus int(11) default NULL,
+  OpStatus int(11) default NULL,
+  Imr smallint(6) default NULL,
+  Emr smallint(6) default NULL,
+  SipAuth int(11) default NULL,
+  CidBlock varchar(15) binary NOT NULL default '',
+  CidUnBlock varchar(15) binary NOT NULL default '',
+  ProxyRegId varchar(67) binary NOT NULL default '',
+  ProxyPort int(11) NOT NULL default '0',
+  VnetName varchar(16) binary NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+
+  PRIMARY KEY  (RealmId),
+  UNIQUE KEY RealmName (Name),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=MyISAM  PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS trails;
+CREATE TABLE trails (
+  TrailId bigint(20) NOT NULL auto_increment,
+  UserName varchar(32) NOT NULL default '',
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClientAddr varchar(32) NOT NULL default '',
+  DBAction varchar(32) NOT NULL default '',
+  DBKey varchar(32) default NULL,
+  Status varchar(32) default NULL,
+  Detail blob,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (TrailId)
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS iedgegroups;
+CREATE TABLE iedgegroups (
+  Id bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClusterId smallint(6) NOT NULL default '-1',
+  Name varchar(31) binary NOT NULL default '',
+  MaxIn int(11) NOT NULL default '0',
+  MaxOut int(11) NOT NULL default '0',
+  MaxTotal int(11) NOT NULL default '0',
+  CallsIn int(11) NOT NULL default '0',
+  CallsOut int(11) NOT NULL default '0',
+  CallsTotal int(11) NOT NULL default '0',
+  MaxBwIn int(11) NOT NULL default '0',
+  MaxBwOut int(11) NOT NULL default '0',
+  MaxBwTotal int(11) NOT NULL default '0',
+  Timeout int(11) NOT NULL default '0',
+  Imr smallint(6) NOT NULL default '-1',
+  Emr smallint(6) NOT NULL default '-1',
+  DndTime bigint(20) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (Id),
+  UNIQUE KEY IEdgeGroupName (Name),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS routesnames;
+CREATE TABLE routesnames (
+  GroupId tinyint(1) NOT NULL default '-1',
+  CallPlanNames longblob,
+  CallRouteNames longblob,
+  CallBindingNames longblob,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY (GroupId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS CollectorType;
+CREATE TABLE `CollectorType` (
+  `CollectorType` varchar(45) NOT NULL default '',
+  `TransportType` tinyint(1) NOT NULL default '0',
+  `DescriptiveName` varchar(64) default NULL,
+  `JavaClass` varchar(225) NOT NULL default '',
+  PRIMARY KEY  (`CollectorType`)
+) TYPE=MyISAM COMMENT='CDRStream Collector Agent table';
+  
+DROP TABLE IF EXISTS ConsumerType;
+CREATE TABLE `ConsumerType` (
+  `ConsumerType` varchar(45) NOT NULL default '',
+  `DescriptiveName` varchar(64) default NULL,
+  `JavaClass` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`ConsumerType`)
+) TYPE=MyISAM COMMENT='CDR Import Table for Consumers';
+  
+DROP TABLE IF EXISTS MappingType;
+CREATE TABLE `MappingType` ( 
+  `MappingID` int(10) unsigned NOT NULL auto_increment,
+  `MappingXMLLocation` varchar(255) NOT NULL default '',
+  `DescriptiveName` varchar(100) default NULL,
+  PRIMARY KEY  (`MappingID`)
+) TYPE=MyISAM ;
+  
+DROP TABLE IF EXISTS PipeLine;
+CREATE TABLE `PipeLine` (
+  `PipeLineID` int(10) unsigned NOT NULL auto_increment,
+  `PipeLineDescription` varchar(45) default NULL,
+  `PipeLineDebugLevel` varchar(10) NOT NULL default '',
+  `CollectorType` varchar(45) NOT NULL default '',
+  `ConsumerType` varchar(45) NOT NULL default '',
+  `DeploymentStatus` varchar(20) NOT NULL default '0',
+  `MappingID` int(10) unsigned NOT NULL default '0',
+  `NextStartTime` datetime default NULL,
+  `IntervalValue` int(10) unsigned default NULL,
+  `CreateTime` datetime default NULL,
+  `ModifiedTime` datetime NOT NULL default '0000-00-00 00:00:00',
+  `SchedulerName` varchar(100) default NULL,
+  `AutomaticStart` tinyint(3) unsigned NOT NULL default '0',
+  `StreamType` varchar(45) NOT NULL default '',
+  PRIMARY KEY  (`PipeLineID`)
+) TYPE=MyISAM COMMENT='CDRStream - PipeLine table';
+
+DROP TABLE IF EXISTS CollectorParams;
+CREATE TABLE `CollectorParams` (
+  `PipeLineID` int(10) unsigned NOT NULL default '0',
+  `Name` varchar(45) NOT NULL default '',
+  `Value` varchar(255) NOT NULL default '',
+  UNIQUE KEY `Index` (`PipeLineID`,`Name`,`Value`)
+) TYPE=MyISAM COMMENT='CollectorParams Table';
+
+DROP TABLE IF EXISTS ConsumerParams;
+CREATE TABLE `ConsumerParams` (
+  `PipeLineID` int(10) unsigned NOT NULL default '0',
+  `Name` varchar(45) NOT NULL default '',
+  `Value` varchar(255) NOT NULL default '',
+  UNIQUE KEY `Index` (`PipeLineID`,`Name`,`Value`)
+) TYPE=MyISAM COMMENT='ConsumerParams Table';
+
+DROP TABLE IF EXISTS subnets;
+CREATE TABLE subnets(
+  SubnetId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClusterId smallint(6) NOT NULL default '-1',
+  Name varchar(67) binary NOT NULL default '',
+  IPaddress int(11) unsigned NOT NULL default '0',
+  Mask int(11) unsigned NOT NULL default '0',
+  IEdgeGroupName varchar(31) binary NOT NULL default '',
+  RealmName varchar(31) binary NOT NULL default '',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (SubnetId),
+  UNIQUE KEY SubnetName (Name),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=MyISAM  PACK_KEYS=DEFAULT;
+
+
+DROP TABLE IF EXISTS callingplans;
+CREATE TABLE callingplans (
+  Id bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClusterId smallint(6) NOT NULL default '-1',
+  Name varchar(59) binary NOT NULL default '',
+	Vpng varchar(79) binary NOT NULL default '',
+	RefreshTime bigint(20)  NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (Id),
+  UNIQUE KEY Name (ClusterId,Name),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS cpbindings;
+CREATE TABLE cpbindings (
+  Id bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClusterId smallint(6) NOT NULL default '-1',
+  CPName varchar(59) binary NOT NULL default '',
+  CRName varchar(59) binary NOT NULL default '',
+  RefreshTime bigint(20) default NULL,
+  StartSec int(11) NOT NULL default '0',
+  StartMin int(11) NOT NULL default '0',
+	StartHour int(11)  NOT NULL default '0',
+	StartMDay int(11)  NOT NULL default '0',
+	StartMon int(11)  NOT NULL default '0',
+	StartYear int(11)  NOT NULL default '0',
+	StartWDay int(11)  NOT NULL default '0',
+	StartYDay int(11)  NOT NULL default '0',
+	StartIsDst int(11)  NOT NULL default '0',
+	EndSec int(11)  NOT NULL default '0',
+	EndMin int(11)  NOT NULL default '0',
+	EndHour int(11)  NOT NULL default '0',
+	EndMDay int(11)  NOT NULL default '0',
+	EndMon int(11)  NOT NULL default '0',
+	EndYear int(11)  NOT NULL default '0',
+	EndWDay int(11)  NOT NULL default '0',
+	EndYDay int(11)  NOT NULL default '0',
+	EndIsDst int(11)  NOT NULL default '0',
+	Priority int(11)  NOT NULL default '0',
+	Flag int(11)  NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (Id),
+  UNIQUE KEY Name (ClusterId,CPName,CRName),
+  KEY CPName(CPName),
+  Key CRName(CRName),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+) TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+DROP TABLE IF EXISTS callingroutes;
+CREATE TABLE callingroutes(
+  Id bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  ClusterId smallint(6) NOT NULL default '-1',
+  Name varchar(59) binary NOT NULL default '',
+	Dest varchar(63) binary NOT NULL default '',
+  Prefix varchar(63) binary NOT NULL default '',
+	SrcPrefix varchar(63) binary NOT NULL default '',
+  RefreshTime bigint(20)  NOT NULL default '0',
+  SrcPresent tinyint(4)  NOT NULL default '0',
+  Src varchar(63) binary NOT NULL default '',
+  SrcLen int(11)  NOT NULL default '0',
+  DestLen int(11)  NOT NULL default '0',
+  RouteFlags int(11)  NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (Id),
+  UNIQUE KEY Name (ClusterId,Name),
+  Key CRName(Name,Src,Dest),
+  INDEX GroupId (GroupId),
+  FOREIGN KEY (GroupId) REFERENCES groups(GroupId) ON UPDATE CASCADE ON DELETE CASCADE
+)TYPE=InnoDB PACK_KEYS=DEFAULT;
+
+
+
+#
+# The following lines create the default entries required in iVMS tables
+#
+REPLACE INTO groups VALUES (1,'admin',"<?xml version='1.0'?>\n<CAPABILITIES admin='true' root='true'>\n  <Report>\n  <Asr>\n      <Chromocode normal='60' questionable='58' />\n    </Asr>\n  <Business>\n      <Profit normal='5' questionable='0' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read='false' readwrite='true' />\n  <Routes read='false' readwrite='true'>\n    <DialPlans readwrite='true' />\n  </Routes>\n  <Rates read='false' readwrite='true' />\n  <Alarm ARM='true'>\n    <Log read='false' readwrite='true' />\n    <CDR read='false' readwrite='true' />\n    <Actions read='false' ARM='true' script='true' generic='true' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n</CAPABILITIES>",0,now(),now());
+REPLACE INTO groups VALUES (-1,'',"<?xml version='1.0'?>\n<CAPABILITIES admin='true' root='true'>\n  <Report>\n  <Asr>\n      <Chromocode normal='60' questionable='58' />\n    </Asr>\n  <Business>\n      <Profit normal='5' questionable='0' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read='false' readwrite='true' />\n  <Routes read='false' readwrite='true'>\n    <DialPlans readwrite='true' />\n  </Routes>\n  <Rates read='false' readwrite='true' />\n  <Alarm ARM='true'>\n    <Log read='false' readwrite='true' />\n    <CDR read='false' readwrite='true' />\n    <Actions read='false' ARM='true' script='true' generic='true' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n</CAPABILITIES>",0,now(),now());
+REPLACE INTO groups VALUES (-2,'*',"<?xml version='1.0'?>\n<CAPABILITIES admin='true' root='true'>\n  <Report>\n  <Asr>\n      <Chromocode normal='60' questionable='58' />\n    </Asr>\n  <Business>\n      <Profit normal='5' questionable='0' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read='false' readwrite='true' />\n  <Routes read='false' readwrite='true'>\n    <DialPlans readwrite='true' />\n  </Routes>\n  <Rates read='false' readwrite='true' />\n  <Alarm ARM='true'>\n    <Log read='false' readwrite='true' />\n    <CDR read='false' readwrite='true' />\n    <Actions read='false' ARM='true' script='true' generic='true' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n</CAPABILITIES>",0,now(),now());
+
+REPLACE INTO users VALUES (1,'root',1,'hGyVtnlrHBskPMTU5frLr59NWpU=',"<?xml version='1.0'?>\n<CAPABILITIES admin='true' sysadmin='true' root='true'>\n  <Report>\n  <Asr>\n      <Chromocode normal='60' questionable='58' />\n    </Asr>\n  <Business>\n      <Profit normal='5' questionable='0' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read='false' readwrite='true' />\n  <Routes read='false' readwrite='true'>\n    <DialPlans readwrite='true' />\n  </Routes>\n  <Rates read='false' readwrite='true' />\n  <Alarm ARM='true'>\n    <Log read='false' readwrite='true' />\n    <CDR read='false' readwrite='true' />\n    <Actions read='false' ARM='true' script='true' generic='true' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n</CAPABILITIES>",now(),now());
+
+REPLACE INTO endpoints (EndpointId, GroupId, realmname, serialNumber, port, created, lastmodified) VALUES (-1,1,'','*',-1,now(),now());
+
+# Insert and delete an endpoint to get around the -1 endpointid problem
+# in mysql
+INSERT INTO endpoints (serialnumber, port, groupid, clusterid, flag) VALUES ('ep1', 0, 1, 4, 1);
+DELETE FROM endpoints where serialnumber='ep1' and port=0;
+
+
+REPLACE INTO actions VALUES (-1, 'None Action', -1, 'none', '', '', '', '', '', '', now(), now());
+
+REPLACE INTO periods VALUES (-1,'-1','DefaultPlan',NULL,127,127,'00:00:00','23:59:59',now(),now());
+
+## PIPELINE QUERIES
+
+REPLACE INTO CollectorType VALUES('ExportCollector',0,'Collector agent for export stream','com.nextone.bn.cdrstream.collection.ExportCollectorAgent');
+
+REPLACE INTO CollectorType VALUES('DB',0,'','com.nextone.bn.cdrstream.collection.DBCollectorAgent');
+
+REPLACE INTO CollectorType VALUES('DelimitedFileType',0,'Collector Agent for delimited file','com.nextone.bn.cdrstream.collection.DelimitedFileCollectorAgent');
+
+REPLACE INTO ConsumerType VALUES('Rater','Default Consumer for Import Pipeline','com.nextone.bn.cdrstream.consumer.RaterConsumer');
+
+REPLACE INTO ConsumerType VALUES('CDRFileConsumer','File Consumer for CDR data','com.nextone.bn.cdrstream.consumer.CDRFileConsumer');
+
+REPLACE INTO ConsumerType VALUES('CDRDBConsumer','Database Consumer for CDR data','com.nextone.bn.cdrstream.consumer.CDRDBConsumer');
+
+INSERT INTO services VALUES ('','Archive','<?xml version=\"1.0\"?>\n\n<archiveentry type=\"PROVISIONAL\" action=\"BACKUP\" id=\"\">\n  <dir>/home/nextone/provBkup</dir>\n  <enddate></enddate>\n  <age>7</age>\n  <schedule>\n    <days>254</days>\n <hh>04</hh>\n    <mm>00</mm>\n    <ss>00</ss>\n    <reps>9999</reps>\n    <sname day=\"1\">archiver_1115157506995</sname>\n   <sname day=\"2\">archiver_1115157507039</sname>\n    <sname day=\"3\">archiver_1115157507059</sname>\n    <sname day=\"4\">archiver_1115157507079</sname>\n    <sname day=\"5\">archiver_1115157507100</sname>\n    <sname day=\"6\">archiver_1115157507121</sname>\n    <sname day=\"7\">archiver_1115157507141</sname>\n  </schedule>\n</archiveentry>\n\n',1,'2005-05-03 17:58:27');
+
+#
+# The following lines create the default entries required in iVMS tables
+#
+#       Insert User Name and Password into user table in mysql database
+#
+#
+%COMMENT%USE mysql; %COMMENT%REPLACE INTO user VALUES('localhost','USERNAME',PASSWORD('USERPASSWORD'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','',0,0,0); %COMMENT%REPLACE INTO user VALUES('127.0.0.1','USERNAME',PASSWORD('USERPASSWORD'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','',0,0,0); %COMMENT%REPLACE INTO user VALUES('%','USERNAME',PASSWORD('USERPASSWORD'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','',0,0,0);
+%COMMENT%UPDATE user SET password = PASSWORD('USERPASSWORD') where User = '';
+%COMMENT%FLUSH PRIVILEGES;
+%COMMENT%select "" as "Updated mysql user table";
+                                                                                                                             
+select "" as "Done creating new iVMS database";
+

@@ -1,0 +1,74 @@
+#! /bin/sh
+#
+# LSB compatible service control script; see http://www.linuxbase.org/spec/
+# 
+# Source LSB init functions
+# providing start_daemon, killproc, pidofproc, 
+# log_success_msg, log_failure_msg and log_warning_msg.
+# This is currently not used by UnitedLinux based distributions and
+# not needed for init scripts for UnitedLinux only. If it is used,
+# the functions from rc.status should not be sourced or used.
+#. /lib/lsb/init-functions
+
+# Shell functions sourced from /etc/rc.status:
+#      rc_check         check and set local and overall rc status
+#      rc_status        check and set local and overall rc status
+#      rc_status -v     be verbose in local rc status and clear it afterwards
+#      rc_status -v -r  ditto and clear both the local and overall rc status
+#      rc_status -s     display "skipped" and exit with status 3
+#      rc_status -u     display "unused" and exit with status 3
+#      rc_failed        set local and overall rc status to failed
+#      rc_failed <num>  set local and overall rc status to <num>
+#      rc_reset         clear both the local and overall rc status
+#      rc_exit          exit appropriate to overall rc status
+#      rc_active        checks whether a service is activated by symlinks
+#      rc_splash arg    sets the boot splash screen to arg (if active)
+. /etc/rc.status
+
+# set path to a valid Java SDK
+#. setJava --devel --version 1.3
+
+# Reset status of this service
+rc_reset
+
+case "$1" in
+    start)
+	echo -n "Starting"
+	modprobe qla2300
+	# check the final status
+        rc_failed 0
+	# Remember status and be verbose
+	rc_status -v
+	;;
+    stop)
+	echo -n "Shutting down "
+	rmmod -f qla2300
+	rc_failed 0
+	# Remember status and be verbose
+	rc_status -v
+	;;
+    restart)
+	## Stop the service and regardless of whether it was
+	## running or not, start it again.
+	$0 stop
+	$0 start
+
+	# Remember status and be quiet
+	rc_status
+	;;
+    status)
+	echo -n "Checking "
+	lsmod|grep qla2300 >/dev/null 2>&1
+ 
+        if test $? = 0 ; then
+          rc_failed 0
+        else
+          rc_failed 3
+        fi
+
+	# NOTE: rc_status knows that we called this init script with
+	# "status" option and adapts its messages accordingly.
+	rc_status -v
+	;;
+esac
+rc_exit

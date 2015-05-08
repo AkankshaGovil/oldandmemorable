@@ -1,0 +1,45 @@
+# This file is to be used by dbback_rsm_cron.sh
+# Please list files and dir to be backed up by the script, one file/dir per line
+# The script checks to see whether it is a regular file, or dir and action accordingly, so no need to worry
+# Bilig Oyun for GENABND - Jan 12, 2011
+# V2.0 - Aug 05, 2011
+
+# Files
+
+/etc/fstab
+/etc/ha.d/ha.cf  
+/etc/HOSTNAME
+/etc/hosts
+/etc/localtime
+/etc/loginusers
+/etc/my.cnf
+/etc/named.conf
+/etc/ntp.conf
+/etc/ocfs2/cluster.conf
+/etc/pam.d/jpam
+/etc/pam.d/sshd
+/etc/passwd
+/etc/resolv.conf
+/etc/rsyncd.conf
+/etc/shadow
+/etc/snmp/snmpd.conf
+/etc/ssh/sshd_config
+/etc/sysconfig/clock
+/etc/sysconfig/o2cb
+/etc/sysconfig/SuSEfirewall2
+/etc/sysctl.conf
+/etc/syslog.conf
+/opt/nxtn/rsm/bn.properties
+/opt/nxtn/rsm/logger.properties
+/usr/lib/ocf/resource.d/genband/rsmres
+/usr/lib/ocf/resource.d/genband/rsmresend
+/usr/lib/ocf/resource.d/genband/rsmsyncpam 
+/var/lib/heartbeat/crm/cib.xml
+/var/spool/cron/tabs
+
+# Directories
+
+/etc/sysconfig/network
+/opt/nxtn/rsm/alarmscripts
+/opt/nxtn/rsm/CDRStream/transform
+/var/lib/heartbeat/crm

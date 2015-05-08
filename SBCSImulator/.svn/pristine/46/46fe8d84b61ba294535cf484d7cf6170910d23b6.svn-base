@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+# Read a license template file and generate a signed license file on 
+# the stdout
+
+use NexTone::LM qw(&encode);
+use Getopt::Std;
+
+my ($prog, $file, $line, $data, $signature, %opt);
+
+($prog = $0) =~ s{(.*/)}{};
+
+getopts('d:h', \%opt) or usage() and exit;
+usage() and exit if $opt{h};
+
+if ($opt{d}) {
+	$expiry_date = localtime(time()+$opt{d}*60*60*24);
+}
+
+die "Usage: $prog <license_file>\n" unless ($#ARGV >= 0);
+$file=$ARGV[0];
+
+die "Error: Can not open license file $file - $!\n" unless (-r $file);
+
+## Read the License Template File
+open(LIC, "<$file")
+	or die "Error opening $file: $!\n";
+
+while (<LIC>) {
+	$line = $_;	
+	if ($line !~ /\<SIGNATURE/) {
+		$data = join('', $data, $line);
+	}
+} 
+
+close(LIC);
+
+## If date is provided modify the date
+$data =~ s{(EXPIRES=')([^']*)(')}{$1$expiry_date$3} if (defined($expiry_date));
+
+## Calculate the signature
+$signature = encode($data);
+$line = q(	<SIGNATURE id=')."$signature".q('/>);
+$data =~ s{(</LICENSE>)}{$line\n$1};
+
+## Write the License File to the stdout
+print "$data";
+
+
+sub usage() {
+	print << "EOF";
+	
+Usage: $prog [-d days] <license_templ>
+
+    -h         : this (help) message
+    -d days    : set expiry date to argument (in days)
+
+example: $prog -d 30 NARS.tmpl
+
+EOF
+}

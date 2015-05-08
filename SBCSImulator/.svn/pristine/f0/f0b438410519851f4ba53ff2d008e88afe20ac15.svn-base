@@ -1,0 +1,15 @@
+../nars-agent/cdrserver.pl
+../nars-agent/rateone.pl
+../nars-agent/rateunrated.pl
+../nars-agent/narsagent
+../nars-agent/narspm
+../nars-agent/cdrdel
+../nars-agent/nars.cfg
+../nars-agent/narslog.cfg
+../nars-agent/logpp
+../nars-agent/createNarsCfg.act
+../lib/libexpatpackage.tar
+../lib/pmod
+../install/.cfgfiles
+../install/runmod
+../install/nextoneNarsAgent

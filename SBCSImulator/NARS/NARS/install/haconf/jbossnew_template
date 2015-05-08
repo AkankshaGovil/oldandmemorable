@@ -1,0 +1,407 @@
+#!/bin/sh
+#
+# 
+#  JBoss HA resource
+#
+# Author:	Roman Shakhov
+
+#######################################################################
+# Initialization:
+
+. /usr/lib/ocf/resource.d/genband/.ocf-shellfuncs  
+
+#######################################################################
+
+# Fill in some defaults if no values are specified
+HOSTOS=`uname`
+OCF_RESKEY_additional_parameters_default=""
+NEXTONE_TMP=/var/ivms/tmp;
+NEXTONE_CACHE=/opt/nxtn/rsm/cache;
+JBOSS_HOME=/opt/nxtn/jboss;
+JAVA_OPTS=%JAVA_OPTS_VALUE%
+
+usage() {
+  cat <<UEND
+	usage: $0 (start|stop|validate-all|meta-data|monitor)
+
+	$0 manages a JBoss as an HA resource.
+
+	The 'start' operation starts the JBoss.
+	The 'stop' operation stops the JBoss.
+	The 'status' operation reports whether the JBoss is running
+	The 'monitor' operation reports whether the JBoss seems to be working
+	The 'validate-all' operation reports whether the parameters are valid
+
+UEND
+}
+
+meta_data() {
+	cat <<END
+<?xml version="1.0"?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
+<resource-agent name="jboss">
+<version>1.0</version>
+
+<longdesc lang="en">
+Resource script for JBoss. 
+It manages a Jboss instance as an HA resource.
+</longdesc>
+<shortdesc lang="en">JBoss resource agent</shortdesc>
+
+<parameters>
+
+<parameter name="additional_parameters" unique="0" required="0">
+<longdesc lang="en">
+Additional parameters which are passed to the jboss on startup. 
+</longdesc>
+<shortdesc lang="en">Additional paramters to pass to JBoss</shortdesc>
+<content type="integer" default="${OCF_RESKEY_additional_parameters_default}"/>
+</parameter>
+
+</parameters>
+
+<actions>
+<action name="start" timeout="120" />
+<action name="stop" timeout="120" />
+<action name="status" timeout="60" />
+<action name="monitor" depth="0" timeout="30" interval="10" start-delay="10" />
+<action name="validate-all" timeout="5" />
+<action name="meta-data" timeout="5" />
+</actions>
+</resource-agent>
+END
+}
+
+jboss_validate() {
+# checking the parameters
+	return 0;
+}
+
+jboss_ext() {
+	temp=$(echo $JAVA_OPTS | sed -e 's/+Use/\\+Use/g')
+	R=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+	
+    if [ $R -eq "0" ]; then
+                ocf_log info "JBoss is not running"
+                return $OCF_NOT_RUNNING;
+    fi
+
+    if [ $R -gt "0" ]; then
+            #ocf_log debug "Sending wget request to RSM Server";
+            jpS=`pgrep -ofx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"`;
+	    fd_cnt=`lsof -p $jpS | /usr/bin/wc -l`;
+            fd_cnt=`expr $fd_cnt - 1`;
+            echo "https://127.0.0.1/rsm/agent?ActionClass=PING_MASTER&lsof=$fd_cnt" > /var/tmp/url.txt
+	    wget_R=`wget -T 55 -t 1 --no-check-certificate --http-user\=narsagent --http-passwd\=narsagent -O - -q -i /var/tmp/url.txt`;
+            wget_z=$?
+            if [ $wget_z == 0 ]; then
+                if [ $wget_R == "Success" ]; then
+			#ocf_log info "JBoss is running!";
+                    return $OCF_SUCCESS;
+                fi
+            fi
+            kill_jboss;
+        	RRR=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+        	if [ $RRR -gt "0" ]; then
+                	cf_log info "JBoss kill failed.";
+                	return $OCF_ERR_GENERIC;
+
+        	fi
+        	ocf_log info "JBoss is not running";
+        	return $OCF_NOT_RUNNING;
+
+    fi
+#    if [ $R -gt "1" ]; then
+#        ocf_log info "JBoss is broken - multipple processes. Killing JBoss."
+#        kill_jboss;
+#        RRR=`pgrep -fx "/opt/nxtn/jdk/bin/java $JAVA_OPTS -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+#        if [ $RRR -gt "0" ]; then
+#        	ocf_log info "JBoss kill failed.";
+#        	return $OCF_ERR_GENERIC;
+#        fi
+#                ocf_log info "JBoss is not running";
+#                return $OCF_NOT_RUNNING;
+#
+#    fi
+
+}
+
+jboss_monitor() {
+        temp=$(echo $JAVA_OPTS | sed -e 's/+Use/\\+Use/g')
+        RM=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+		
+        if [ $RM -gt "0" ]; then
+                #ocf_log debug "JBoss is running";
+                return $OCF_SUCCESS;
+        fi
+
+        if [ $RM -eq "0" ]; then
+                ocf_log info "JBoss is not running"
+                return $OCF_NOT_RUNNING;
+        fi
+
+#        if [ $RM -gt "1" ]; then
+#
+#                ocf_log info "JBoss is broken - multipple processes. Killing JBoss."
+#                kill_jboss;
+#                RRRM=`pgrep -fx "/opt/nxtn/jdk/bin/java $JAVA_OPTS -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+#                if [ $RRRM -gt "0" ]; then
+#                	ocf_log info "JBoss kill failed.";
+#                	return $OCF_ERR_GENERIC;
+#
+#                fi
+#                ocf_log info "JBoss is not running";
+#                return $OCF_NOT_RUNNING;
+#
+#	fi
+
+}
+
+jboss_start() {
+				jbossinitialwait=180
+				jbosswgetcnt=180
+	temp=$(echo $JAVA_OPTS | sed -e 's/+Use/\\+Use/g')
+        R=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+
+        if [ $R -eq "1"  ]; then
+                ocf_log info "JBoss is already running";
+                return $OCF_SUCCESS;
+        fi
+
+	if [ $R -eq "0" ]; then
+                /etc/init.d/jbsrv start
+	        holdd=1
+		cnt=1
+		#sleep for 1st few minutes before checking if Jboss has started
+		ocf_log info "JBoss start command issued, first wget command will be issued after roughly $jbossinitialwait seconds ...";
+		sleep $jbossinitialwait
+        	while [ $holdd = 1 ]; do
+                	ocf_log info "JBoss is starting...";
+			sleep 2
+			let cnt++;
+         	        ocf_log debug "Sending wget request to RSM Server";
+            		jpS=`pgrep -ofx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"`;
+			fd_cnt=`lsof -p $jpS | /usr/bin/wc -l`;
+        		fd_cnt=`expr $fd_cnt - 1`;
+#Start: PR172465: RSM 6.0.1.5 - JBOSS times out upon starting heartbeat
+
+	ocf_log debug  "Checking existance of /var/tmp/ directory..";
+	if [ ! -d "/var/tmp/" ];then
+		ocf_log debug  "/var/tmp directory doesnt exists. Creating...";
+                                mkdir -p /var/tmp/;
+                                if [ $? -eq 0 ];then
+				ocf_log debug "/var/tmp directory created successfully.Changing permissions..";
+                                        chmod 777 /var/tmp/;
+                                        if [ $? -ne 0 ];then
+                                               ocf_log debug "Failed to change permission of /var/tmp/ directory to drwxrwxrwt. jboss status command fails.";
+                                                return  $OCF_ERR_GENERIC;
+                                        fi
+                                        chmod o+t /var/tmp/;
+                                        if [ $?  -ne 0 ];then
+                                              ocf_log debug "Failed to change permission of /var/tmp/ directory to drwxrwxrwt. jboss status command fails.";
+                                                return  $OCF_ERR_GENERIC;
+                                        fi
+                                else
+                                        ocf_log debug "Failed to create /var/tmp directory. jboss status command fails";
+                                        return  $OCF_ERR_GENERIC;
+                                fi
+	else
+		ocf_log debug  "/var/tmp directory already exists...";
+
+	fi
+
+#End: PR172465        		
+
+
+
+
+
+        		echo "https://127.0.0.1/rsm/agent?ActionClass=PING_MASTER&lsof=$fd_cnt" > /var/tmp/url.txt
+			wget_R=`wget -T 55 -t 1 --no-check-certificate --http-user\=narsagent --http-passwd\=narsagent -O - -q -i /var/tmp/url.txt`;
+			wget_z=$?
+            		if [ $wget_z == 0 ]; then
+                		if [ $wget_R == "Success" ]; then
+                        		ocf_log info "JBoss is started";
+                    			return $OCF_SUCCESS;
+                		fi
+			fi
+
+			if [ $cnt -gt $jbosswgetcnt ]; then
+				ocf_log info "JBoss start timed out...";
+		                return  $OCF_ERR_GENERIC;
+                        fi
+        	done
+		
+#		ocf_log info "JBoss is started";
+#                return $OCF_SUCCESS;
+	fi
+
+	if [ $R -gt "1" ]; then
+                kill_jboss;
+		sleep 5;
+		RR=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+			if [ $RR -gt "0" ]; then
+                                ocf_log info "JBoss cannot start - unkillable processes are present"
+                                return $OCF_ERR_GENERIC;
+                        fi
+		/etc/init.d/jbsrv start
+	        holdd=1
+		cnt=1
+		
+		#sleep for 1st few minutes before checking if Jboss has started
+		ocf_log info "JBoss start command issued, first wget command will be issued after roughly $jbossinitialwait seconds ...";
+		sleep $jbossinitialwait
+		
+        	while [ $holdd = 1 ]; do
+                	ocf_log info "JBoss is starting...";
+			sleep 2
+			let cnt++;
+         	        ocf_log debug "Sending wget request to RSM Server (start after multipple processes killed)";
+            		jpS=`pgrep -ofx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"`;
+			fd_cnt=`lsof -p $jpS | /usr/bin/wc -l`;
+        		fd_cnt=`expr $fd_cnt - 1`;
+
+
+#Start: PR172465: RSM 6.0.1.5 - JBOSS times out upon starting heartbeat 
+
+ ocf_log debug  "Checking existance of /var/tmp/ directory..";
+        if [ ! -d "/var/tmp/" ];then
+                ocf_log debug  "/var/tmp directory doesnt exists. Creating...";
+                                mkdir -p /var/tmp/;
+                                if [ $? -eq 0 ];then
+                                ocf_log debug "/var/tmp directory created successfully.Changing permissions..";
+                                        chmod 777 /var/tmp/;
+                                        if [ $? -ne 0 ];then
+                                               ocf_log debug "Failed to change permission of /var/tmp/ directory to drwxrwxrwt. jboss status command fails.";
+                                                return  $OCF_ERR_GENERIC;
+                                        fi
+                                        chmod o+t /var/tmp/;
+                                        if [ $?  -ne 0 ];then
+                                              ocf_log debug "Failed to change permission of /var/tmp/ directory to drwxrwxrwt. jboss status command fails.";
+                                                return  $OCF_ERR_GENERIC;
+                                        fi
+                                else
+                                        ocf_log debug "Failed to create /var/tmp directory. jboss status command fails";
+                                        return  $OCF_ERR_GENERIC;
+                                fi
+        else
+                ocf_log debug  "/var/tmp directory already exists...";
+
+        fi
+
+#End: PR172465
+
+
+
+
+
+
+
+        		echo "https://127.0.0.1/rsm/agent?ActionClass=PING_MASTER&lsof=$fd_cnt" > /var/tmp/url.txt
+			wget_R=`wget -T 55 -t 1 --no-check-certificate --http-user\=narsagent --http-passwd\=narsagent -O - -q -i /var/tmp/url.txt`;
+            		wget_z=$?
+            		if [ $wget_z == 0 ]; then
+                		if [ $wget_R == "Success" ]; then
+                        		ocf_log info "JBoss is started";
+                    			return $OCF_SUCCESS;
+                		fi
+			fi
+
+			if [ $cnt -gt $jbosswgetcnt ]; then
+				ocf_log info "JBoss start timed out...";
+		                return  $OCF_ERR_GENERIC;
+                        fi
+        	done
+		
+#		ocf_log info "JBoss is started";
+#                return $OCF_SUCCESS;
+	fi
+}
+
+jboss_stop() {
+    temp=$(echo $JAVA_OPTS | sed -e 's/+Use/\\+Use/g')
+	R=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+        
+        if [ $R -eq "1" ]; then
+		ocf_log info "Attempting to gracefully stop single JBoss process";
+                /etc/init.d/jbsrv stop
+
+                holdd=1
+                cnt=1
+                while [ $holdd = 1 ]; do
+			ocf_log info "JBoss stopping..."
+                        sleep 2
+                        let cnt++;
+			RR=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+			if [ $RR -eq "0" ]; then
+                                holdd=0;
+                        fi
+                       	if [ $cnt -gt "30" ]; then
+				ocf_log info "JBoss cannot be stopped - killing it"
+		               	kill_jboss;
+				sleep 5;
+                		RRR=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+                		if [ $RRR -gt "0" ]; then
+                			ocf_log info "JBoss kill failed.";
+                			return $OCF_ERR_GENERIC;
+				fi
+		                ocf_log info "JBoss is stopped";
+       		        	return $OCF_SUCCESS;
+
+             	  	fi
+                done
+
+                ocf_log info "JBoss is stopped";
+                return $OCF_SUCCESS;
+	fi
+
+	if [ $R -eq "0" ]; then
+                ocf_log info "JBoss already stopped";
+                return $OCF_SUCCESS;
+        fi
+
+        if [ $R -gt "1" ]; then
+		ocf_log info "Jboss runs in multiplle processes - killing";
+                kill_jboss;
+                sleep 5;
+                RRR=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| /usr/bin/wc -l`;
+                if [ $RRR -gt "0" ]; then
+                	ocf_log info "JBoss kill failed.";
+                	return $OCF_ERR_GENERIC;
+		fi
+        fi
+        
+}
+
+#----------------------------------------------------------------------------------------
+
+kill_jboss() {
+
+        ocf_log info "Killing JBoss processes";
+	temp=$(echo $JAVA_OPTS | sed -e 's/+Use/\\+Use/g')
+        pid_R=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"`;
+        echo $pid_R | while read line; do ocf_log info "Killing pid: $line" ; `kill -9 $line > /dev/null` ; done
+	sleep 3
+}
+
+
+
+
+
+# What kind of method was invoked?
+case "$1" in
+  start)	jboss_validate; 
+		jboss_start;;
+  stop)		jboss_stop;;
+  status)	jboss_ext;;
+  monitor)	jboss_monitor;;
+  ext)		jboss_ext;;
+
+  meta-data)	meta_data; exit $OCF_SUCCESS;;
+  validate-all)	jboss_validate; exit $OCF_SUCCESS;;
+
+ *)		usage
+		exit $OCF_ERR_UNIMPLEMENTED;;
+esac
+exit $?
+

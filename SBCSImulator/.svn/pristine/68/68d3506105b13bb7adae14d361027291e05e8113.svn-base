@@ -1,0 +1,7 @@
+#VERSION 5.0m1
+truncate periods_breakdown;
+#VERSION 5.0m1
+
+#VERSION 5.0m2
+truncate periods_breakdown;
+#VERSION 5.0m2

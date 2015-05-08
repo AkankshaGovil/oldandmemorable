@@ -1,0 +1,8 @@
+AuthUserFile "INSTALL_PATH/.htpasswd"
+AuthName "NARS Login"
+AuthType Basic
+
+<Limit GET POST>
+require valid-user
+</Limit>
+

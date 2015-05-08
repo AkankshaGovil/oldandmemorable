@@ -1,0 +1,189 @@
+0.24
+
+- Fix Attribute::Params::Validate docs to show that attribute
+declaration must have open paren immediately after "Validate" or
+"ValidatePos".  Reported by Britton Kerin.
+
+- Fix bug with Perl 5.8.0 when in PERL_NO_VALIDATION mode and calling
+validate() expecting a hash ref to be returned.  Reported by Randal
+Schwartz.
+
+0.23
+
+- Argh.  In 0.22 some of the tests printer their test counts (1..x)
+after doing the tests.  This works with newer versions of
+Test::Harness so I didn't notice it.  Reported by Peter Asemann.
+
+0.22
+
+- The last version's tarball was a mess, and had blib and other junk
+in it.  This is a nice clean one.
+
+0.21
+
+- The various validation functions are now context sensitive, and will
+return a reference in scalar context.  This may be a helpful speedup,
+especially for large parameter lists.
+
+0.20
+
+- More optimization work.
+
+-- Improved the speed of both validate() and validate_pos() by about
+20-25%.
+
+-- Improved the speed of the 'no validation' mode for validate() by
+over 30%, for validation_pos() by 15%, and for validate_with() by
+125%.
+
+-- The speed of validate_with() has been improved by over 100%, but
+this was at the expense of not validating its own incoming arguments,
+thus making it a little more fragile.
+
+- The PERL_NO_VALIDATION env var is now _only_ checked when the module
+is loaded.  This means you cannot change it mid-program.  This is a
+backwards incompatibility.
+
+0.18
+
+- Added a new function, validate_with(), that allow you to set various
+options on a per-invocation basis, rather than on a per-package basis.
+Patch by Ken Williams.
+
+0.17
+
+- Fix a doc nit where I had a wrong code example.  Reported by Britton
+Kerin.
+
+- Added a new validation option parameter, stack_skip, which allows
+you to change how errors are reported by Params::Validate.
+
+0.16 May 11, 2002
+
+- Improve skipping of tests when run with 5.6.0.  Patch by Ken
+Williams.
+
+- Silence an uninit value warning
+
+0.15 Apr 19, 2002
+
+- validate_pos would die stupidly when it received an array with an
+odd number of elements.
+
+0.14 Mar 14, 2002
+
+- validate_pos used exists on an array element, which only works with
+5.6.0.  This releaes makes it work 5.00503 again.  Reported by Jon
+Swartz.
+
+0.13 Mar 10, 2002
+
+- Apply some of the same optimizations to positional parameters.  The
+speedup here seems to be about 7-8%.
+
+- Fix stupid bug in 04-defaults tests.
+
+0.12 Mar 10, 2002
+
+- Add BOOLEAN type (equivalent to UNDEF | SCALAR).  Suggested by Ken
+Williams.
+
+- This version is about 8-10% faster on named parameters than previous
+versions.  This may not seem like that much but if most, or all, of
+your subroutines/methods use validation then this can be a significant
+improvement.
+
+- This version has slightly different semantics for dealing with
+missing parameters.  Previously, if parameters were missing, an
+exception was thrown before any of the other validation parameters
+were checked.  Now, the validation parameters (type, isa, etc.) are
+checked first, so that these errors will show up before missing
+parameters.
+
+0.11 Jan 04, 2002
+
+- Accidentally removed the set_options function (in 0.08).  Though
+this will go away in the future it isn't happening quite yet.
+
+0.10 Jan 04, 2002
+
+- Apparently making a tarball for CPAN is beyond my limited abilities.
+0.09 was missing a file needed for tests.  Also reported by Blair
+Zajac.
+
+- When running Makefile.PL you get some warnings that can be ignored.
+Add a message saying you can ignore them.
+
+0.09 Jan 04, 2002
+
+- I forgot to put the Makefile.PL in the MANIFEST.  I am dumb.
+Reported by Blair Zajac.
+
+0.08 Jan 03, 2002
+
+- Explicitly mention that, by default, Params::Validate uses
+Carp::confess to report a validation failure.  Suggested by Mark
+Stosberg.
+
+- The 'NO_VALIDATION' mode was seriously broken in that it didn't
+handle defaults at all.
+
+- The 'NO_VALIDATION' env var was mis-documented as being
+'NO_VALIDATE'.
+
+- The 'NO_VALIDATION' env var is now 'PERL_NO_VALIDATION' and this
+method of disabling validation is no longer considered alpha.
+
+- The validation functions now check this environment variable every
+time they are called.  This is probably a bit slower than the previous
+implementation, which only checked once when the module was loaded.
+If you have a problem with this, let me know.
+
+0.07 Sep 23, 2001
+
+- Fix problem with CPAN shell's 'r' command that
+Attribute::Params::Validate was causing with older Perl's.  Reported
+by Rob BloodGood.
+
+- Add ability to specify defaults for parameters and get a new
+hash/array back from validate or validate_pos.  Partial patch
+submitted by Ken Williams.
+
+0.06 Aug 23, 2001
+
+- Require Attribute::Handlers if using Perl 5.6.0+.
+
+- fix doc nits.
+
+0.05 Aug 23, 2001
+
+- Added Attribute::Params::Validate - do validation via attributes!
+
+- Rename set_options to validation_options.  This can now be exported
+safely and is included in the :all export tag.  set_options is
+deprecated and will be removed in a future release.  Thanks to Jon
+Swartz for the suggestion.
+
+0.04 Apr 14, 2001
+
+- tweaks to make the code work under 5.00404
+
+0.03 Mar 17, 2001
+
+- make sure all error messages contain the name of the subroutine that
+was called.
+
+- the error message given when an argument doesn't match the 'isa'
+spec has been improved.
+
+- use Carp::confess by default when dying with an error.  This
+produces a more useful error message.
+
+0.02 Mar 6, 2001
+
+- fix a bug in the test suite that caused failures in 5.6.0.
+
+0.01 Feb 16, 2001
+
+- Original release
+

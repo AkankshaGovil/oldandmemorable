@@ -1,0 +1,1 @@
+%MASTER_NODE_NAME% %MANAGEMENT_IP% Filesystem::/dev/sdb1::/opt/nxtn::reiserfs Filesystem::/dev/sdb2::/opt/nxtn/mysql/data::reiserfs Filesystem::/dev/sdb3::/opt/nxtn/mysql/log::reiserfs mysql jboss

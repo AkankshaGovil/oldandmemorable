@@ -1,0 +1,6 @@
+#!/bin/bash
+nxi_logfile=${nxi_logfile-/var/log/nxinstall/install.log}
+nxi_shlib=${nxi_shlib-/usr/libexec/nxinstall}
+source $nxi_shlib/log
+nxi_task=$1
+log "$2" "$3"

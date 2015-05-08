@@ -1,0 +1,6 @@
+#%PAM-1.0
+auth		include		common-auth
+account		include		common-account
+account		required	pam_time.so
+password	include		common-password
+session		include		common-session

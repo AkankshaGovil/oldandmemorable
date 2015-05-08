@@ -1,0 +1,147 @@
+#!/bin/sh
+#
+# 
+#  RSM HA resource
+#
+# Author:	Roman Shakhov
+
+#######################################################################
+# Initialization:
+
+. /usr/lib/ocf/resource.d/genband/.ocf-shellfuncs 
+
+#######################################################################
+
+# Fill in some defaults if no values are specified
+HOSTOS=`uname`
+OCF_RESKEY_additional_parameters_default=""
+
+usage() {
+  cat <<UEND
+	usage: $0 (start|stop|validate-all|meta-data|monitor)
+
+	$0 manages RSM as an HA resource.
+
+	The 'start' resets failure counters.
+	The 'stop' resets failure counters.
+	The 'status' resets failure counters.
+	The 'monitor' resets failure counters.
+	The 'validate-all' operation reports whether the parameters are valid
+
+UEND
+}
+
+meta_data() {
+	cat <<END
+<?xml version="1.0"?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
+<resource-agent name="rsmres">
+<version>1.0</version>
+
+<longdesc lang="en">
+Resource script for RSM HA. 
+It manages RSM instance as an HA resource.
+</longdesc>
+<shortdesc lang="en">RSM resource agent</shortdesc>
+
+<parameters>
+
+<parameter name="additional_parameters" unique="0" required="0">
+<longdesc lang="en">
+Additional parameters which are passed on startup. 
+</longdesc>
+<shortdesc lang="en">Additional paramters to pass</shortdesc>
+<content type="integer" default="${OCF_RESKEY_additional_parameters_default}"/>
+</parameter>
+
+</parameters>
+
+<actions>
+<action name="start" timeout="120" />
+<action name="stop" timeout="120" />
+<action name="status" timeout="60" />
+<action name="monitor" depth="0" timeout="30" interval="10" start-delay="10" />
+<action name="validate-all" timeout="5" />
+<action name="meta-data" timeout="5" />
+</actions>
+</resource-agent>
+END
+}
+
+rsmres_validate() {
+# checking the parameters
+	return 0;
+}
+
+rsmres_status() {
+        pro=`cat /var/lib/heartbeat/crm/cib.xml | grep 'name="ip"'| cut -d'"' -f6`
+        apro=`ip addr list | grep $pro`
+        if [ "$apro" \> "" ]; then
+            return $OCF_SUCCESS;
+        else
+            return $OCF_NOT_RUNNING;
+        fi
+									
+
+}
+
+rsmres_monitor() {
+        pro=`cat /var/lib/heartbeat/crm/cib.xml | grep 'name="ip"'| cut -d'"' -f6`
+        apro=`ip addr list | grep $pro`
+        if [ "$apro" \> "" ]; then
+            return $OCF_SUCCESS;
+        else
+            return $OCF_NOT_RUNNING;
+        fi
+
+
+}
+
+rsmres_start() {
+        return $OCF_SUCCESS;
+
+}
+
+rsmres_stop() {
+	
+	STS=`crm_mon -s | /usr/bin/cut -d' ' -f1`;
+	if [ "$STS" = "Warning:offline" ]; then
+                ocf_log info "Only one node is online. Enabling local resilience."
+	        SSD1=`cat /var/lib/heartbeat/crm/cib.xml|egrep node | grep type | cut -d '"' -f4 | head -1`;
+	        SSD0=`cat /var/lib/heartbeat/crm/cib.xml|egrep node | grep type | cut -d '"' -f4 | tail -1`;
+	        /usr/sbin/crm_failcount -D -r FCRstart -U "$SSD1";
+	        /usr/sbin/crm_failcount -D -r FCRstart -U "$SSD0";
+	        /usr/sbin/crm_failcount -D -r IP -U "$SSD1";
+	        /usr/sbin/crm_failcount -D -r IP -U "$SSD0";
+	        /usr/sbin/crm_failcount -D -r MySQL -U "$SSD1";
+	        /usr/sbin/crm_failcount -D -r MySQL -U "$SSD0";
+	        /usr/sbin/crm_failcount -D -r JBoss -U "$SSD1";
+	        /usr/sbin/crm_failcount -D -r JBoss -U "$SSD0";
+	        /usr/sbin/crm_failcount -D -r PAMSync -U "$SSD1";
+	        /usr/sbin/crm_failcount -D -r PAMSync -U "$SSD0";
+	        /usr/sbin/crm_failcount -D -r RSMResil -U "$SSD1";
+	        /usr/sbin/crm_failcount -D -r RSMResli -U "$SSD0";
+								
+		ocf_log info "Failure counters reset completed.";
+	fi	
+        return $OCF_SUCCESS;
+
+}
+
+
+# What kind of method was invoked?
+case "$1" in
+  start)	rsmres_validate; 
+		rsmres_start;;
+  stop)		rsmres_stop;;
+  status)	rsmres_status;;
+  monitor)	rsmres_monitor;;
+
+  meta-data)	meta_data; exit $OCF_SUCCESS;;
+  validate-all)	rsmres_validate; exit $OCF_SUCCESS;;
+
+ *)		usage
+		exit $OCF_ERR_UNIMPLEMENTED;;
+esac
+exit $?
+

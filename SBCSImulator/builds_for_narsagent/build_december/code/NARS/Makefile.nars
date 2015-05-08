@@ -1,0 +1,149 @@
+# this is the makefile for building NARS
+
+ADMINDIRS = plib
+
+NARSAGENT=install.tar
+
+
+################################################
+## rules to generate licencse file
+################################################
+gen_lic : .DUMMY 
+	(license/nars_lic_create -d 30 license/NARS.tmpl > narsinstall/NARS.lc)
+
+
+################################################
+## Nars Agent Installation related rules
+################################################
+nars-agent narsagent agentpackage agentPackage: agentinstall setup-file
+	@(echo "Making NARS Agent package")
+	@(cd install; . ./changePath.sh; ChangePath /usr/local/bin/perl /usr/bin/perl NarsAgentInst.pl)
+	@(tar cvf $(NARSAGENT) setup install/LICENSE install/*.sh install/nars-agent-files install/NarsAgentInst.pl install/perlcheck.pl nxi_log nxi_preinstall nxi_install nxi_postinstall nxi_finalize)
+	(mv setup.bak setup; )
+	@(cd install; ./package.sh -n)
+
+agentinstall agentInstall: perlmods license cdrserver alarm
+
+setup-file : .DUMMY
+	(sed 's,/install\.sh$$,/install\.sh -n,' setup >setup.nars; )
+	(mv setup setup.bak; mv setup.nars setup; chmod a+x setup)
+	
+perlmods : .DUMMY
+	@(echo "Making Perl modules")
+#	@(cd plib; make narsinstall)
+	@(cd plib; make narsagent)
+
+license : .DUMMY
+	@(echo "Making license module")
+	@(cd license; make install)
+
+cdrserver : .DUMMY
+	@(echo "Making cdrserver")
+	@(cd cdrserver; make install)
+
+alarm : .DUMMY
+	@(echo "Making alarm")
+	@(cd alarm; make install)
+
+narsagent_par:
+	@(echo "Making Perl modules"; cd plib; make install_par)
+	@(echo "Making license module"; cd license; make install_par)
+	@(echo "Making cdrserver"; cd cdrserver; make install_par)
+	@(echo "Making alarm"; cd alarm; make install_par)
+	@(cd nars-agent; zip -r ../lib/mod.par lib/)
+	@(echo "Creating perl PAR script"; cd plib; make pardist)
+	(sed 's,/install\.sh$$,/install\.sh -n,' setup >setup.nars; )
+	(mv setup setup.bak; mv setup.nars setup; chmod a+x setup)
+	@(echo "Making NARS Agent package")
+	@(tar cvf $(NARSAGENT) setup install/LICENSE install/*.sh install/nars-agent-files install/NarsAgentInst.pl install/perlcheck.pl)
+	(mv setup.bak setup; )
+	@(sed -e '1s,.*,#!/bin/sh runmod,' narsinstall/createNarsCfg.act > nars-agent/createNarsCfg.act; chmod a+x nars-agent/createNarsCfg.act)
+	@(cd install; ./package.sh -p)
+
+################################################
+## Nars Server Installation related rules
+################################################
+
+checkPackages: .DUMMY
+	@(if (test ! -r jakarta-tomcat-5.0.18.tar); then \
+		echo "Need tomcat package (jakarta-tomcat-5.0.18.tar) to be copied to $(BASE)"; \
+		exit 1; \
+	fi);
+	@(if (test ! -r MySQL-client-4.0.17-0.i386.rpm); then \
+		echo "Need mysql client package (MySQL-client-4.0.17-0.i386.rpm) to be copied to $(BASE)"; \
+		exit 1; \
+	fi);
+	@(if (test ! -r MySQL-server-4.0.17-0.i386.rpm); then \
+		echo "Need mysql server package (MySQL-server-4.0.17-0.i386.rpm) to be copied to $(BASE)"; \
+		exit 1; \
+	fi);
+	@(if (test ! -r j2sdk-1_4_2_02-linux-i586.bin); then \
+		echo "Need jdk package (j2sdk-1_4_2_02-linux-i586.bin) to be copied to $(BASE)"; \
+		exit 1; \
+	fi);
+
+narsInstall narsserver serverinstall serverInstall: checkPackages buildWar buildTar buildInstall
+	@(cd $(BASE); tar uvf narsServerInstall.tar nars.tar)
+	@(cd $(BASE); gzip narsServerInstall.tar)
+	@echo "------------------------------------------"
+	@echo "Finished building NARS server package"
+	@echo "------------------------------------------"
+
+buildWar: .DUMMY
+	@(cd $(BASE)/java; . ./buildnars.sh; make narsserver; tar cvf $(BASE)/nars.tar nars.war)
+	@echo "------------------------------------------"
+	@echo "Finished building nars.war"
+	@echo "------------------------------------------"
+
+buildTar: .DUMMY
+	@(cd $(BASE)/java/nars/WEB-INF; tar uvf $(BASE)/nars.tar web-head.xml web-tail.xml web-title.xml)
+	@(cd $(BASE)/narsinstall; tar uvf $(BASE)/nars.tar my.cnf nars*.sql )
+	@(cd $(BASE); tar uhvf $(BASE)/nars.tar j2sdk-1_4_2_02-linux-i586.bin jakarta-tomcat-5.0.18.tar MySQL-client-4.0.17-0.i386.rpm MySQL-server-4.0.17-0.i386.rpm)
+	@(cd $(BASE)/install; tar uvf $(BASE)/nars.tar nextoneTomcat db.sh)
+	@echo "------------------------------------------"
+	@echo "Finished building nars.tar"
+	@echo "------------------------------------------"
+
+buildInstall: .DUMMY
+	@(cd $(BASE)/plib; make narsInstall)
+	@(cd $(BASE)/lib/perl5; tar cvf $(BASE)/narsServerInstall.tar site_perl)
+	@(cd $(BASE)/lib; mkdir libc; cp -pr $(TARGET)/* libc/.; tar uvf $(BASE)/narsServerInstall.tar libc)
+	@(cd $(BASE)/install; rm -f setup; ln -s Setup.sh setup; tar uvf $(BASE)/narsServerInstall.tar NarsServerInst.pl Setup.sh setup utils.sh LICENSE globals.sh; rm -f setup)
+	@echo "------------------------------------------"
+	@echo "Finished building narsServerInstall.tar"
+	@echo "------------------------------------------"
+
+
+buildivmsInstall: .DUMMY
+	@(cd $(BASE)/plib; make narsInstall)
+	@(cd $(BASE)/lib/perl5; tar cvf $(BASE)/ivmsServerInstall.tar site_perl)
+	@(cd $(BASE)/lib; mkdir libc; cp -pr $(TARGET)/* libc/.; tar uvf $(BASE)/ivmsServerInstall.tar libc)
+	@(cd $(BASE)/install; rm -f setup; ln -s Setup.sh setup; tar uvf $(BASE)/ivmsServerInstall.tar ivmsServerInst.pl Setup.sh setup utils.sh LICENSE globals.sh; rm -f setup)
+	@echo "------------------------------------------"
+	@echo "Finished building ivmsServerInstall.tar"
+	@echo "------------------------------------------"
+
+
+cleanpack: .DUMMY
+	@(cd $(BASE); rm -f narsServerInstall.tar.gz nars.tar)
+	@(cd $(BASE)/plib; make clean)
+
+cleanserver: cleanpack .DUMMY
+	@(cd $(BASE)/java; make cleannarsserver)
+
+cleanagent cleanagentinstall: .DUMMY
+	@(cd alarm; make clean)
+	@(cd cdrserver; make clean)
+	@(cd license; make clean)
+	@(cd plib; make cleannarsagent)
+#	for subdir in $(ADMINDIRS); do \
+#		(cd $$subdir; $(MAKE) clean; ) \
+#	done
+	rm -rf lib
+
+
+clean: cleanserver cleanagent cleanpack
+
+
+.DUMMY:
+

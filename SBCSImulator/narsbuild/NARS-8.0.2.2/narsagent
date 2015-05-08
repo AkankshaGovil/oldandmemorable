@@ -1,0 +1,428 @@
+#!/bin/sh
+
+############################################################################
+##
+## NARS Agent control script
+##
+## Usage:
+##   narsagent <name_of_daemon> [start | stop | reconfig | status | version]
+##       where
+##       <name_of_daemon> is:
+##       all, logpp, cdrserver
+############################################################################
+
+
+Usage="Usage: $0 <all|logpp|cdrserver> <start|stop|reconfig|status|version>"
+ECHO=/bin/echo
+KILL=/bin/kill
+RECONFIGSIG="-HUP"
+PS="ps"
+PSOPTS="-f"
+PSPIDOPTS="-p"
+RM="rm -rf"
+
+SCRIPTDIR=`dirname $0`
+
+LOGPPPIDFILE="$SCRIPTDIR/logpp.pid"
+CDRSERVERPIDFILE="$SCRIPTDIR/nars.pid"
+PERL="$SCRIPTDIR/perl"
+
+## The follwing refers to number of instances of cdrserver
+NUM_INST=1
+
+### It may not be needed after all it seems like new linux has pgrep
+PGREP='pgrep'
+### OS dependent variables
+#OSTYP=`uname`
+#if [ "$OSTYP" = "Linux"]
+#then
+#	PGREP='ps -o pid --no-heading -C '
+#else
+## Assume SunOS
+#	PGREP='pgrep -x'
+#fi
+
+DAEMON=$1
+OPERATION=$2
+PROGNAME=$0
+if [ $# -gt 2 ]
+then
+    shift
+    shift
+    RESTARGS=$*
+else
+    RESTARGS=""
+fi
+
+
+# check for valid arguments
+if [ -z "$DAEMON" -o -z "$OPERATION" ]
+then
+    $ECHO "Invalid number of arguments"
+    $ECHO $Usage
+    $ECHO ""
+    exit 1
+fi
+
+# validate the operation
+case $OPERATION in
+     start)
+        ;;
+     stop)
+        ;;
+     reconfig)
+        ;;
+     status)
+        ;;
+     version)
+        ;;
+     *)
+        $ECHO "Invalid operation specified: $OPERATION"
+        $ECHO $Usage
+        $ECHO
+        exit 1
+        ;;
+esac
+
+
+# given the list of pids, create a list of pids whose processes are still up and running
+# the resulting list is stored in a variable called $runningPids
+getRunningPid ()
+{
+	runningPids="";
+	while [ $# -ge 1 ]
+	do
+		runningpid=`$PS $PSPIDOPTS $1 | grep -v PID | tr -s ' ' ' ' | sed -e 's/^ *//' | cut -d " " -f1`
+		if [ ! -z "$runningpid" ]
+		then
+			runningPids="$runningPids $runningpid"
+		fi
+		shift
+	done
+}
+
+
+# return the pid from the given pid file
+# If we are given multiple files it returns all the pids in a list
+getPid ()
+{
+	PID=""
+	for i in $@
+	do
+          if [ ! -r $i ]
+          then
+              if [ $SILENT -eq 0 ]
+              then
+                  $ECHO "pidfile $i does not exist"
+              fi
+              continue
+          fi
+          x=`cat $i`
+          PID="$PID $x"
+	done
+
+    if [ -z "$PID" ]
+    then
+        if [ $SILENT -eq 0 ]
+        then
+            $ECHO "No such process"
+        fi
+    fi
+}
+
+# handle logpp related commands
+logppHandle ()
+{
+    if [ "$OPERATION" = "stop" -o "$OPERATION" = "status" -o "$OPERATION" = "reconfig"  -o "$OPERATION" = "start" ]
+    then
+        getPid $LOGPPPIDFILE
+        if [ -z "$PID" -a "$OPERATION" != "start" ]
+        then
+            return
+        fi
+    fi
+
+    case $OPERATION in
+        start)
+            getRunningPid $PID
+            if [ ! -z "$runningPids" ]
+            then
+                $ECHO "A previous instance of logpp (PID: $runningPids) is already running"
+            else
+                $ECHO "Starting logpp"
+	        $RM $LOGPPPIDFILE    # cleanup if any old pid files are there
+                $PERL $SCRIPTDIR/logpp
+            fi
+            ;;
+        stop)
+            $ECHO "Stopping logpp, pid = [$PID]"
+            $KILL -TERM $PID
+            count=0
+            while [ $count -lt 5 ]
+            do
+              echo "Waiting for the logpp to exit..."
+              sleep 4
+              getRunningPid $PID
+              if [ -z "$runningPids" ]
+              then
+                  break
+              fi
+              count=`expr $count + 1`
+            done
+            getRunningPid $PID
+            if [ ! -z "$runningPids" ]
+            then
+              for pid in $runningPids
+              do
+                kill -KILL $pid
+	        $RM $LOGPPPIDFILE
+              done
+              echo "Killed logpp [PIDs: $runningPids]"
+            fi
+            $ECHO
+            ;;
+        reconfig)
+            $ECHO "Reconfiguring logpp, pid = [$PID]"
+            $KILL $RECONFIGSIG $PID
+            $ECHO
+            ;;
+        status)
+			PIDS=`echo $PID | sed 's/ /,/g'`
+            $PS $PSOPTS $PSPIDOPTS $PIDS | grep -v PID
+            ;;
+        version)
+            $PERL $SCRIPTDIR/logpp -v
+            $ECHO
+            ;;
+    esac
+}
+
+execMonitor()
+{
+	curDir=$(cd $(dirname $0); pwd -P);
+
+	$PERL $SCRIPTDIR/monitor.pl -i $curDir
+}
+
+registMonitor()
+{
+	curDir=$(cd $(dirname $0); pwd -P);
+
+	interval=`cat $curDir/nars.cfg|grep ProcessMonitorInterval|grep -v "#"`
+	interval=${interval#*=}
+
+	if [ -z "$interval" ]
+    then
+        interval=1
+    fi
+
+    echo $interval|grep '^[0-9]*$' > monitortmp
+    tmp=`cat monitortmp`
+
+	if [ -z "$tmp" ]
+	then
+		echo "ProcessMonitorInterval wrong configuration: $interval"
+		interval=1
+	else
+		if [ $interval -gt 60 -o $interval -lt 1 ]
+		then
+			interval=1
+		fi
+		echo "Regist monitor to cron service as interval $interval mins"
+	fi
+    `rm -rf monitortmp`
+
+	cronJobString="*/$interval * * * * $curDir/narsagent monitor start"
+	#if interval equal to 60mins(1 hour) 
+	if [ $interval -eq 60 ]
+	then
+		cronJobString="* */1 * * * $curDir/narsagent monitor start"
+	fi
+
+	tmpCronFile="oldCronFile"
+	
+	`crontab -l|grep -v $curDir/narsagent >>$tmpCronFile`
+
+	`sed -i '/DO NOT EDIT THIS FILE - edit the master and reinstall/d' $tmpCronFile`
+	`sed -i '/installed on/d' $tmpCronFile`
+	`sed -i '/Cron version/d' $tmpCronFile`
+
+	`echo "$cronJobString" >>$tmpCronFile`
+	`crontab $tmpCronFile`
+	tmp=`/etc/init.d/cron reload`
+	`rm -f $tmpCronFile`
+}
+
+unregistMonitor()
+{
+	curDir=$(cd $(dirname $0); pwd -P);
+	cronJobString="$curDir/narsagent"
+	tmpCronFile="oldCronFile"
+
+	`crontab -l|grep -v $cronJobString >>$tmpCronFile`
+	`sed -i '/DO NOT EDIT THIS FILE - edit the master and reinstall/d' $tmpCronFile`
+	`sed -i '/installed on/d' $tmpCronFile`
+	`sed -i '/Cron version/d' $tmpCronFile`
+
+	`crontab $tmpCronFile`
+	tmp=`/etc/init.d/cron reload`
+	`rm -f $tmpCronFile`
+}
+
+
+# handle narsagent related commands
+monitorHandle ()
+{
+    case $OPERATION in
+        start)
+            registMonitor
+			$ECHO "Monitor started"
+            ;;
+        stop)
+         	$ECHO "Stopping Monitor"
+            unregistMonitor
+            $ECHO
+            ;;
+    esac
+}
+
+# handle cdrserver related commands
+cdrserverHandle ()
+{
+    cdrpidfiles="";
+    if [ "$OPERATION" = "stop" -o "$OPERATION" = "status" -o "$OPERATION" = "reconfig" -o "$OPERATION" = "start" ]
+    then
+		### Create a list of cdrserver pid files
+		ii=0
+		while [ $ii -lt $NUM_INST ] 
+		do
+			cdrpidfiles="$cdrpidfiles nars"
+			if [ $ii -ne 0 ]
+			then
+				cdrpidfiles="$cdrpidfiles""$ii"
+			fi
+			cdrpidfiles="$cdrpidfiles"".pid"
+			ii=`expr $ii + 1`
+		done
+	if [ "$OPERATION" = "start" ]
+	then
+		SILENT=1
+	fi
+        getPid $cdrpidfiles
+        if [ -z "$PID" -a "$OPERATION" != "start" ]
+        then
+            return
+        fi
+    fi
+
+    case $OPERATION in
+        start)
+            getRunningPid $PID
+            if [ ! -z "$runningPids" ]
+            then
+                $ECHO "A previous instance of cdrserver (PID: $runningPids) is already running"
+            else
+                $ECHO "Starting cdrserver instances"
+        	$RM $cdrpidfiles  # cleanup if any old pid files are there
+
+				### start all instances of cdrserver
+				ii=0
+				while [ $ii -lt $NUM_INST ] 
+				do
+					if [ $ii -ne 0 ]
+					then
+                		$PERL $SCRIPTDIR/cdrserver.pl -i $ii
+					else
+                		$PERL $SCRIPTDIR/cdrserver.pl
+					fi
+					ii=`expr $ii + 1`
+                	$ECHO "   instance $ii started"
+				done
+            fi
+            ;;
+        stop)
+            $ECHO "Stopping cdrserver, pid = [$PID]"
+	    for pid in $PID
+            do
+	      $KILL -TERM $PID
+	    done 
+            count=0
+            while [ $count -lt 5 ]
+            do
+              echo "Waiting for cdrserver to exit..."
+              sleep 4
+              getRunningPid $PID
+              if [ -z "$runningPids" ]
+              then
+                  break
+              fi
+              count=`expr $count + 1`
+            done
+            getRunningPid $PID
+            if [ ! -z "$runningPids" ]
+            then
+              for pid in $runningPids
+              do
+                kill -KILL $pid
+	        #$RM $CDRSERVERPIDFILE
+        	$RM $cdrpidfiles
+              done
+              echo "Killed cdrserver [PIDs: $runningPids]"
+            fi
+            $ECHO
+            ;;
+        reconfig)
+            $ECHO "Reconfiguring cdrserver, pid = [$PID]"
+            $KILL $RECONFIGSIG $PID
+            $ECHO
+            ;;
+        status)
+			PIDS=`echo $PID | sed 's/ /,/g'`
+            $PS $PSOPTS $PSPIDOPTS $PIDS | grep -v PID
+            ;;
+        version)
+            $PERL $SCRIPTDIR/cdrserver.pl -v
+            $ECHO
+            ;;
+    esac
+}
+
+
+# path we would have the libraries
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$SCRIPTDIR/lib"
+export LD_LIBRARY_PATH
+
+PERL5LIB="$SCRIPTDIR:/usr/lib/perl5/vendor_perl/5.10.0/x86_64-linux-thread-multi:$SCRIPTDIR/lib/perl5/site_perl"
+export PERL5LIB
+
+export PATH="/sbin:$PATH"
+
+SILENT=0
+
+# main switch staement
+case $DAEMON in
+     all)
+        cdrserverHandle
+        monitorHandle
+        logppHandle
+        ;;
+     cdrserver)
+        cdrserverHandle
+     	monitorHandle
+        ;;
+     monitor)
+     	execMonitor
+        ;;
+     logpp)
+        logppHandle
+        ;;
+     *)
+        $ECHO "Invalid server specified: $DAEMON"
+        $ECHO $Usage
+        $ECHO
+        exit 1
+        ;;
+esac
+
+exit 0
+

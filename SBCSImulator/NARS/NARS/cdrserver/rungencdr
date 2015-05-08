@@ -1,0 +1,7 @@
+SCRIPTDIR=`dirname $0`
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH::$SCRIPTDIR/lib"
+export LD_LIBRARY_PATH
+PERL5LIB="$SCRIPTDIR:$SCRIPTDIR/lib/perl5/site_perl"
+export PERL5LIB
+#perl gencdrs.pl -s 2001-02-15-11-25-00 -i 1000000 -t 2001-02-15-11-28-00 -c gencdrs.cfg /tmp/cdrs 180000
+perl gencdrs.pl  -c gencdrs.cfg /tmp/cdrs 180000

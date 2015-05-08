@@ -1,0 +1,68 @@
+#################################################################
+#################################################################
+##
+##                      Makefile
+##
+#################################################################
+#################################################################
+##
+## Makefile for making Perl Libraries.
+##
+
+ifeq ("${MKMK_VER}","new")
+MKMK_PRE = "PREFIX=$(BASE)"
+else
+MKMK_POS = "PREFIX=$(BASE)"
+endif
+
+install lib exec: .DUMMY
+	@(echo "MKMK_VER is $(MKMK_VER), MKMK_PRE is $(MKMK_PRE) and MKMK_POS is $(MKMK_POS)")
+	@(cd Statistics-Descriptive-2.4; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Mail-Sendmail-0.78; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Date-EzDate-0.93; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd libnet-1.0704; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd expat; ./configure; make prefix=$(BASE) bindir=$(BASE)/bin/$(TARGET) libdir=$(BASE)/lib/$(TARGET) install)
+	@(cd XML-Parser-2.30; perl Makefile.PL EXPATINCPATH=$(BASE)/include EXPATLIBPATH=$(BASE)/lib/$(TARGET) $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd XML-Simple-1.08_01; perl -I$(BASE)/lib/perl5/site_perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd MIME-Base64-2.12; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd File-Rsync-0.20; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Net-Telnet-3.02; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd File-Tail-0.98; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Time-HiRes-01.20; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Attribute-Handlers-0.77; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Params-Validate-0.24; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Log-Dispatch-2.01; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Digest-MD5-2.20; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Config-Simple-2.82; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Log-Log4perl-0.23; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd DBI-1.18; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd Msql-Mysql-modules-1.2219; perl Makefile.PL $(MKMK_PRE); make $(MKMK_POS) install)
+	@(cd $(BASE)/lib/perl5/site_perl; cp -R $(PERLVERSION) $(PERLADJVERSION); cp -R $(PERLVERSION) $(PERLOLDVERSION);)
+	@(cd $(BASE)/lib; tar cvf libperl.tar perl5)
+	@(cd $(BASE)/lib/$(TARGET); tar cvf libexpatpackage.tar libexpat.* ; mv -f libexpatpackage.tar .. )
+
+clean: 
+	@(cd Statistics-Descriptive-2.4; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Mail-Sendmail-0.78;  if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Date-EzDate-0.93; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd libnet-1.0704; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd expat; make clean)
+	@(cd XML-Parser-2.30; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd XML-Simple-1.08_01; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd MIME-Base64-2.12; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd File-Rsync-0.20; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Net-Telnet-3.02; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd File-Tail-0.98; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Time-HiRes-01.20; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Attribute-Handlers-0.77; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Params-Validate-0.24; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Log-Dispatch-2.01; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Digest-MD5-2.20; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Config-Simple-2.82; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Log-Log4perl-0.23; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd DBI-1.18; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+	@(cd Msql-Mysql-modules-1.2219; if [ ! -r Makefile ]; then perl Makefile.PL; fi; make clean)
+
+
+.DUMMY:
+

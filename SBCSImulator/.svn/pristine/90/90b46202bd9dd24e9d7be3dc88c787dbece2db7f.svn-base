@@ -1,0 +1,14 @@
+--- #YAML:1.0
+name:                Net-INET6Glue
+version:             0.4
+abstract:            ~
+license:             ~
+author:              ~
+generated_by:        ExtUtils::MakeMaker version 6.42
+distribution_type:   module
+requires:     
+    IO::Socket::INET6:             2.54
+    Net::FTP:                      2.75
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

@@ -1,0 +1,22 @@
+/00base.t/1.1/Mon Dec  6 22:53:06 2004//
+/10dsnlist.t/1.1/Mon Dec  6 22:53:06 2004//
+/20createdrop.t/1.1/Mon Dec  6 22:53:06 2004//
+/30insertfetch.t/1.1/Mon Dec  6 22:53:06 2004//
+/40bindparam.t/1.1/Mon Dec  6 22:53:06 2004//
+/40blobs.t/1.1/Mon Dec  6 22:53:06 2004//
+/40listfields.t/1.1/Mon Dec  6 22:53:06 2004//
+/40nulls.t/1.1/Mon Dec  6 22:53:06 2004//
+/40numrows.t/1.1/Mon Dec  6 22:53:06 2004//
+/50chopblanks.t/1.1/Mon Dec  6 22:53:06 2004//
+/50commit.t/1.1/Mon Dec  6 22:53:06 2004//
+/60leaks.t/1.1/Mon Dec  6 22:53:06 2004//
+/ak-dbd.t/1.1/Mon Dec  6 22:53:06 2004//
+/akmisc.t/1.1/Mon Dec  6 22:53:06 2004//
+/dbdadmin.t/1.1/Mon Dec  6 22:53:06 2004//
+/insertid.t/1.1/Mon Dec  6 22:53:06 2004//
+/lib.pl/1.1/Mon Dec  6 22:53:06 2004//
+/mysql.dbtest/1.1/Mon Dec  6 22:53:06 2004//
+/mysql.mtest/1.1/Mon Dec  6 22:53:06 2004//
+/mysql.t/1.1/Mon Dec  6 22:53:06 2004//
+/mysql2.t/1.1/Mon Dec  6 22:53:06 2004//
+D

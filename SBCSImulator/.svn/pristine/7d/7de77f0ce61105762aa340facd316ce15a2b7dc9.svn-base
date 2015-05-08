@@ -1,0 +1,66 @@
+=head2 Tue Jul 13 11:42:27 2004: C<Module> L<XML::Parser|XML::Parser>
+
+=over 4
+
+=item *
+
+C<installed into: /home/santosh/ivmsbuilds/ivms_3_1_1_d2/bn/lib/perl5/site_perl/5.8.0>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.34>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Tue Jul 13 11:42:29 2004: C<Module> L<XML::Simple|XML::Simple>
+
+=over 4
+
+=item *
+
+C<installed into: /home/santosh/ivmsbuilds/ivms_3_1_1_d2/bn/lib/perl5/site_perl/5.8.0>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.09>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Tue Jul 13 11:42:33 2004: C<Module> L<Config::Simple|Config::Simple>
+
+=over 4
+
+=item *
+
+C<installed into: /home/santosh/ivmsbuilds/ivms_3_1_1_d2/bn/lib/perl5/site_perl/5.8.0>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 4.55>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

@@ -1,0 +1,223 @@
+<HTML>
+<HEAD>
+<TITLE>DBI::Shell - Interactive command shell for the DBI</TITLE>
+<LINK REL="stylesheet" HREF="../../../Active.css" TYPE="text/css">
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD CLASS=block VALIGN=MIDDLE WIDTH=100% BGCOLOR="#cccccc">
+<FONT SIZE=+1><STRONG><P CLASS=block>&nbsp;DBI::Shell - Interactive command shell for the DBI</P></STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#to do">TO DO</A></LI>
+	<LI><A HREF="#commands">COMMANDS</A></LI>
+	<LI><A HREF="#authors and acknowledgements">AUTHORS and ACKNOWLEDGEMENTS</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>DBI::Shell - Interactive command shell for the DBI</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  perl -MDBI::Shell -e shell [&lt;DBI data source&gt; [&lt;user&gt; [&lt;password&gt;]]]</PRE>
+<P>or</P>
+<PRE>
+  dbish [&lt;DBI data source&gt; [&lt;user&gt; [&lt;password&gt;]]]</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>The DBI::Shell module (and dbish command, if installed) provide a
+simple but effective command line interface for the Perl DBI module.</P>
+<P>DBI::Shell is very new, very experimental and very subject to change.
+Your milage <EM>will</EM> vary. Interfaces <EM>will</EM> change with each release.</P>
+<P>
+<HR>
+<H1><A NAME="to do">TO DO</A></H1>
+<P>Proper docs - but not yet, too much is changing.</P>
+<P>``/source file'' command to read command file.
+Allow to nest via stack of command file handles.
+Add command log facility to create batch files.</P>
+<P><TABLE CELLSPACING=0 CELLPADDING=0><TR><TD>Commands:
+<TR><TD><TD>load (query?) from file
+<TR><TD><TD>save (query?) to file</TABLE></P>
+<P>Use Data::ShowTable if available.</P>
+<P><TABLE CELLSPACING=0 CELLPADDING=0><TR><TD>Define DBI::Shell plug-in semantics.
+<TR><TD><TD>Implement import/export as plug-in module</TABLE></P>
+<P>Clarify meaning of batch mode</P>
+<P>Completion hooks</P>
+<P>Set/Get DBI handle attributes</P>
+<P>Portability</P>
+<P>Emulate popular command shell modes (Oracle, Ingres etc)?</P>
+<P>
+<HR>
+<H1><A NAME="commands">COMMANDS</A></H1>
+<P>Many commands - few documented, yet!</P>
+<DL>
+<DT><STRONG><A NAME="item_help">help</A></STRONG><BR>
+<DD>
+<PRE>
+  /help</PRE>
+<DT><STRONG><A NAME="item_chistory">chistory</A></STRONG><BR>
+<DD>
+<PRE>
+  /chistory          (display history of all commands entered)
+  /chistory | YourPager (display history with paging)</PRE>
+<DT><STRONG><A NAME="item_clear">clear</A></STRONG><BR>
+<DD>
+<PRE>
+  /clear             (Clears the current command buffer)</PRE>
+<DT><STRONG><A NAME="item_commit">commit</A></STRONG><BR>
+<DD>
+<PRE>
+  /commit            (commit changes to the database)</PRE>
+<DT><STRONG><A NAME="item_connect">connect</A></STRONG><BR>
+<DD>
+<PRE>
+  /connect           (pick from available drivers and sources)
+  /connect dbi:Oracle (pick source from based on driver)
+  /connect dbi:YourDriver:YourSource i.e. dbi:Oracle:mysid</PRE>
+<P>Use this option to change userid or password.</P>
+<DT><STRONG><A NAME="item_current">current</A></STRONG><BR>
+<DD>
+<PRE>
+  /current            (Display current statement in the buffer)</PRE>
+<DT><STRONG><A NAME="item_do">do</A></STRONG><BR>
+<DD>
+<PRE>
+  /do                 (execute the current (non-select) statement)</PRE>
+<PRE>
+        dbish&gt; create table foo ( mykey integer )
+        dbish&gt; /do</PRE>
+<PRE>
+        dbish&gt; truncate table OldTable /do (Oracle truncate)</PRE>
+<DT><STRONG><A NAME="item_drivers">drivers</A></STRONG><BR>
+<DD>
+<PRE>
+  /drivers            (Display available DBI drivers)</PRE>
+<DT><STRONG><A NAME="item_edit">edit</A></STRONG><BR>
+<DD>
+<PRE>
+  /edit               (Edit current statement in an external editor)</PRE>
+<P>Editor is defined using the enviroment variable $VISUAL or
+$EDITOR or default is vi.  Use /option editor=new editor to change
+in the current session.</P>
+<P>To read a file from the operating system invoke the editor (/edit)
+and read the file into the editor buffer.</P>
+<DT><STRONG><A NAME="item_exit">exit</A></STRONG><BR>
+<DD>
+<PRE>
+  /exit              (Exits the shell)</PRE>
+<DT><STRONG><A NAME="item_get">get</A></STRONG><BR>
+<DD>
+<PRE>
+  /get               (Retrieve a previous command to the current buffer)</PRE>
+<DT><STRONG><A NAME="item_go">go</A></STRONG><BR>
+<DD>
+<PRE>
+  /go                (Execute the current statement)</PRE>
+<P>Run (execute) the statement in the current buffer.  This is the default
+action if the statement ends with /</P>
+<PRE>
+        dbish&gt; select * from user_views/</PRE>
+<PRE>
+        dbish&gt; select table_name from user_tables
+        dbish&gt; where table_name like 'DSP%'
+        dbish&gt; /</PRE>
+<PRE>
+        dbish&gt; select table_name from all_tables/ | more</PRE>
+<DT><STRONG><A NAME="item_history">history</A></STRONG><BR>
+<DD>
+<PRE>
+  /history            (Display combined command and result history)
+  /history | more</PRE>
+<DT><STRONG><A NAME="item_option">option</A></STRONG><BR>
+<DD>
+<PRE>
+  /option [option1[=value]] [option2 ...]
+  /option            (Displays the current options)
+  /option   MyOption (Displays the value, if exists, of MyOption)
+  /option   MyOption=4 (defines and/or sets value for MyOption)</PRE>
+<DT><STRONG><A NAME="item_perl">perl</A></STRONG><BR>
+<DD>
+<PRE>
+  /perl               (Evaluate the current statement as perl code)</PRE>
+<DT><STRONG><A NAME="item_quit">quit</A></STRONG><BR>
+<DD>
+<PRE>
+  /quit               (Leaves shell.  Same as exit)</PRE>
+<DT><STRONG><A NAME="item_redo">redo</A></STRONG><BR>
+<DD>
+<PRE>
+  /redo               (Re-execute the previously executed statement)</PRE>
+<DT><STRONG><A NAME="item_rhistory">rhistory</A></STRONG><BR>
+<DD>
+<PRE>
+  /rhistory           (Display result history)</PRE>
+<DT><STRONG><A NAME="item_rollback">rollback</A></STRONG><BR>
+<DD>
+<PRE>
+  /rollback           (rollback changes to the database)</PRE>
+<P>For this to be useful, turn the autocommit off. /option autocommit=0</P>
+<DT><STRONG><A NAME="item_table_info">table_info</A></STRONG><BR>
+<DD>
+<PRE>
+  /table_info         (display all tables that exist in current database)
+  /table_info | more  (for paging)</PRE>
+<DT><STRONG><A NAME="item_trace">trace</A></STRONG><BR>
+<DD>
+<PRE>
+  /trace              (set DBI trace level for current database)</PRE>
+<P>Adjust the trace level for DBI 0 - 4.  0 off.  4 is lots of information.
+Useful for determining what is really happening in DBI.  See DBI.</P>
+<DT><STRONG><A NAME="item_type_info">type_info</A></STRONG><BR>
+<DD>
+<PRE>
+  /type_info          (display data types supported by current server)</PRE>
+</DL>
+<P>
+<HR>
+<H1><A NAME="authors and acknowledgements">AUTHORS and ACKNOWLEDGEMENTS</A></H1>
+<P>The DBI::Shell has a long lineage.</P>
+<P>It started life around 1994-1997 as the pmsql script written by Andreas
+König. Jochen Wiedmann picked it up and ran with it (adding much along
+the way) as <EM>dbimon</EM>, bundled with his DBD::mSQL driver modules. In
+1998, around the time I wanted to bundle a shell with the DBI, Adam
+Marks was working on a dbish modeled after the Sybase sqsh utility.</P>
+<P>Wanting to start from a cleaner slate than the feature-full but complex
+dbimon, I worked with Adam to create a fairly open modular and very
+configurable DBI::Shell module. Along the way Tom Lowery chipped in
+ideas and patches. As we go further along more useful code and concepts
+from Jochen's dbimon is bound to find it's way back in.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>The DBI::Shell module is Copyright (c) 1998 Tim Bunce. England.
+All rights reserved. Portions are Copyright by Jochen Wiedmann,
+Adam Marks and Tom Lowery.</P>
+<P>You may distribute under the terms of either the GNU General Public
+License or the Artistic License, as specified in the Perl README file.</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD CLASS=block VALIGN=MIDDLE WIDTH=100% BGCOLOR="#cccccc">
+<FONT SIZE=+1><STRONG><P CLASS=block>&nbsp;DBI::Shell - Interactive command shell for the DBI</P></STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+</BODY>
+
+</HTML>

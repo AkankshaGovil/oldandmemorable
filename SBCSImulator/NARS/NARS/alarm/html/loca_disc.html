@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Configure a new alarm</title>
+<base target="rbottom">
+</head>
+<body bgcolor="cccccc">
+<script language="JavaScript" src="options.js">
+document.write("Error: .js file not found");
+</script>
+<script language="javascript"> </script>
+
+<script language="javascript"> heading("Configure a new alarm - local disconnect") </script>
+<form name="Form1" method="POST" action="http://204.180.228.224/cgi-bin/add.cgi">
+  <table border="0" width="100%">
+    <tr>
+       <script language="javascript"> ask_EVENT("local disconnect") </script>
+		<script language="javascript"> ask_QUAL_DEF_CDR("") </script>
+       <script language="javascript"> ask_HOST("All") </script>
+    </tr>
+    <tr>
+      	<script language="javascript"> ask_KEY("local-disconnect") </script>
+      <td width="51%">
+        	<script language="javascript"> ask_OPERATOR() </script>
+        	<script language="javascript"> ask_OPERAND() </script>
+        	<script language="javascript"> ask_TIME_AVERAGE() </script>
+      </td>
+        	<script language="javascript"> ask_ACTION() </script>
+    </tr>
+    <tr>
+      <script language="javascript"> ask_DESC("\"Action\" is taken when \"key\" condition is found in the \"Type\" files on \"Host\" for \"Duration\".") </script>
+    </tr>
+    <tr>
+      <td width="27%"><input type="submit" value="Configure Alarm"></td>
+      <td width="47%"><input type="reset" value="Reset" name="B2"></td>
+      <td width="26%">&nbsp;</td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+</form>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+#!/bin/sh
+#
+# nextoneJBoss		This shell script takes care of starting and stopping
+#			JBoss server
+#
+
+### BEGIN INIT INFO
+# Provides: jboss
+# Required-Start: $network
+# Default-Start: 3 5
+# Required-Stop:
+# Default-Stop: 0 1 2 6
+# Description: Start the RSM/RSM Lite
+### END INIT INFO
+
+#create tmp directory if necessary
+NEXTONE_TMP=/var/ivms/tmp;
+NEXTONE_CACHE=/opt/nxtn/rsm/cache;
+mkdir -p $NEXTONE_TMP
+mkdir -p $NEXTONE_CACHE
+
+#ulimit and core settings to be updated in case of RSM server install
+#set the ulimit to generate core when java crashes
+ulimit -c unlimited
+#set the core filepath
+echo /var/log/RSMcore-%e-%p-%t > /proc/sys/kernel/core_pattern
+
+
+JAVA_HOME=/opt/nxtn/jdk
+JBOSS_HOME=/opt/nxtn/jboss
+JAVA_OPTS=%JAVA_OPTS_VALUE%
+export JAVA_HOME JAVA_OPTS
+export JBOSS_HOME
+umask 000
+
+STARTDIR=`pwd`;
+
+JBOSS_RUNNING='0'
+
+check_jboss() {
+		check_jboss_by_ps
+}
+
+check_jboss_by_ps() {
+	temp=$(echo $JAVA_OPTS | sed -e 's/+Use/\\+Use/g')
+	
+	R=`pgrep -fx "/opt/nxtn/jdk/bin/java $temp -Dprogram.name=run.sh -classpath /opt/nxtn/jboss/bin/run.jar:/opt/nxtn/jdk/lib/tools.jar org.jboss.Main -b 0.0.0.0 -c rsm"| wc -l`
+	if [ $R -eq "0" ]; then
+		JBOSS_RUNNING='0'
+	else
+		JBOSS_RUNNING='1'
+	fi
+}
+
+check_jboss_by_checkproc() {
+	checkproc java
+	if [ $? -ne 0 ]; then
+		JBOSS_RUNNING='0'
+	else
+		JBOSS_RUNNING='1'
+	fi
+}
+
+case "$1" in
+	'start')
+	    check_jboss
+	    if [ $JBOSS_RUNNING -eq '0' ]; then
+	    	cd $JBOSS_HOME
+	    	rm -rf $JBOSS_HOME/server/rsm/work/jboss.web/localhost/ivms/SESSIONS.ser
+	    	rm -rf $JBOSS_HOME/server/rsm/work $JBOSS_HOME/server/rsm/data $JBOSS_HOME/server/rsm/tmp
+			./bin/run.sh -b 0.0.0.0 -c rsm > /dev/null  2>&1 &
+	    fi
+	    ;;
+	'stop')
+	    cd $JBOSS_HOME
+	    ./bin/shutdown.sh -S -s 0.0.0.0  > /dev/null 2>&1 &
+	    ;;
+	'status')
+	    check_jboss
+	    if [ $JBOSS_RUNNING -gt '0' ]; then
+	    	echo "running"
+	    else
+	    	echo "unused"
+		exit 3
+	    fi
+	    ;;
+	'restart')
+	    $0 stop
+	    $0 start
+	    ;;
+	*)
+	    echo "Usage: ivms {start|stop|status|restart}"
+	    exit 1
+esac
+
+exit $?
+
+

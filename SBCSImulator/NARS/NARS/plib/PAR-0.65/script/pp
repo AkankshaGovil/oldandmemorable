@@ -1,0 +1,608 @@
+#!/usr/bin/perl
+# $File: //member/autrijus/PAR/script/pp $ $Author: ptyagi $
+# $Revision: 1.1 $ $Change: 4674 $ $DateTime: 2003/03/09 13:35:34 $
+
+use 5.006;
+use strict;
+use warnings;
+
+use Config;
+our $PARL;
+
+# bootstrap ourselves on a binary-only install.
+unless (eval { require PAR; 1 }) {
+    $PARL ||= _can_run("parl$Config{_exe}") or die("can't find par loader");
+    exec($PARL, $0, @ARGV);
+}
+
+use File::Temp qw(tempfile);
+use Cwd;
+our $VERSION = 0.03;
+$| = 1;
+
+$SIG{INT} = sub { exit(); }; # exit gracefully and clean up after ourselves.
+
+sub opt(*); # imal quoting
+sub is_win32();
+sub vprint($@);
+
+our ($Options);
+our (@Input, $Output);
+our ($logfh);
+our ($par_file);
+
+main();
+
+sub main {
+    parse_argv();
+    check_write($Output);
+    generate_code();
+    run_code();
+    _die("XXX: Not reached?");
+}
+
+#######################################################################
+
+sub compile_par { 
+    use Module::ScanDeps 0.10;
+    use Archive::Zip;
+    use File::Basename;
+
+    my ($cfh, $lose);
+
+    if (opt(S) || opt(p)) {
+        # We need to keep it.
+        if (opt(e) or !@Input) {
+            $par_file = "a.out.par";
+        } else {
+            $par_file = $Input[0];
+            # File off extension if present
+            # hold on: plx is executable; also, careful of ordering!
+            $par_file =~ s/\.(?:p(?:lx|l|h)|m)\z//i;
+            $par_file .= ".par";
+            $par_file = $Output if opt(p) && $Output =~ /\.par\z/i;
+        }
+        check_write($par_file);
+    } else {
+        # Don't need to keep it, be safe with a tempfile.
+        $lose = 1;
+        ($cfh, $par_file) = tempfile("ppXXXXX", SUFFIX => ".par"); 
+        close $cfh; # See comment just below
+    }
+    vprint 1, "Writing PAR on $par_file";
+
+    my @modules = map {
+	s/::/\//g; "$_.pm"
+    } @{opt(M) || []};
+
+    my %map;
+    push @INC, @{opt(I) || []};
+
+    Module::ScanDeps::scan_deps(
+	rv	=> \%map,
+	files	=> [
+	    (map Module::ScanDeps::_find_in_inc($_), @modules),
+	    (@Input ? @Input : ()),
+	],
+	recurse	=> 1,
+	skip	=> { map { ($_ => 1) } @{opt(X) || []} }
+    );
+    Module::ScanDeps::add_deps(
+	rv	=> \%map,
+	modules	=> \@modules,
+	skip	=> { map { ($_ => 1) } @{opt(X) || []} }
+    );
+
+    my %text;
+    $text{$_} = ($map{$_}{type} =~ /^(?:module|autoload)$/) for keys %map;
+    $map{$_}  = $map{$_}{file} for keys %map;
+
+    my @manifest = ('MANIFEST', 'META.yml');
+    my $size = 0;
+    my $zip = Archive::Zip->new;
+    my %zip_args = (
+	desiredCompressionMethod
+	    => Archive::Zip::COMPRESSION_DEFLATED(),
+	desiredCompressionLevel
+	    => Archive::Zip::COMPRESSION_LEVEL_BEST_COMPRESSION(),
+    );
+
+    my $verbatim = ($ENV{PAR_VERBATIM} || 0);
+    foreach (sort grep length $map{$_}, keys %map) {
+	next if !opt(B) and ($map{$_} eq "$Config::Config{privlib}/$_"
+			  or $map{$_} eq "$Config::Config{archlib}/$_");
+
+	vprint 2, "... adding $map{$_}";
+	next unless $zip;
+
+	if ($text{$_}) {
+	    local $/;
+	    open my $file, '<', $map{$_} or die $!;
+	    binmode($file);
+	    my $content = <$file>;
+	    $content =~ s/
+		^=(?:head\d|pod|begin|item|over|for|back|end)\b.*?
+		^=cut\s*$
+		\n*
+	    //smgx unless $verbatim;
+	    $size += length($content);
+	    $zip->addString( \$content => "lib/$_", %zip_args );
+	}
+	else {
+	    $zip->addFile($map{$_} => "lib/$_");
+	    $size += -s $map{$_};
+	}
+
+	push @manifest, "lib/$_";
+    }
+
+    @Input = grep !/\.pm\z/i, @Input;
+
+    foreach my $input (@Input) {
+	my $name = $input;
+	$size += -s $input;
+
+	$zip->addFile($input => "script/$input");
+	push @manifest, "script/$input";
+
+    }
+
+    $zip->addString(
+	((@Input == 1)
+	    ? _main_pl_single("script/$Input[0]")
+	    : _main_pl_multi()) => "script/main.pl", %zip_args
+    );
+
+    push @manifest, "script/main.pl";
+
+    my $manifest    = join("\n", @manifest);
+    my $meta_yaml   = << "YAML";
+build_requires: {}
+conflicts: {}
+dist_name: $Output
+distribution_type: par
+dynamic_config: 0
+generated_by: 'Perl Packager version $VERSION'
+license: unknown
+par:
+  cleartemp: 0
+  signature: ''
+  verbatim: $verbatim
+  version: $PAR::VERSION
+YAML
+
+    $size += length($_) for ($manifest, $meta_yaml);
+    vprint 2, "... making $_" for qw(MANIFEST META.yml);
+
+    $zip->addString($manifest	=> 'MANIFEST', %zip_args);
+    $zip->addString($meta_yaml	=> 'META.yml', %zip_args);
+    $zip->writeToFileNamed($par_file);
+
+    my $newsize = -s $par_file;
+    vprint 2, sprintf(
+	"*** %s: %d bytes read, %d compressed, %2.2d%% saved.\n",
+	$par_file, $size, $newsize, (100 - ($newsize / $size * 100))
+    );
+
+    par_to_exe() unless opt(p);
+    
+    if ($lose) {
+        vprint 2, "unlinking $par_file";
+        unlink $par_file or _die("can't unlink $par_file: $!"); 
+    }
+}
+
+sub par_to_exe { 
+    $PARL ||= _can_run("parl$Config{_exe}") or _die("can't find par loader");
+    my @quiet = (opt(v) ? () : ('-q'));
+    vprint 0, "Running $PARL @quiet -B -O$Output $par_file";
+    system($PARL, @quiet, "-B", "-O$Output", $par_file);
+}
+
+sub generate_code { 
+    vprint 0, "Compiling @Input";
+    compile_par();
+    exit(0) if (!opt('r'));
+}
+
+sub run_code {
+    vprint 0, "Running code";
+    $Output = File::Spec->catfile(".", $Output);
+    system($Output, @ARGV);
+    exit(0);
+}
+
+sub vprint ($@) {
+    my $level = shift;
+    my $msg = "@_";
+    $msg .= "\n" unless substr($msg, -1) eq "\n";
+    if (opt(v) > $level) {
+         print        "$0: $msg" if !opt('log');
+	 print $logfh "$0: $msg" if  opt('log');
+    }
+}
+
+sub parse_argv {
+    use Getopt::Long; 
+    Getopt::Long::Configure("no_ignore_case");
+
+    # no difference in exists and defined for %ENV; also, a "0"
+    # argument or a "" would not help cc, so skip
+    unshift @ARGV, split ' ', $ENV{PP_OPTS} if $ENV{PP_OPTS};
+
+    $Options = {};
+    Getopt::Long::GetOptions( $Options,
+        'M:s@',         # include modules
+        'X:s@',         # exclude modules
+        'I:s@',         # include directories (FOR PERL, NOT FOR C)
+        'o:s',          # Output file
+        'v:i',          # Verbosity level
+        'e:s',          # One-liner
+        'p',            # Generate PAR only
+        'h',            # Help me
+        'S',            # Dump PAR files
+        'B',            # Bundle core modules
+	'r',            # run the resulting executable
+	'log:s',        # where to log packaging process information
+    );
+
+    $Options->{v} += 0;
+    $Options->{B} = 1 unless opt(p) and !opt(o);
+
+    helpme() if opt(h); # And exit
+
+    $Output = opt(o) || ( 'a' . ($Config{_exe} || '.out') );
+    open $logfh, '>>', opt('log') or die ("XXX: Cannot open log: $!") if (opt('log'));
+
+    if (opt(e)) {
+        warn "$0: using -e 'code' as input file, ignoring @ARGV\n" if @ARGV and !opt(r);
+        my ($fh, $fake_input) = tempfile("ppXXXXX", SUFFIX => ".pl", UNLINK => 1); 
+	print $fh $Options->{e};
+	close $fh;
+	@Input = $fake_input;
+    }
+    else {
+        @Input = shift @ARGV if @ARGV;
+        _usage_and_die("$0: No input file specified\n") unless @Input or opt(M);
+	push @Input, @ARGV if @ARGV and !opt(r);
+        check_read(@Input) if @Input;
+        check_perl(@Input) if @Input;
+        sanity_check();
+    }
+}
+
+sub opt(*) {
+    my $opt = shift;
+    return exists($Options->{$opt}) && ($Options->{$opt} || 0);
+} 
+
+sub sanity_check {
+    # Check the input and output files make sense, are read/writable.
+    if ("@Input" eq $Output) {
+        if ("@Input" eq 'a.out') {
+            _die("$0: Compiling a.out is probably not what you want to do.\n");
+            # You fully deserve what you get now. No you *don't*. typos happen.
+        } else {
+            warn "$0: Will not write output on top of input file, ",
+                "compiling to a.out instead\n";
+            $Output = "a.out";
+        }
+    }
+}
+
+sub check_read { 
+    foreach my $file (@_) {
+	unless (-r $file) {
+	    _die("$0: Input file $file is a directory, not a file\n") if -d _;
+	    unless (-e _) {
+		_die("$0: Input file $file was not found\n");
+	    } else {
+		_die("$0: Cannot read input file $file: $!\n");
+	    }
+	}
+	unless (-f _) {
+	    # XXX: die?  don't try this on /dev/tty
+	    warn "$0: WARNING: input $file is not a plain file\n";
+	} 
+    }
+}
+
+sub check_write {
+    foreach my $file (@_) {
+	if (-d $file) {
+	    _die("$0: Cannot write on $file, is a directory\n");
+	}
+	if (-e _) {
+	    _die("$0: Cannot write on $file: $!\n") unless -w _;
+	} 
+	unless (-w cwd()) { 
+	    _die("$0: Cannot write in this directory: $!\n");
+	}
+    }
+}
+
+sub check_perl {
+    my $file = shift;
+    unless (-T $file) {
+        warn "$0: Binary `$file' sure doesn't smell like perl source!\n";
+	if (my $file_checker = _can_run("file")) {
+	    print "Checking file type... ";
+	    system($file_checker, $file);
+	}
+        _die("Please try a perlier file!\n");
+    } 
+
+    open(my $handle, "<", $file) or _die("XXX: can't open $file: $!");
+    local $_ = <$handle>;
+    if (/^#!/ && !/perl/) {
+        _die("$0: $file is a ", /^#!\s*(\S+)/, " script, not perl\n");
+    } 
+
+} 
+
+sub helpme {
+    print "Perl Packager, version $VERSION\n\n";
+    {
+	no warnings;
+	exec "pod2usage $0";
+	exec "perldoc $0";
+	exec "pod2text $0";
+    }
+}
+
+sub _die {
+    $logfh->print(@_) if opt('log');
+    print STDERR @_;
+    exit();
+}
+
+sub _usage_and_die {
+    _die(<<EOU);
+$0: Usage:
+$0 [-o executable] [-r] [-B|-p|-S] [-log log] [source[.pl] | -e oneliner]
+EOU
+}
+
+sub _can_run {
+    use File::Spec;
+    use ExtUtils::MakeMaker; # just for maybe_command()
+
+    my $command = shift;
+
+    for my $dir (split(/$Config{path_sep}/, $ENV{PATH}), File::Basename::dirname($0)) {
+        my $abs = File::Spec->catfile($dir, $command);
+        return $abs if $abs = MM->maybe_command($abs);
+    }
+
+    return;
+}
+
+sub _main_pl_multi {
+    return << '__MAIN__';
+$PAR::__reading = 1;
+my $file = $0;
+my $zip = $PAR::LibCache{$0};
+$file =~ s/^.*[\/\\]//;
+$file =~ s/\.[^.]*$//i ;
+my $member  = $zip->memberNamed($file)
+	|| $zip->memberNamed("$file.pl")
+	|| $zip->memberNamed("script/$file")
+	|| $zip->memberNamed("script/$file.pl")
+    or die qq(Can't open perl script "$file": No such file or directory);
+PAR::_run_member($member);
+
+__MAIN__
+}
+
+sub _main_pl_single {
+    my $file = shift;
+    return << "__MAIN__";
+\$PAR::__reading = 1;
+my \$zip = \$PAR::LibCache{\$0};
+my \$member = \$zip->memberNamed('$file')
+    or die qq(Can't open perl script "$file": No such file or directory);
+PAR::_run_member(\$member);
+
+__MAIN__
+}
+
+END {
+    unlink $par_file if ($par_file && !opt(S) && !opt(p));
+}
+
+__END__
+
+=head1 NAME
+
+pp - Perl Packager
+
+=head1 SYNOPSIS
+
+    % pp hello			# Pack 'hello' into executable 'a.out'
+    % pp -o hello hello.pl	# Pack 'hello.pl' into executable 'hello'
+
+    % pp -o foo foo.pl bar.pl	# Pack 'foo.pl' and 'bar.pl' into 'foo'
+    % ./foo			# Run 'foo.pl' inside 'foo'
+    % mv foo bar; ./bar		# Run 'bar.pl' inside 'foo'
+    % mv bar baz; ./baz		# Error: Can't open perl script "baz"
+
+    % pp -p file		# Creates a PAR file, 'file.par'
+    % pp -S -o hello file	# Creates a PAR file, 'file.par',
+				# then packages it to executable 'hello'
+    % pp -p -o out.par file	# Creates 'out.par' from 'file'
+    % pp -B -p -o out.par file	# same as above, but bundles core modules
+				# (-B is assumed when making executables)
+
+    % pp -e 'print q//'		# Pack a one-liner into 'a.out'
+    % pp -c -e 'print q//'	# Creates a PAR file 'a.out.par'
+
+    % pp -I /foo hello		# Extra paths (notice space after -I)
+    % pp -M Foo::Bar hello	# Extra modules (notice space after -M)
+    % pp -X Foo::Bar hello	# Exclude modules (notice space after -X)
+
+    % pp -r hello		# Pack 'hello' into 'a.out', runs 'a.out'
+    % pp -r hello a b c		# Pack 'hello' into 'a.out', runs 'a.out'
+				# with arguments 'a b c' 
+
+    % pp hello -log c		# Pack 'hello' into 'a.out', logs
+				# messages into 'c'
+
+=head1 DESCRIPTION
+
+F<pp> creates standalone executables from Perl programs, using the
+compressed packager provided by L<PAR>, and dependency detection
+heuristics offered by L<Module::ScanDeps>.  Source files are compressed
+verbatim without compilation.
+
+You may think of F<pp> as "F<perlcc> that works without hassle". :-)
+
+It does not provide the compilation-step acceleration provided
+by F<perlcc> (although a ByteLoader variant of F<pp> is entirely
+possible), but makes up for it with better reliability, smaller
+executable size, and full retrieval of original source code.
+
+If a single input program is specified, the resulting executable will
+behave identically as that program.  However, when multiple programs
+are packaged, the produced executable will run the one that has the
+same basename as C<$0> (i.e. the filename used to invoke it).  If
+nothing matches, it dies with the error C<Can't open perl script "$0">.
+
+On Microsoft Windows platforms, F<a.exe> is used instead of F<a.out>
+as the default executable name.
+
+=head1 OPTIONS
+
+=over 4
+
+=item -M I<module names>
+
+Adds the given modules to the dependency search patch and to the
+binary.
+
+=item -X I<module names>
+
+Excludes the given modules to the dependency search patch and to the
+binary.
+
+=item -I I<library directories>
+
+Adds the given directories to the perl library file search path.
+
+=item -o I<output file name>
+
+Specifies the file name for the final packaged executable.
+
+=item -p I<PAR file name>
+
+Create PAR archives only; do not package to a standalone binary.
+
+=item -e I<perl code>
+
+Package a one-liner, much the same as C<perl -e '...'>
+
+=item -S
+
+Do not delete generated PAR file after packaging.
+
+=item -v
+
+Increase verbosity of output; can be repeated for more verbose output.
+
+=item -r 
+
+Run the resulting packaged script after packaging it.
+
+=item -log
+
+Log the output of packaging to a file rather than to stdout.
+
+=back
+
+=head1 ENVIRONMENT
+
+=over 4
+
+=item PP_OPTS
+
+Command-line options (switches).  Switches in this variable are taken
+as if they were on every F<pp> command line.
+
+=back
+
+=head1 NOTES
+
+Here are some recipes showing how to utilize F<pp> to bundle
+F<source.pl> with all its dependencies, on target machines with
+different expected settings:
+
+=over 4
+
+=item Stand-alone setup
+
+    % pp -o packed.exe source.pl	# makes packed.exe
+    # Now, deploy 'packed.exe' to target machine...
+    $ packed.exe			# run it
+
+=item Perl interpreter only, without core modules:
+
+    % pp -B -p source.pl		# makes source.par
+    % par.pl -B -Opacked.pl source.par  # makes packed.pl
+    # Now, deploy 'packed.pl' to target machine...
+    $ perl packed.pl			# run it
+
+=item Perl with core module installed:
+
+    % pp -p source.pl			# makes source.par
+    % par.pl -b -Opacked.pl source.par	# makes packed.pl
+    # Now, deploy 'packed.pl' to target machine...
+    $ perl packed.pl			# run it
+
+=item Perl with PAR.pm and its dependencies installed:
+
+    % pp -p source.pl                   # makes source.par
+    % echo "use PAR 'source.par';" > packed.pl;
+    % cat source.pl >> packed.pl;       # makes packed.pl
+    # Now, deploy 'source.par' and 'packed.pl' to target machine...
+    $ perl packed.pl                    # run it
+
+=back
+
+Note that if your perl was built with a shared library, the
+'Stand-alone setup' above will still need a separate F<perl5x.dll> or
+F<libperl.so> to function correctly.  Patches to include a copy
+of libperl with the executable are most welcome.
+
+=head1 SEE ALSO
+
+L<PAR>, L<Module::ScanDeps>, L<par.pl>, L<parl>, L<perlcc>
+
+=head1 ACKNOWLEDGMENTS
+
+Simon Cozens, Tom Christiansen and Edward Peschko for writing
+F<perlcc>; this program try to mimic its interface as close
+as possible, and copied liberally from their code.
+
+Mattia Barbon for providing the C<myldr> binary loader code.
+
+Jeff Goff for suggesting the name C<pp>.
+
+=head1 AUTHORS
+
+Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
+
+PAR has a mailing list, E<lt>par@perl.orgE<gt>, that you can write to;
+send an empty mail to E<lt>par-subscribe@perl.orgE<gt> to join the list
+and participate in the discussion.
+
+Please send bug reports to E<lt>bug-par@rt.cpan.orgE<gt>.
+
+=head1 COPYRIGHT
+
+Copyright 2002, 2003 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See L<http://www.perl.com/perl/misc/Artistic.html>
+
+=cut

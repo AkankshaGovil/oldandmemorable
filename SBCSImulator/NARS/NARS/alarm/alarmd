@@ -1,0 +1,372 @@
+#!/usr/bin/perl
+
+#
+# alarmd server
+#
+require 5.004;
+use strict;
+use POSIX qw(tmpnam);
+use File::Basename qw(&basename &dirname);
+use XML::Simple;
+
+require Net::Daemon::Concurrent;
+
+package Alarm;
+
+use vars qw($VERSION @ISA);
+$VERSION = '0.01';
+@ISA = qw(Net::Daemon::Concurrent); # to inherit from Net::Daemon::Concurrent
+
+### END - DEFINITIONS AND IMPORTS
+
+
+
+### BEGIN - PARAMETER DEFS
+my ($mydir, $myname, $conf_alarms_ref, $conf_tstamp);
+my $CONFFILE = 'nars.cfg';
+
+$mydir = dirname("$0");
+$myname = basename("$0");
+$conf_alarms_ref = {'conf_loc' => undef};
+$conf_tstamp = 0;
+
+### END - PARAMETER DEFS
+
+
+
+### BEGIN - FUNCTION DEFINITIONS 
+
+sub read_conf ($) {
+    my($self) = @_;
+	my $conf;
+	
+	$conf = $self->ParseConfigFile($self->ConfigFile);
+	return	$conf_alarms_ref->{'conf_loc'} = $conf->{'EV'};
+}
+
+sub get_conf ($) {
+    my($self) = @_;
+	
+	if (defined $conf_alarms_ref->{'conf_loc'}) {
+		return $conf_alarms_ref->{'conf_loc'};
+	}
+	else {
+		return $self->read_conf;
+	}
+}
+
+sub ConfigFile {
+	return "alarms.conf";
+}
+
+sub Version ($) { 'Alarm Server, 0.01'; }
+
+################################################################################
+# If Run is succesful return 1. Else return 0.
+# If 0 is returned it is assumed that the socket was closed and it is removed
+# from select loop in the Bind function
+################################################################################
+sub Run ($) {
+    my($self) = @_;
+    my($sock, $rc);
+	my($alarmid,$logdesc,$line,$infer);
+
+    $sock = $self->{'socket'};
+
+	if (($rc = $self->ReadMsg) < 0) {
+		return 0; # The socket was closed. 
+	}
+	elsif ($rc > 0) {
+		my $msg = $self->{'msg'};
+
+		if ($self->{'debug'}) {		
+			$self->Debug("Msg contents are - \n"); 
+			$self->Debug(@$msg); 
+		}
+
+		# Process this message
+		if ($msg->[0] =~ /^ALARM: (.*)/) {
+			$alarmid = $1;
+		}		
+		if ($msg->[1] =~ /^LOGDESC: (.*)/) {
+			$logdesc = $1;
+		}		
+		if ($msg->[2] =~ /^LINE: (.*)/) {
+			$line = $1;
+		}		
+		if ($msg->[3] =~ /^INFER: (.*)/) {
+			$infer = $1;
+		}		
+
+		$self->DoAction($alarmid, $logdesc, $line, $infer);
+	}
+
+    return 1;
+}
+
+################################################################################
+# ReadMsg is called whenever there is a line to be read from the socket.
+# It returns 1 - if a msg is present to be read.
+#            0 - if no message is present.
+# 			-1 - if an error occured on the socket and it was closed
+################################################################################
+sub ReadMsg ($) {
+    my($self) = @_;
+    my($line, $sock);
+    $sock = $self->{'socket'};
+
+#    if (!defined($line = $sock->getline())) {
+#        if ($sock->error()) {
+#            $self->Error("Client connection error %s", $sock->error());
+#        }
+#        $sock->close();
+#        return -1;
+#    }
+
+	while (defined($line = $sock->getline())) {
+   	$line =~ s/\s+$//; # Remove CRLF
+
+	if ($line =~ /^START_MSG/) {
+		$self->{'msg'} = [];
+		$self->{'msg_status'} = 0;
+	}
+	elsif ($line =~ /^END_MSG/) {
+		$self->{'msg_status'} = 1;
+		return $self->{'msg_status'};
+	}
+	elsif ($self->{'msg_status'} == 0) {
+		push(@{$self->{'msg'}}, $line);
+	}
+	}
+
+	return 0 if ($sock->error() && ($! == POSIX::EWOULDBLOCK()));
+
+	if ($sock->error()) {
+		$self->Error("Client connection error %s\n", $sock->error());
+    }
+	else {
+		$self->Debug("Client closed connection.\n");
+	}
+
+	$sock->close();
+	return -1;
+
+}
+
+################################################################################
+# This function is executed at a regular interval. 
+# It checks for new cdr entries and processes them
+################################################################################
+sub Loop ($) {
+	my ($self) = @_;
+	my ($new_mtime, $i);
+	my @new_stat;
+
+	die "Can't read $self->ConfigFile file.\n" if (-r $self->ConfigFile);
+	
+	@new_stat = stat($self->ConfigFile);	
+
+	# modification time is the 9th value of the returned array 
+	foreach $i (0..8) {
+		shift @new_stat;
+	}	
+
+	$new_mtime = shift @new_stat;
+
+	if ($new_mtime != $conf_tstamp) {
+		$self->readconf();	
+		if ($self->SaveConfigFile()) {
+			$conf_tstamp = $new_mtime;
+			$self->SendMsgToAgents();
+		}
+	}
+}
+
+sub SendMsgToAgents($) {
+	my ($self) = @_;	
+	my ($peer, $fd);
+	my $msg = "START_MSG\n".
+			  "READ_CONF_FILE\n".
+			  "END_MSG\n";
+	my $rc;
+	
+	foreach $fd (keys %{$self->{'peers'}}) {
+		$peer = ${$self->{'peers'}{$fd}};
+		$rc = print {$peer->{'socket'}} $msg;
+		unless ($rc) {
+			$peer->Error("Error sending message to client - $!\n");	
+			undef $peer;
+			delete $self->{'peers'}{$fd};	
+		}		
+	}
+}
+
+sub SaveConfFile($) {
+	my ($self) = @_;
+	my $blob;
+	my $sth;
+	
+	my @db_login = GetDBILogin();
+    my $dbh = DBI->connect(@db_login)
+        or die "$DBI::errstr\n";
+
+    open(DATA, "$self->ConfigFile")
+        or die "Cannot open file $self->ConfigFile\n";
+
+    read(DATA, $blob, 100000);
+
+    close(DATA);
+
+    $sth = $dbh->prepare("UPDATE alarms_conf SET file = ? WHERE filename = ?");
+ 
+    $sth->execute($dbh->quote($blob), $self->ConfigFile)
+		or print "Couldn't save file in DB - $DBI::errstr\n";
+
+    $dbh->disconnect;
+}
+
+################################################################################
+# Get the server name from the $CONFFILE file
+################################################################################
+sub GetDBILogin() {
+    # read the nars config file
+    my $config;
+
+    if (-f "$mydir/$CONFFILE" && -T "$mydir/$CONFFILE") {
+        $config = new Config::Simple(filename=>"$CONFFILE", mode=>'O_RDONLY');
+    } else {
+        die("Cannot read config file $mydir/$CONFFILE");
+    }
+
+    my %cfg = $config->param_hash();
+
+    # if the password is just a '.', it means password is empty
+    $cfg{'.dbpass'} = "" if ($cfg{'.dbpass'} eq '.');
+
+    return ($cfg{'.dburl'}, $cfg{'.dbuser'}, $cfg{'.dbpass'});
+}
+
+sub DoMail ($ $) {
+	my ($action, $messageref) = @_;
+	my $cmd = './mail.pl';
+
+	if ( defined $action->{'TO'}) {
+		$cmd .= " -t $action->{'TO'}";
+	}
+	
+	if ( defined $action->{'FROM'}) {
+		$cmd .= " -f $action->{'FROM'}";
+	}
+	
+	if ( defined $action->{'BCC'}) {
+		$cmd .= " -b $action->{'BCC'}";
+	}
+	
+	if ( defined $action->{'CC'}) {
+		$cmd .= " -c $action->{'CC'}";
+	}
+	
+	if ( defined $action->{'SUBJ'}) {
+		$cmd .= " -s '$action->{'SUBJ'}'";
+	}
+	else {
+		$cmd .= " -s AlarmReport!";
+	}
+	
+	my $MsgFile = POSIX::tmpnam();
+	open(T, ">$MsgFile") or print "unable to open $MsgFile file";
+	print T "$$messageref\n";
+	close(T);
+	
+	$cmd .= " $MsgFile";
+	system("$cmd");
+	unlink $MsgFile;
+}
+
+sub DoLog ($ $) {
+	my ($action, $messageref) = @_;
+	my $LogFile;
+
+	if ( defined $action->{'FILE'}) {
+		$LogFile = $action->{'FILE'};
+	}
+	else {
+		$LogFile = "ALARMS";
+	}
+	
+	open(L, ">>$LogFile") or print "unable to open $LogFile file";
+	print L "\n$$messageref\n";
+	close(L);
+}
+
+sub DoAction ($ $ $ $ $) {
+	my ($self, $alarmid, $log, $line, $infer) = @_;
+    my $date = `date`;
+    chomp ($date);
+    my ($alarm,$action,$message);
+	my $loc_conf;
+	
+	$loc_conf = $self->get_conf;
+	$alarm = $loc_conf->{$alarmid}; 
+	unless(defined $alarm) {
+		$self->Error("Couldn't find alarmid = $alarmid ".
+					 "in the config file $self->ConfigFile\n");
+	}
+
+	### BEGIN - The message format
+
+	$message = <<eEOF;
+
+$infer
+
+was inferred from:
+$log
+
+-----------------------------------------------
+More detailed information is given below:
+$line
+
+***********************************************************************
+Message generated by $self->Version on $date
+***********************************************************************
+eEOF
+
+	### END - The message format
+
+	$action = $alarm->{'ACTION'}[0];	
+	DoMail($action, \$message) if ($action->{'NAME'} =~ /MAIL/); 
+	DoLog($action, $message) if ($action->{'NAME'} =~ /LOG/); 
+}
+
+# Parses given config file and returns hashref pointing to data.
+sub ParseConfigFile ($ $) {
+	my ($class) = shift;
+    my ($arg) = shift;
+    ## Basic engine for doing work.
+    ##
+    my $xs = new XML::Simple();
+
+    ## Forcearray changes the whole paradigm.
+    my $ref = $xs->XMLin( $arg, forcearray => 1 );
+
+#    For debug only.
+#    print Dumper ($ref);
+
+    return $ref;
+}
+
+### END - FUNCTION DEFINITIONS
+
+
+
+### BEGIN - MAIN PROGRAM
+
+my $server = Alarm->new({ 'pidfile' => "$myname.pid",
+                          'logfile' => 'err',
+                          'mode' => 'single',
+                          'localport' => 2000}, \@ARGV);
+
+
+$server->Bind();
+
+1;

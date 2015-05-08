@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# nextoneTomcat		This shell script takes care of starting and stopping
+#			nextoneTomcat service (for NARS)
+#
+
+JAVA_HOME=/usr/local/jdk
+export JAVA_HOME
+JAVA_OPTS="-server -Djava.awt.headless=true -Xms64M -Xmx512M"
+export JAVA_OPTS
+TOMCAT_DIR=/usr/local
+
+STARTDIR=`pwd`;
+
+case "$1" in
+        start)
+                cd $TOMCAT_DIR
+                ./tomcat/bin/startup.sh
+                cd $STARTDIR
+                ;;
+        stop)
+                cd $TOMCAT_DIR
+                ./tomcat/bin/shutdown.sh
+                cd $STARTDIR
+                ;;
+        status)
+                ;;
+        restart)
+                $0 stop
+                $0 start
+                ;;
+        *)
+                echo "Usage: tomcat {start|stop|status|restart}"
+                exit 1
+esac
+
+exit $?
+

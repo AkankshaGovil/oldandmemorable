@@ -1,0 +1,81 @@
+<!--
+  Command line example: ant -Dvers=5.1d2 dist
+-->
+<project name="EMS" default="help" basedir=".">
+  <description> EMS build script </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="software" location="files/software"/>
+
+  <!-- display help information -->
+  <target name="help">
+    <echo>Usage ant -Dvers=version dist</echo>
+  </target>
+
+  <!-- Create the distribution directories and the timestamp if vers is set -->
+  <target name="init" if="vers">
+    <!-- Create the time stamp -->
+    <tstamp>
+			<format property="build.date" pattern="MMddyyyy"/>
+    </tstamp>
+  </target>
+
+  <!-- Checkout the files into the target directory if we have a vers set. init and diff will be run first -->
+  <target name="compile" depends="init" description="compile the source " if="vers">
+		<!-- Make sure that that swmpreinstall file is executable -->
+    <echo>Ensuring swmpreinstall is executable</echo>
+    <chmod file="swmpreinstall" dir="files" perm="a+x" />
+    <chmod file="swmpreinstall64" dir="files" perm="a+x" />
+
+    <!-- Create the distribution directory -->
+    <echo>Creating directory i686pc-ems--${vers}-${DSTAMP}</echo>
+    <mkdir dir="releases/i686pc-ems-${vers}-${build.date}"/>
+
+
+    <!-- Extract the release notes from the MSX distribution and rename them "" -->
+
+    <!-- Determine the component versions. This will have to come from the file name.
+         The current naming schemes are :
+           MSX       - i686pc-5.1-d1-11232007.tar.gz
+           RSM Agent - rsmagent_5.1d1_linux.tar.gz
+           RSM Lite  - rsmagent_5.1d1_linux.tar.gz
+           nxlinux   - nxlinux-master-update-5.0.3-1
+           nxinstall - nxinstall-1.0-38.i586.rpm
+          -->
+
+    <!-- Create the software.tar.gz file. -->
+    <echo>Creating software.tar.gz</echo>
+    <tar destfile="files/software.tar.gz" basedir="files/software" compression="gzip"  />
+    
+    <!-- Update the MD5 file -->
+    <echo>Creating software.tar.gz checksum</echo>
+  	<checksum file="files/software.tar.gz" forceOverwrite="yes" algorithm="MD5" fileext=".md5" /> 
+		<move file="files/software.tar.gz.md5" tofile="files/software.md5" />
+  	
+    <!-- Determine the file size -->
+    <echo>Getting the file size for software.tar.gz</echo>
+    <!-- <taskdef name="FileSize" classname="FileSize" classpath="./"/>
+    <FileSize path="files/software.tar.gz" /> -->
+
+  	<!-- Update the generics 
+         The names and versions of the components need updating .
+         This is manual for now.-->
+
+  </target>
+
+  <target name="dist" depends="compile" description="Create the tar file" if="vers">
+    <!-- Create the top level tar file -->
+    <echo>Creating i686pc-ems-${vers}-${build.date}</echo>
+    <!-- <tar destfile="files/i686pc-ems-${vers}-${build.date}.tar.gz" basedir="files" compression="gzip" includes="software.tar.gz,software.md5,generics.xml,releasenotes.pdf,swmpreinstall" /> -->
+    <tar destfile="files/i686pc-ems-${vers}-${build.date}.tar" basedir="files" includes="software.tar.gz,software.md5,generics.xml,releasenotes.pdf,swmpreinstall,swmpreinstall64" />
+
+  <!-- <move file="files/i686pc-ems-${vers}-${build.date}.tar.gz" todir="releases/i686pc-ems-${vers}-${build.date}"/> -->
+  <move file="files/i686pc-ems-${vers}-${build.date}.tar" todir="releases/i686pc-ems-${vers}-${build.date}"/>
+    
+  </target>
+
+  <target name="clean" description="clean up" if="vers">
+    <echo>Delete the software.tar.gz </echo>
+  </target>
+</project>

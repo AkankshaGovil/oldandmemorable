@@ -1,0 +1,12 @@
+#!/bin/bash
+source $nxi_shlib/log
+nxi_task='postinstall'
+log info "start $nxi_tempinst/rsmInstall.pl nxi_postinstall ..."
+$nxi_tempinst/rsmInstall.pl nxi_postinstall %%RSM-INSTALL-TYPE%%
+STATUS=$?
+if [ $STATUS != 0 ]; then
+	log info "exit with error status code $STATUS."
+	exit $STATUS
+fi
+log info 'completed.'
+exit 0

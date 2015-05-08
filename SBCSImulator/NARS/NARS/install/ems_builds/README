@@ -1,0 +1,13 @@
+This build.xml file will let you create the EMS file.
+
+The following are the steps required to create a build.
+
+1. Copy the files for iserver (not encrypted), rsmagent and ff rsmlite into the directory files/software
+2. Run 'ant -Dvers=5.1d8 dist' (use the correct version #)
+   This will create the distribution file. Unfortunately for this release the generics will not be updated. 
+3. Update generics.xml with the correct version numbers for each component and the top level (ems) version number.
+   Update the file sizes in generics.xml. The compressed size is taken from software.tar.gz. FF used a factor of 3 to
+   determine uncompressed sizes (I assume that this was only an estimate).
+4. Run  'ant -Dvers=5.1d8 dist' (use the correct version #) again. This will create the ems tar file in the releases
+   directory releases/i686pc-ems-5.1d8-11292007
+

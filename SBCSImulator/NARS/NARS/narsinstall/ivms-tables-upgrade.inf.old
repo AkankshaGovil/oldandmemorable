@@ -1,0 +1,149 @@
+#VERSION 3.1.1d11
+#VERSION 3.1.1d11
+#VERSION 3.1.1d12
+use bn;
+alter table plans add COLUMN EffectiveStartDate datetime default NULL AFTER ConnectionCharge;
+alter table plans add COLUMN EffectiveEndDate datetime default NULL AFTER EffectiveStartDate;
+alter table plans add UNIQUE KEY Group_Plan_CostCode (GroupId,Plan,CostCode);
+alter table periods drop COLUMN EffectiveStartDate;
+alter table periods drop COLUMN EffectiveEndDate;
+alter table periods add UNIQUE KEY Group_Period (GroupId,Period);
+alter table cdrsummary add COLUMN MSWId smallint(6) NOT NULL default '0' AFTER CdrSummaryId;
+alter table buysummary add COLUMN MSWId smallint(6) NOT NULL default '0' AFTER BuySummaryId;
+alter table sellsummary add COLUMN MSWId smallint(6) NOT NULL default '0' AFTER SellSummaryId;
+REPLACE INTO endpoints VALUES (-1,1,'','*',-1,now(),now());
+REPLACE INTO periods VALUES (-1,'-1','DefaultPlan',NULL,127,127,'00:00:00','23:59:59',now(),now());
+#VERSION 3.1.1d12
+#VERSION 3.1.1d13
+use bn;
+create database oldbn;
+rename table periods to oldbn.periods;
+rename table plans to oldbn.plans;
+rename table cdrlogs to oldbn.cdrlogs;
+rename table cdrfiles to oldbn.cdrfiles;
+alter table activitylogs drop MaxCdrDate;
+alter table activitylogs drop MinCdrDate;
+alter table activitylogs add MaxCdrDateInt int(11) NOT NULL default '0' after CdrLogId;
+alter table activitylogs add MinCdrDateInt int(11) NOT NULL default '0'after MaxCdrDateInt;
+alter table cdr drop Created;
+alter table cdr add CreatedInt int(11) NOT NULL default '0' after UserAuth;
+alter table cdr add CallRoute varchar(64) NOT NULL default '' after TermRealm;
+CREATE TABLE plans (
+  PlanId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  Plan varchar(32) NOT NULL default '',
+  CostCode varchar(32) NOT NULL default '',
+  DurMin mediumint(9) NOT NULL default '0',
+  DurIncr mediumint(9) NOT NULL default '0',
+  Rate float(10,4) NOT NULL default '0.0000',
+  Country varchar(64) NOT NULL default '',
+  ConnectionCharge float(10,4) NOT NULL default '0.0000',
+  EffectiveStartDate datetime default NULL,
+  EffectiveEndDate datetime default NULL,
+  PeriodId bigint(20) NOT NULL default '-1',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (PlanId),
+  UNIQUE KEY Group_Plan_CostCode_Period (GroupId,Plan,CostCode,PeriodId),
+  FOREIGN KEY (PeriodId) REFERENCES periods(PeriodId) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY Plan_Cost_Time (Plan,CostCode,PeriodId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+DROP TABLE IF EXISTS cdrlogs;
+CREATE TABLE cdrlogs (
+  CDRLogId smallint(6) NOT NULL auto_increment,
+  CDRTableName varchar(32) NOT NULL default '',
+  StartDateInt int(11) NOT NULL default '0',
+  EndDateInt int(11) default '0',
+  TotalCDRs int(11) default '0',
+  Status int(11) NOT NULL default '-1',
+  CreatedInt int(11) NOT NULL default '0',
+  LastInsertionInt int(11) NOT NULL default '0',
+  LastModifiedInt int(11) NOT NULL default '0',
+  PRIMARY KEY  (CDRLogID),
+  UNIQUE KEY CDRTableName (CDRTableName)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+DROP TABLE IF EXISTS cdrfiles;
+CREATE TABLE cdrfiles (
+  CDRFileId smallint(6) NOT NULL auto_increment,
+  SrcFileName varchar(255) NOT NULL default '',
+  CDRStartDateInt int(11) NOT NULL default '0',
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY (CDRFileId)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+CREATE TABLE periods (
+  PeriodId bigint(20) NOT NULL auto_increment,
+  GroupId tinyint(1) NOT NULL default '-1',
+  Period varchar(32) NOT NULL default '',
+  Zone varchar(32) default NULL,
+  StartWeekDays mediumint(9) NOT NULL default '-1',
+  EndWeekDays mediumint(9) NOT NULL default '-1',
+  StartTime TIME default NULL,
+  EndTime TIME default NULL,
+  Created datetime NOT NULL default '0000-00-00 00:00:00',
+  LastModified datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY (PeriodId),
+  UNIQUE KEY Group_Period (GroupId,Period)
+) TYPE=MyISAM PACK_KEYS=DEFAULT;
+drop table cdrsummary;
+drop table buysummary;
+select "" as "Migrating periods table...";
+insert into periods (
+  PeriodId,
+  GroupId,
+  Period,
+  Zone,
+  StartWeekDays,
+  EndWeekDays,
+  StartTime,
+  EndTime,
+  Created,
+  LastModified
+) select
+   PeriodId,
+  GroupId,
+  Period,
+  Zone,
+  StartWeekDays,
+  EndWeekDays,
+  StartTime,
+  EndTime,
+  Created,
+  LastModified
+from oldbn.periods;
+insert into plans (
+  PlanId,
+  GroupId,
+  Plan,
+  CostCode,
+  DurMin,
+  DurIncr,
+  Rate,
+  Country,
+  ConnectionCharge,
+  EffectiveStartDate,
+  EffectiveEndDate,
+  PeriodId,
+  Created,
+  LastModified
+) select
+  PlanId,
+  GroupId,
+  Plan,
+  CostCode,
+  DurMin,
+  DurIncr,
+  Rate,
+  Country,
+  ConnectionCharge,
+  NULL,
+  NULL,
+  PeriodId,
+  Created,
+  LastModified
+from oldbn.plans;
+#VERSION 3.1.1d13
+#VERSION 3.1.1d14
+use bn;
+alter table plans drop index group_plan_costcode_period;
+alter table plans add unique Group_Plan_CostCode_StartDate_EndDate_Period (GroupId,Plan,CostCode,EffectiveStartDate,EffectiveEndDate,PeriodId);
+#VERSION 3.1.1d14

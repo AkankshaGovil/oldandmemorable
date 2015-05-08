@@ -1,0 +1,157 @@
+<HTML>
+<HEAD>
+<TITLE>DBI::Format - A package for displaying result tables</TITLE>
+<LINK REL="stylesheet" HREF="../../../Active.css" TYPE="text/css">
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD CLASS=block VALIGN=MIDDLE WIDTH=100% BGCOLOR="#cccccc">
+<FONT SIZE=+1><STRONG><P CLASS=block>&nbsp;DBI::Format - A package for displaying result tables</P></STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#available subclasses">AVAILABLE SUBCLASSES</A></LI>
+	<UL>
+
+		<LI><A HREF="#ascii boxes">Ascii boxes</A></LI>
+		<LI><A HREF="#raw">Raw</A></LI>
+		<LI><A HREF="#string">String</A></LI>
+	</UL>
+
+	<LI><A HREF="#author and copyright">AUTHOR AND COPYRIGHT</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>DBI::Format - A package for displaying result tables</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  # create a new result object
+  $r = DBI::Format-&gt;new('var1' =&gt; 'val1', ...);</PRE>
+<PRE>
+  # Prepare it for output by creating a header
+  $r-&gt;header($sth, $fh);</PRE>
+<PRE>
+  # In a loop, display rows
+  while ($ref = $sth-&gt;fetchrow_arrayref()) {
+    $r-&gt;row($ref);
+  }</PRE>
+<PRE>
+  # Finally create a trailer
+  $r-&gt;trailer();</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>THIS PACKAGE IS STILL VERY EXPERIMENTAL. THINGS WILL CHANGE.</P>
+<P>This package is used for making the output of DBI::Shell configurable.
+The idea is to derive a subclass for any kind of output table you might
+create. Examples are</P>
+<UL>
+<LI>
+a very simple output format as offered by DBI::neat_list().
+<A HREF="#available subclasses">AVAILABLE SUBCLASSES</A>.
+<P></P>
+<LI>
+a box format, as offered by the Data::ShowTable module.
+<P></P>
+<LI>
+HTML format, as used in CGI binaries
+<P></P>
+<LI>
+postscript, to be piped into lpr or something similar
+<P></P></UL>
+<P>In the future the package should also support interactive methods, for
+example tab completion.</P>
+<P>These are the available methods:</P>
+<DL>
+<DT><STRONG><A NAME="item_new"><CODE>new(@attr)</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>new(\%attr)</CODE></STRONG><BR>
+<DD>
+(Class method) This is the constructor. You'd rather call a subclass
+constructor. The construcor is accepting either a list of key/value
+pairs or a hash ref.
+<P></P>
+<DT><STRONG><A NAME="item_header">header($sth, $fh)</A></STRONG><BR>
+<DD>
+(Instance method) This is called when a new result table should be
+created to display the results of the statement handle <STRONG>$sth</STRONG>. The
+(optional) argument <STRONG>$fh</STRONG> is an IO handle (or any object supporting
+a <EM>print</EM> method), usually you use an IO::Wrap object for STDIN.
+<P>The method will query the <STRONG>$sth</STRONG> for its <EM>NAME</EM>, <EM>NUM_OF_FIELDS</EM>,
+<EM>TYPE</EM>, <EM>SCALE</EM> and <EM>PRECISION</EM> attributes and typically print a
+header. In general you should not assume that <STRONG>$sth</STRONG> is indeed a DBI
+statement handle and better treat it as a hash ref with the above
+attributes.</P>
+<P></P>
+<DT><STRONG><A NAME="item_row"><CODE>row($ref)</CODE></A></STRONG><BR>
+<DD>
+(Instance method) Prints the contents of the array ref <STRONG>$ref</STRONG>. Usually
+you obtain this array ref by calling <STRONG>$sth-&gt;fetchrow_arrayref()</STRONG>.
+<P></P>
+<DT><STRONG><A NAME="item_trailer">trailer</A></STRONG><BR>
+<DD>
+(Instance method) Once you have passed all result rows to the result
+package, you should call the <EM>trailer</EM> method. This method can, for
+example print the number of result rows.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="available subclasses">AVAILABLE SUBCLASSES</A></H1>
+<P>First of all, you can use the DBI::Format package itself: It's
+not an abstract base class, but a very simple default using
+DBI::neat_list().</P>
+<P>
+<H2><A NAME="ascii boxes">Ascii boxes</A></H2>
+<P>This subclass is using the <EM>Box</EM> mode of the <EM>Data::ShowTable</EM> module
+internally. <A HREF="..\..\..\site\lib/Data/ShowTable(3).html">the Data::ShowTable(3) manpage</A>.</P>
+<P>
+<H2><A NAME="raw">Raw</A></H2>
+<P>Row is written without formating.  Columns returned in comma or user defined
+separated list.</P>
+<P>
+<H2><A NAME="string">String</A></H2>
+<P>Row is written using a string format.  Future releases will include th ability
+set the string format.</P>
+<P>
+<HR>
+<H1><A NAME="author and copyright">AUTHOR AND COPYRIGHT</A></H1>
+<P>This module is Copyright (c) 1997, 1998</P>
+<PRE>
+    Jochen Wiedmann
+    Am Eisteich 9
+    72555 Metzingen
+    Germany</PRE>
+<PRE>
+    Email: joe@ispsoft.de
+    Phone: +49 7123 14887</PRE>
+<P>The DBD::Proxy module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.</P>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="..\..\..\site\lib/DBI/Shell(3).html">the DBI::Shell(3) manpage</A>, <EM>DBI(3)</EM>, <EM>dbish(1)</EM></P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD CLASS=block VALIGN=MIDDLE WIDTH=100% BGCOLOR="#cccccc">
+<FONT SIZE=+1><STRONG><P CLASS=block>&nbsp;DBI::Format - A package for displaying result tables</P></STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+</BODY>
+
+</HTML>

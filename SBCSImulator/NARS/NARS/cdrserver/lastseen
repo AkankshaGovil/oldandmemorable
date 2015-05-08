@@ -1,0 +1,15 @@
+#!/bin/bash
+
+x=`/usr/bin/mysql -s <<EOF
+use nars;
+select (@f1:=max(src_file)) from cdrs where src_file like '/home/nextone/cdrs1/%' order by src_file desc limit 1;
+select (@l1:=max(src_line)) from cdrs where src_file like @f1;
+select (@f2:=max(src_file)) from cdrs where src_file like '/home/nextone/cdrs2/%' order by src_file desc limit 1;
+select (@l2:=max(src_line)) from cdrs where src_file like @f2;
+select (@f3:=max(src_file)) from cdrs where src_file like '/home/msc1/cdrs/%' order by src_file desc limit 1;
+select (@l3:=max(src_line)) from cdrs where src_file like @f3;
+select (@f4:=max(src_file)) from cdrs where src_file like '/home/msc2/cdrs/%' order by src_file desc limit 1;
+select (@l4:=max(src_line)) from cdrs where src_file like @f4;
+EOF
+`
+echo "$x" | /usr/bin/paste -d':' - -

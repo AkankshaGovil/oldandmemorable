@@ -1,0 +1,43 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.05.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It would check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 cad9e891afa5ef45f756c8dfe50ed23c2b174a74 Changes
+SHA1 d54c70de7dfec0d9af680ba0651e85fa22a39df3 MANIFEST
+SHA1 9a5353fb08c59a72a03902dd918f4fd88b409e9e Makefile.PL
+SHA1 c49f5586d64dd4e3f2bf8377a33f1e9c2f40e474 README
+SHA1 69482a84805e73d89afd7ccfcc5fb91f2b8719fd demo/Demo.pm
+SHA1 ce4a29d074a28a50cd3a80bbeca63430a1089525 demo/Descriptions.pm
+SHA1 f0a681272740252230e48e6bf696cdaa72d4e6a0 demo/MyClass.pm
+SHA1 cd587a9a557174e2899420b18df22349b4be406c demo/demo.pl
+SHA1 93a3586b653ce66b1b9e7c714a0f9ac5693a8348 demo/demo2.pl
+SHA1 b3f34b0f69773fa0558f9c09e0f0d20ca0a0179a demo/demo3.pl
+SHA1 8168c38627301687a54ed06f99b1224c4a1a1a14 demo/demo4.pl
+SHA1 1534ce654721cbb7098b984bcec7fdb34950d991 demo/demo_call.pl
+SHA1 b7327f5cc1d82830ec0a112485f114f83d5e7257 demo/demo_chain.pl
+SHA1 b8a4a0b6f45f9314e2893b8a947c14e050d286ea demo/demo_cycle.pl
+SHA1 b426b19af3d138bd0e2b25777cc0d5d96425cde3 demo/demo_hashdir.pl
+SHA1 ce57a977f3e274f027aa3b7e9518d14388c54ae6 demo/demo_phases.pl
+SHA1 92445bfd43d0eb647d549e10cf61a048f48a150c demo/demo_range.pl
+SHA1 119829405f72cc843297aad4520d786b52cc4395 demo/demo_rawdata.pl
+SHA1 d7f6f7af9a20e843e6fecb93f06bfda3571784e4 lib/Attribute/Handlers.pm
+SHA1 7473e2de2d5e55b6f9062be452a0ce09229b9dc9 t/multi.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.0.7 (Darwin)
+
+iD8DBQE9nnpz4h8E5YWlfS8RAq42AJ9sgljO5ji9s5nx4X9j7wjST/wwaACfZ6qh
+q5N7pLF5sA751+B747Fqx1E=
+=w85k
+-----END PGP SIGNATURE-----

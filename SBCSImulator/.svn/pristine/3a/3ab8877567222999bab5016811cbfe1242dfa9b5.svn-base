@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<stream>
+  <!-- information about the database -->
+  <!--<db dbtype="mysql" dbname="nars2" dbtable="nextone" dbhost="127.0.0.1" dbuser="root" dbpass="" /> -->
+  <file dir="/tmp/destdir" separator=":" prefix="TEST" suffix=".CDP" />
+
+  <!-- CDR fields to map -->
+  <CDR>
+    <!-- these are fields in the cdr entry that need to go into the new database -->
+    <field no="1" name="start-time" fmt="string">
+      <transform type="date" format="%Y%m%d%H%M%S" outname="CallDate" />
+    </field>
+    <field no="2" name="start-time" fmt="uint32">
+      <transform type="date" format="%Y%m%d%H%M%S" outname="CallTime" />
+    </field>
+    <field no="3" name="call-duration" fmt="HH:MM:SS">
+      <transform type="keep" outname="CallDuration" />
+    </field>
+    <field no="4" name="call-source" fmt="A.B.C.D">
+      <transform type="keep" outname="SrcIP" />
+    </field>
+    <field no="5" name="call-source-q931sig-port" fmt="uint32"/>
+    <field no="6" name="call-dest" fmt="A.B.C.D">
+      <transform type="keep" outname="DstIP" />
+    </field>
+    <field no="7"/>
+    <field no="8" name="call-source-custid" fmt="string"/>
+    <field no="9" name="called-party-on-dest" fmt="string">
+      <transform type="keep" outname="CalledPartyOnDest" />
+    </field>
+    <field no="10" name="called-party-from-src" fmt="string">
+      <transform type="keep" outname="CalledPartyNumber" />
+    </field>
+    <field no="11" name="call-type" fmt="{ IF|IV }">
+      <transform type="keep" outname="CallType" />
+    </field>
+    <field no="12"/>
+    <field no="13" name="disconnect-error-type" fmt="{A|B|N|E}">
+      <transform type="keep" outname="DiscCode" />
+    </field>
+    <field no="14" name="call-error" fmt="uint32"/>
+    <field no="15" name="call-error" fmt="string"/>
+    <field no="16"/>
+    <field no="17"/>
+    <field no="18" name="ani" fmt="string" outname="ANI">
+      <transform type="keep" outname="ANI" />
+    </field>
+    <field no="19"/>
+    <field no="20"/>
+    <field no="21"/>
+    <field no="22" name="cdr-seq-no" fmt="uint32">
+      <transform type="keep" outname="SeqNum" />
+    </field>
+    <field no="23"/>
+    <field no="24" name="callid" fmt="string">
+      <transform type="keep" outname="CallID" />
+    </field>
+    <field no="25" name="call-hold-time" fmt="HH:MM:SS">
+      <transform type="keep" outname="HoldTime" />
+    </field>
+    <field no="26" name="call-source-regid" fmt="string"/>
+    <field no="27" name="call-source-uport" fmt="uint32">
+      <transform type="keep" outname="SrcPort" />
+    </field>
+    <field no="28" name="call-dest-regid" fmt="string"/>
+    <field no="29" name="call-dest-uport" fmt="uint32">
+      <transform type="keep" outname="DstPort" />
+    </field>
+    <field no="30" name="isdn-cause-code" fmt="uint32">
+      <transform type="keep" outname="ISDNCC" />
+    </field>
+    <field no="31" name="called-party-after-src-calling-plan" fmt="string"/>
+    <field no="32" name="call-error-dest" fmt="uint32"/>
+    <field no="33" name="call-error-dest" fmt="string"/>
+    <field no="34" name="call-error-event-str" fmt="string#string">
+      <transform type="keep" outname="ErrorDesc" />
+    </field>
+    <field no="35" name="new-ani" fmt="string"/>
+    <field no="36" name="call-duration" fmt="uint32">
+      <transform type="keep" outname="SessionTime" />
+      <transform type="expr" matchkey="K" value="K/1000" format="%5.3f" outname="DurationInK" />
+    </field>
+    <field no="37" name="incoming-leg-callid" fmt="string"/>
+    <field no="38" name="protocol" fmt="{sip|h323}">
+      <transform type="keep" outname="Protocol" />
+    </field>
+    <field no="39" name="cdr-type" fmt="{start1|start2|end1|end2|hunt}"/>
+    <field no="40" name="hunting-attempts" fmt="uint32"/>
+    <field no="41" name="caller-trunk-group" fmt="string">
+      <transform type="condition" ifempty="6" outname="Destination" />
+    </field>
+    <field no="42" name="call-pdd" fmt="uint32"/>
+    <field no="43" name="h323-dest-ras-error" fmt="uint32"/>
+    <field no="44" name="h323-dest-h225-error" fmt="uint32"/>
+    <field no="45" name="sip-dest-respcode" fmt="uint32"/>
+
+    <!-- these are fields that are in the new database only-->
+    <field type="constant" value="answer" outname="CallOrigin" />
+    <field type="constant" value="VOIP" outname="CallType" />
+    <field type="variable" value="CDRFILE" outname="SrcFile" />
+    <field type="variable" value="CDRLINE" outname="SrcLine" />
+    <field type="variable" value="MSWID" outname="MswId" />
+    <!--field type="variable" value="DATETIME" format="%Y-%m-%d %H:%M:%S" outname="InsertionTime" /-->
+  </CDR>
+  <OUTPUT>
+	<field no="1" name="MswId"/>
+	<field no="2" name="MswId"/>
+	<field no="3" name="A-Number-NA"/>
+	<field no="4" name="ANI"/>
+	<field no="5" name="A-Number-Ex"/>
+	<field no="6" name="B-Number-NA"/>
+	<field no="7" name="CalledPartyNumber"/>
+	<field no="8" name="B-Number-Ex"/>
+	<field no="9" name="C-Number-NA"/>
+	<field no="10" name="CalledPartyOnDest"/>
+	<field no="11" name="C-Number-Ex"/>
+	<field no="12" name="IncomingRoute" separator="|">
+		<subfield no="1" name="SrcIP" />
+		<subfield no="2" name="SrcPort" />
+	</field>
+	<field no="13" name="OutgoingRoute" separator="|">
+		<subfield no="1" name="DstIP" />
+		<subfield no="2" name="DstPort" />
+	</field>
+	<field no="14" name="CallDate"/>
+	<field no="15" name="CallTime"/>
+	<field no="16" name="CallDuration"/>
+	<field no="17" name="BearerService"/>
+	<field no="18" name="CallID"/>
+	<field no="19" name="SeqNum"/>
+	<field no="20" name="ISDNCC"/>
+	<field no="21" name="LocationCode"/>
+	<field no="22" name="Protocol"/>
+	<field no="23" name="HoldTime"/>
+	<field no="24" name="ANI"/>
+	<field no="25" name="SwitchFileName"/>
+	<field no="26" name="ErrorCode" separator="|">
+		<subfield no="1" name="CallType" />
+		<subfield no="2" name="ErrorDesc" />
+		<subfield no="3" name="ISDNCC" />
+	</field>
+	<field no="27" name="Field27"/>
+	<field no="28" name="DiscCode"/>
+	<field no="29" name="CallGroup"/>
+	<field no="30" name="CarrierCode"/>
+	<field no="31" name="InPrefix"/>
+	<field no="32" name="OutPrefix"/>
+  </OUTPUT>
+</stream>

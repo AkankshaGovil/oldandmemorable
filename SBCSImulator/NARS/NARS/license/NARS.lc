@@ -1,0 +1,8 @@
+<LICENSE PRODUCT='NARS' VERSION='1.0' EXPIRES='Sat Nov 16 12:10:34 2002'>
+	<SERVER hostid='0xdeadbeef'/>
+	<AGENT hostid='0xfeedbead'/>
+	<AGENT hostid='0xdeafbeed'/>
+	<FEATURES RAM='1' ARM='1' ESM='1' WIM='1'/>
+	<SIGNATURE id='161d94e2a1665ac94f216bfcfb526d003e576a6beefd574acaf9245c4f0f2b'/>
+</LICENSE>
+

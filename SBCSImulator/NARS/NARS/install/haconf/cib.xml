@@ -1,0 +1,74 @@
+ <cib>
+   <configuration>
+     <crm_config>
+       <cluster_property_set id="cib-bootstrap-options">
+         <attributes>
+           <nvpair id="cib-bootstrap-options-dc-version" name="dc-version" value="2.1.4-node: aa909246edb386137b986c5773344b98c6969999"/>
+           <nvpair name="last-lrm-refresh" id="cib-bootstrap-options-last-lrm-refresh" value="1285776754"/>
+           <nvpair id="cib-bootstrap-options-default-action-timeout" name="default-action-timeout" value="600s"/>
+         </attributes>
+       </cluster_property_set>
+     </crm_config>
+     <nodes>
+     </nodes>
+     <resources>
+       <group id="HA">
+         <meta_attributes id="HA_meta_attrs">
+           <attributes>
+             <nvpair name="target_role" id="HA_metaattr_target_role" value="started"/>
+             <nvpair id="HA_metaattr_ordered" name="ordered" value="true"/>
+             <nvpair id="HA_metaattr_collocated" name="collocated" value="true"/>
+             <nvpair id="HA_metaattr_resource_failure_stickiness" name="resource_failure_stickiness" value="-INFINITY"/>
+             <nvpair name="resource_stickiness" id="HA_metaattr_resource_stickiness" value="90000"/>
+             <nvpair id="HA_metaattr_is_managed" name="is_managed" value="true"/>
+           </attributes>
+         </meta_attributes>
+         <primitive id="FCRstart" class="ocf" type="rsmres" provider="genband">
+           <operations>
+             <op id="c4fbe1d9-6784-4c26-ae02-f9e054745579" name="monitor" interval="15" timeout="15" start_delay="6"/>
+           </operations>
+         </primitive>
+         <primitive id="IP" class="ocf" type="IPaddr2" provider="heartbeat">
+           <instance_attributes id="IP_instance_attrs">
+             <attributes>
+               <nvpair id="c7723fc5-1cae-4867-ae2f-77d1bc8191c7" name="ip" value="%RSM_IP%"/>
+               <nvpair id="2b0ad025-160b-446c-ae26-685c5c4590db" name="nic" value="eth0"/>
+             </attributes>
+           </instance_attributes>
+           <operations>
+             <op id="84255438-93b1-4478-aaab-580b46dc299b" name="monitor" description="ip_monitor" interval="15" timeout="20" start_delay="5"/>
+           </operations>
+         </primitive>
+         <primitive id="MySQL" class="ocf" type="mysql" provider="genband">
+           <instance_attributes id="MySQL_instance_attrs">
+             <attributes>
+               <nvpair id="c276eaf6-fc2a-4bc4-84b4-2580d049cef3" name="binary" value="/usr/bin/safe_mysqld"/>
+               <nvpair id="dde02449-e5c6-4fa4-8412-48e9eea61ce4" name="config" value="/etc/my.cnf"/>
+             </attributes>
+           </instance_attributes>
+           <operations>
+             <op id="bf3dbbb9-8019-44e4-8095-e6f67d1a53f8" name="monitor" description="mysql_monitor" interval="15" timeout="60" start_delay="10"/>
+           </operations>
+         </primitive>
+         <primitive class="ocf" type="jbossnew" provider="genband" id="JBoss">
+           <operations>
+             <op id="f888448b-02c2-4026-b03e-07e4e11c91b1" name="status" description="jboss_status" interval="30" timeout="60" start_delay="110" disabled="false" role="Started" on_fail="restart"/>
+           </operations>
+           <meta_attributes id="JBoss_meta_attrs">
+             <attributes/>
+           </meta_attributes>
+         </primitive>
+         <primitive id="PAMSync" class="ocf" type="rsmsyncpam" provider="genband">
+           <operations>
+             <op id="b4126a77-55e2-4254-9c21-1e3e00252be8" name="monitor" description="pam_monitor" interval="15" timeout="15" start_delay="10" disabled="false" role="Started"/>
+           </operations>
+           <meta_attributes id="PAMSync_meta_attrs">
+             <attributes/>
+           </meta_attributes>
+         </primitive>
+         <primitive id="RSMResil" class="ocf" type="rsmresend" provider="genband"/>
+       </group>
+     </resources>
+     <constraints/>
+   </configuration>
+ </cib>

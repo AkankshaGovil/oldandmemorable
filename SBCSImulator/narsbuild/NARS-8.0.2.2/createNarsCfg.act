@@ -1,0 +1,425 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $ff_install = $ENV{'FF_INSTALL'};
+my $swm_install = $ENV{'SWM_INSTALL'};
+if ($ff_install) {
+	open(STDOUT, ">>/var/log/rsmAgentInstall.out");
+	open(STDERR, ">>/var/log/rsmAgentInstall.err");
+}
+
+if ($ENV{BASE})
+{
+    use lib "$ENV{BASE}/lib/perl5/site_perl";
+    use lib "$ENV{BASE}/nars-agent";
+}
+
+my $CurrentVersion = sprintf "%vd", $^V;
+if ($CurrentVersion lt "5.6")
+{
+    use lib "/usr/local/narsagent/lib/perl5/site_perl/5.005";
+    use lib "/usr/local/narsagent"; # to get validate.pm
+}
+else
+{
+    use lib "/usr/local/narsagent/lib/perl5/site_perl";
+    use lib "/usr/local/narsagent";
+}
+
+use Getopt::Std;
+use Config::Simple;
+use Term::ReadKey;
+use IO::File;
+
+use NexTone::validate;
+
+
+my $DEF_MAXINST = 1;
+my $DEF_CDRPATH = '/home/nextone/cdrs';
+my $DEF_USER = 'narsagent';
+my $DEF_PASS = 'narsagent';
+my $DEF_POSTPERIOD = 1;
+my $DEF_POSTTHRESH= 500;
+my $DEF_MAKEUNIQUE = 'TRUE';
+my $DEF_ADDSTREAM = '.';
+my $DEF_STREAMSONLY = 'FALSE';
+my $DEF_NARSCFG_FN = "nars";
+my $DEF_NARSCFG_EXT = "cfg";
+my $DEF_NARSDIR = "/usr/local/narsagent";
+my $DEF_EXCLUDEEP = undef;
+my $DEF_EXCLUDEFILTER = undef;
+my $DEF_INCLUDEFILTER = undef;
+my $DEF_ALLOWEMPTYLASTSEEN = 'TRUE';
+my $DEF_HOST = "127.0.0.1";
+# default values for narsAgentMode and localAddress added
+my $DEF_narsAgentMode = "regular";
+my $DEF_localAddress = "127.0.0.1";
+
+my ($prog, %opt);
+my (@cdrdirs);
+# values for narsAgentMode and localAddress added
+my ($maxInst, $cdrpath, $host, $user, $pass, $postPeriod, $postThresh, $narsAgentMode ,$localAddress ,$makeCallidUnique, ,$addStream, $streamsOnly, $includeFilter, $excludeEP, $excludeFilter, $allowEmptyLastSeen) = ($DEF_MAXINST, $DEF_CDRPATH, $DEF_HOST, $DEF_USER, $DEF_PASS, $DEF_POSTPERIOD, $DEF_POSTTHRESH, $DEF_narsAgentMode,  $DEF_localAddress, $DEF_MAKEUNIQUE, $DEF_ADDSTREAM, $DEF_STREAMSONLY, $DEF_INCLUDEFILTER, $DEF_EXCLUDEEP, $DEF_EXCLUDEFILTER, $DEF_ALLOWEMPTYLASTSEEN);
+
+($prog = $0) =~ s{(.*/)}{};
+
+getopts('f:d:h', \%opt) or usage() and exit;
+usage() and exit if $opt{h};
+if(defined($opt{d}))
+{
+    $DEF_NARSDIR = "$opt{d}";
+}
+if (!defined($opt{f}))
+{
+    $opt{f} = "$DEF_NARSDIR/".$DEF_NARSCFG_FN.".$DEF_NARSCFG_EXT";
+}
+
+my $config;
+# read the given config file
+if (-f "$opt{f}" && -T "$opt{f}")
+{
+    $config = new Config::Simple(filename=>"$opt{f}", mode=>O_RDWR);
+}
+else
+{
+    die("Cannot read config file $opt{f}");
+}
+my %cfghash = $config->param_hash();
+$cdrpath = defined($cfghash{'default.cdrpath'})?$cfghash{'default.cdrpath'}:$DEF_CDRPATH;
+$host = defined($cfghash{'default.host'})?$cfghash{'default.host'}:$DEF_HOST;
+$user = defined($cfghash{'default.user'})?$cfghash{'default.user'}:$DEF_USER;
+$pass = defined($cfghash{'default.pass'})?($cfghash{'default.pass'} eq '.')?'':$cfghash{'default.pass'}:$DEF_PASS;
+$postPeriod = defined($cfghash{'default.postPeriod'})?int($cfghash{'default.postPeriod'}):$DEF_POSTPERIOD;
+$postThresh = defined($cfghash{'default.postThresh'})?int($cfghash{'default.postThresh'}):$DEF_POSTTHRESH;
+# values for narsAgentMode and localAddress added
+$narsAgentMode = defined($cfghash{'default.narsAgentMode'})?$cfghash{'default.narsAgentMode'}:$DEF_narsAgentMode ;
+$localAddress = defined($cfghash{'default.localAddress'})?$cfghash{'default.localAddress'}:$DEF_localAddress ;
+$makeCallidUnique = defined($cfghash{'default.makeCallidUnique'})?$cfghash{'default.makeCallidUnique'}:$DEF_MAKEUNIQUE;
+$addStream = defined($cfghash{'default.addStream'})?$cfghash{'default.addStream'}:$DEF_ADDSTREAM;
+$streamsOnly = defined($cfghash{'default.streamsOnly'})?$cfghash{'default.streamsOnly'}:$DEF_STREAMSONLY;
+$excludeEP = $cfghash{'default.excludeEP'};
+if (defined($excludeEP))
+{
+    $excludeEP = "excludeEP=" . $excludeEP;
+} else {
+    $excludeEP = "#excludeEP=GW-Mexico:0,GW-Cuba:-1";
+}
+
+$excludeFilter = $cfghash{'default.excludeFilter'};
+if (defined($excludeFilter))
+{
+    $excludeFilter = "excludeFilter=" . $excludeFilter;
+} else {
+    $excludeFilter = "#excludeFilter=15:no-ports,30:34";
+}
+
+$includeFilter = $cfghash{'default.includeFilter'};
+if (defined($includeFilter))
+{
+    $includeFilter = "includeFilter=" . $includeFilter;
+} else {
+    $includeFilter = "#includeFilter=15:no-ports,30:34";
+}
+
+$maxInst = defined($cfghash{'default.maxInst'})?$cfghash{'default.maxInst'}:$DEF_MAXINST;
+$allowEmptyLastSeen = defined($cfghash{'default.allowEmptyLastSeen'})?$cfghash{'default.allowEmptyLastSeen'}:$DEF_ALLOWEMPTYLASTSEEN;
+my $mswId = defined($cfghash{'default.mswId'})?$cfghash{'default.mswId'}:undef;
+
+
+open(FILE, ">$opt{f}") or die $!;
+
+
+print "RSM Agent Configuration:\n";
+print "-------------------------\n";
+
+ReadMode('normal');
+
+if (!$ff_install) {
+	$maxInst = getVal("No. of CDR dirs handled by this agent [$maxInst]: ", $maxInst, 0);
+	my $ind = 0;
+	while ($ind < $maxInst)
+	{
+		$cdrdirs[$ind] =  getVal("Directory where CDRS are created [$cdrpath]: ", $cdrpath, 0);
+		# validate the cdr path
+		if (NexTone::validate::validDir($cdrdirs[$ind]) == 0)
+		{
+			print STDERR "\nError processing CDR directory: $NexTone::validate::errstr\n";
+			print STDOUT "\nWould you like to re-enter? y[n] ";
+			my $val = ReadLine(0);
+			chomp($val);
+			if ($val eq '' || $val eq 'n' || $val eq 'N')
+			{
+				$ind++;
+			}
+			next;
+		}
+		$ind++;
+	}
+}
+else {
+	$maxInst = 1;
+	$cdrdirs[0] = $cdrpath;
+}
+
+# reverse the config, the question we ask is negative logic
+if ($streamsOnly eq 'TRUE') {
+    $streamsOnly = 'FALSE';
+} else {
+    $streamsOnly = 'TRUE';
+}
+if (!$ff_install) {
+	$streamsOnly = getVal("Send data to RSM Server? [$streamsOnly]: ", $streamsOnly, 0);
+}
+# reverse the config back
+if ($streamsOnly eq 'TRUE') {
+    $streamsOnly = 'FALSE';
+} else {
+    $streamsOnly = 'TRUE';
+}
+
+# Values for narsAgentMode and localAddress required at the time of installation
+if ($streamsOnly eq 'FALSE') {
+	if (!$ff_install) {
+		$host = getVal("RSM Server IP Address [$host]: ", $host, 0);
+		$user = getVal("RSM CDR Post Username [$user]: ", $user, 0);
+		$pass = getVal("RSM CDR Post Password [$pass]: ", $pass, 1);
+		$postPeriod = getVal("CDR Post Period (in seconds) [$postPeriod]: ", $postPeriod, 0);
+		$postThresh = getVal("CDR count threshold to trigger poster [$postThresh]: ", $postThresh, 0);
+		$narsAgentMode= getVal("Narsagent Mode (regular/simulator) [$narsAgentMode]: ", $narsAgentMode, 0);
+		$localAddress= getVal("Local Address to stream CDRs [$localAddress]: ", $localAddress, 0);
+
+	}
+	else {
+        if (!$swm_install) {
+		    $host = $ENV{'rsm_server_ip'};
+        }
+	}
+}
+if (!$ff_install) {
+	$makeCallidUnique = getVal("Make Call-id unique (use TRUE if call hunting is enabled) [$makeCallidUnique]: ", $makeCallidUnique, 0);
+	$allowEmptyLastSeen = getVal("Allow empty last seen files [$allowEmptyLastSeen]: ", $allowEmptyLastSeen, 0);
+}
+
+my @curvals = ();
+if ($addStream ne '.')
+{
+    @curvals = split(/,/, $addStream);
+}
+
+$addStream = '';
+my $index = 0;
+while ( 1 )
+{
+	my $curval = ($index <= $#curvals)?$curvals[$index]:'.';
+	my $val = $curval;
+	if (!$ff_install) {
+		$val = getVal("XML Config file for additional cdr streams ('.' for none) [$curval]: ", $curval, 0);
+	}
+	if ($val eq '.' && $index >= @curvals)
+	{
+		last;
+	}
+	if ($val ne '.')
+	{
+		if ($addStream ne '')
+		{
+			$addStream .= ',';
+		}
+		$addStream .= $val;
+	}
+	$index++;
+}
+
+if ($addStream eq '')
+{
+    $addStream = '.';
+}
+
+
+if ($mswId)
+{
+    $mswId = getVal("MSW Id [$mswId]: ", $mswId, 0);
+}
+
+generateCfg(*FILE, 0);
+close(FILE);
+
+my $jnk; 
+
+## Generate the other instance files
+for (my $i = 1; $i < $maxInst; $i++)
+{
+
+	### Generate the nars.cfg file
+    my $filename = "${DEF_NARSDIR}/${DEF_NARSCFG_FN}${i}.${DEF_NARSCFG_EXT}";
+	open(FILE, ">>$filename") or die $!;
+	generateCfg(*FILE, $i);
+	close(FILE);
+	
+	### Create narslog.cfg
+	$jnk = `cp $DEF_NARSDIR/narslog.cfg $DEF_NARSDIR/nars${i}log.cfg`;
+
+}
+
+### insert maxInst in narspm and narsagent scripts
+my $SEDCMD="sed 's/NUM_INST=1/NUM_INST=$maxInst/'";
+my $filename = "narspm";
+my $jnk = `$SEDCMD $DEF_NARSDIR/$filename > /tmp/$filename;`;
+my $jnk = `mv /tmp/$filename $DEF_NARSDIR/$filename;`;
+chmod 0755, "$DEF_NARSDIR/$filename";
+my $filename = "narsagent";
+my $jnk = `$SEDCMD $DEF_NARSDIR/$filename > /tmp/$filename;`;
+my $jnk = `mv /tmp/$filename $DEF_NARSDIR/$filename;`;
+chmod 0755, "$DEF_NARSDIR/$filename";
+	
+exit 0;
+
+
+sub getVal
+{
+    my ($prompt, $default, $canEmpty) = @_;
+
+    my $val = '';
+    while (1)
+    {
+        print STDOUT $prompt;
+        $val = ReadLine(0);
+        chomp($val);
+        if ($val eq '')
+        {
+            $val = $default;
+        }
+        if ($val eq '' && !$canEmpty)
+        {            
+            print STDERR "Please enter a valid input\n";
+        }
+        else
+        {
+            last;
+        }
+    }
+
+    return $val;
+}
+
+
+sub usage
+{
+    print << "EOF";
+
+Usage: $prog [-f cfgfile -d dir]
+    -h            : this (help) message
+    -f cfgfile    : current configuration file
+    -d dir	  : path to narsagent directory
+
+example: $prog -f nars.cfg -d dir
+
+EOF
+}
+
+
+sub generateCfg
+{
+    my ($fileHandle, $inst) = @_;
+
+    if ($pass eq '')
+    {
+        $pass = '.';
+    }
+
+    print {$fileHandle}  << "END";
+
+###############################
+# NARS Agent configuration file
+###############################
+
+# the path were the .CDR and .CDT files are stored in
+cdrpath=$cdrdirs[$inst]
+
+# the ip addresss of ivms server  
+host=$host
+
+# username to use to connect to Blue Neon App Server
+user=$user
+
+# password to use to connect to Blue Neon App Server
+pass=$pass
+
+# specify if you want to allow  agent to start with empty nars.lastseen
+# or empty cstm.lastseen
+allowEmptyLastSeen=$allowEmptyLastSeen
+
+
+# cdr post period
+postPeriod=$postPeriod
+
+# cdr count threshold to trigger poster
+postThresh=$postThresh
+
+#monitor poll interval, default 1 min, range:1-60(min)
+ProcessMonitorInterval=1
+
+# append unique ids to the callid (use this if call hunting is used) TRUE|FALSE
+makeCallidUnique=$makeCallidUnique
+
+# create addional streams of CDR outputs as specified in the following file
+# (more than one file should be comma separated, no preference is denoted with '.')
+#addStream=cdrstream1.xml;nostrict,cdrstream2.xml;strict
+addStream=$addStream
+
+# process only the additional streams, (TRUE if no entries are required in the
+# default NARS server database, FALSE, also the default, if entries need to be in NARS server)
+streamsOnly=$streamsOnly
+
+# excludeEP specifies a comma separated list of endpoints in the form of regid:port
+# that should not be rated.
+# A port value of -1 matches all possible port values. 
+# By default it is an empty list.
+$excludeEP
+
+# exclusion filter: cdrFieldNum:value1&cdrFieldNum:value2,cdrFieldNum:value3
+# OR conditions are separated by commas, AND conditions by ampersands
+# e.g., 15:no-ports,30:34 will exclude cdr entries that have error description
+#       no-ports or isdn cause code 34
+$excludeFilter
+
+# inclusion filter: cdrFieldNum:value1&cdrFieldNum:value2,cdrFieldNum:value3
+# OR conditions are separated by commas, AND conditions by ampersands
+# e.g., 15:no-ports,30:34 will include cdr entries that have error description
+#       no-ports or isdn cause code 34
+$includeFilter
+
+# specifies the value that appears in the mswId field, default is `/usr/bin/hostid`
+#mswId=127.0.0.1
+
+# Number of concurrent cdrservers
+# one per cdr directory (each msw should generate its cdrs in a separate dir)
+maxInst=$maxInst
+
+# Capability of sending trap
+NotificationTrapsEnabled=true
+
+# Narsagent Mode - Regular/Simulator
+narsAgentMode=$narsAgentMode
+
+# Local IP Address
+localAddress=$localAddress
+
+END
+
+if ($mswId)
+{
+    print {$fileHandle} << "END2";
+
+## MSW Id (a unique id for this msw, usually is `/usr/bin/hostid`)
+mswId=$mswId
+
+END2
+
+}
+
+}
+
+
+1;
+

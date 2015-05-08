@@ -1,0 +1,15 @@
+logfacility local7
+logfile /var/log/ha-log
+auto_failback %AUTO_FAILBACK_FLAG%
+ucast eth1 %PEER_HEARTBEAT_IP%
+ucast eth0 %PEER_HEARTBEAT_IP_0%
+node %NODE_0%
+node %NODE_1%
+keepalive 2
+deadtime 15
+warntime 5
+initdead 30
+ping %PING_IP%
+respawn hacluster /usr/lib64/heartbeat/ipfail
+respawn root /etc/ha.d/resource.d/pm
+respawn root /etc/ha.d/resource.d/rsync_pam.sh

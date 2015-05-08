@@ -1,0 +1,34 @@
+#!/bin/sh
+
+###############################################
+###############################################
+##
+## GENBAND Installer
+##
+###############################################
+###############################################
+## The main front-end.
+##
+## Sridhar, 06.16.99
+##
+
+
+echo " "
+echo " "
+echo "GENBAND Installer"
+echo "Copyright (c) 1998-2012, GENBAND Inc."
+echo " "
+echo "This program is used to install, uninstall or upgrade"
+echo "various licensed GENBAND software products."
+echo " "
+echo "Hit <CR> to continue..."
+
+read cr
+
+
+##
+## The real engine
+##
+cd install
+./install.sh -n
+

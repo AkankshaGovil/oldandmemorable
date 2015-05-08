@@ -1,0 +1,29 @@
+#!/bin/bash
+source $nxi_shlib/log
+nxi_task='install'
+log info "start..."
+
+OPERATION=`nxprofile get install.operation`
+log info "PROFILE Read: OPERATION = $OPERATION"
+
+if [ $OPERATION = "add" ]; then
+
+    rsm_server_ip=`nxprofile get product.msx.rsm_server_ip`
+	export rsm_server_ip
+    cd $nxi_tempinst/install
+    ./NarsAgentInst.pl -s
+
+elif [ $OPERATION = "remove" ]; then
+
+    cd $nxi_tempinst/install
+    ./NarsAgentInst.pl -t
+
+else
+
+    log info "INVALID INSTALL Operation : $OPERATION"
+    exit -1
+
+fi
+
+log info 'completed.'
+exit 0

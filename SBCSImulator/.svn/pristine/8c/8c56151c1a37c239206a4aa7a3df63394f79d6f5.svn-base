@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Template Alarms</title>
+<!--
+<base href="http://204.180.228.69/web/" target="rtop">
+-->
+<STYLE TYPE="text/css">
+A:hover { color: orange; text-decoration: bold}
+.myAnchor {
+  border-top: solid #8080FF 2px
+  border-right:  solid #202080 2px;
+  border-bottom: solid #202080 2px;
+  border-left:   solid #8080FF 2px;
+  padding: 2px;
+  background: #000080;
+  color: white;
+  width: 130px;
+ }
+.highlight {
+	background: yellow;
+	border: solid black 3px;
+}  
+</STYLE> 
+<base target="rtop">
+</head>
+
+<script language="JavaScript">
+function 
+loadframe_rtop(y)
+{
+	if (top.rtop) { top.rtop.location=y; }
+}
+
+function 
+loadframe_rbot(y)
+{
+	if (top.rbottom) { top.rbottom.location=y; }
+}
+
+function 
+loadframe(x,y)
+{
+    z = top.eval(x).location;
+    alert(z);
+}
+</script>
+
+<body bgcolor="#99ccff" onload="loadframe_rbot('http://204.180.228.224/cgi-bin/show.cgi')">
+
+<p><b><u><font size="4">Template Alarms</font></u></b></p>
+<form method="POST" action="">
+  <table border=0 width="10">  
+  <tr><td><center><b> <br>Log Alarms<br><p> </b></center></td></tr>
+  <tr>
+        <td>
+            <DIV ID="myDiv0">
+            <input type="button" value="iServer Restart" name="iServer Restart" onClick="loadframe_rtop('iser_rest.html')" CLASS="myAnchor" ID="IR0" width="130" style="font-family: System" >
+            </DIV>
+        </td> 
+  </tr>
+  <tr>
+  			<td>
+            <DIV ID="myDiv1">
+            <input type="button" value="Array Overflow" name="iServer Restart1" onClick="loadframe_rtop('arra_over.html')" CLASS="myAnchor" ID="IR1" width="130" style="font-family: System" >
+  			  </DIV>
+          </td>
+  </tr>
+  <tr><td><center><b> <br>Cdr Alarms</br><p> </b></center></td></tr>
+  <tr>
+  			<td>
+            <DIV ID="myDiv2">
+            <input type="button" value="Local Disconnect" name="iServer Restart2" onClick="loadframe_rtop('loca_disc.html')" CLASS="myAnchor" ID="IR2" width="130" style="font-family: System" >
+  			 </DIV>
+          </td> 
+  </tr>
+  <tr>
+  			<td>
+            <DIV ID="myDiv3">
+            <input type="button" width=130 value="ASR" name="iServer Restart3" onClick="loadframe_rtop('asr.html')" CLASS="myAnchor" ID="IR3" width="130" style="font-family: System" >
+  		     </DIV>
+          </td> 
+  </tr>
+  </table>
+</form>
+
+</body>
+
+</html>

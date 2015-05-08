@@ -1,0 +1,1683 @@
+#!/usr/bin/perl 
+##
+## this script sets up the bn.properties file, the file should be present in the directory speficied by -d option. The script keeps default values of each parameter, if that parameter is found in the bn.properties file in the supplied directory, we use that value otherwise we print he default value
+##
+
+#use strict;
+
+
+my $CurrentVersion = sprintf "%vd", $^V;
+
+use FindBin;
+use lib $FindBin::Bin."/site_perl/5.8.0";
+use Getopt::Std;
+use Config::Simple;
+#use Term::ReadKey;
+use IO::File;
+
+
+
+my $DEF_LOG_LEVEL = 'ALL';
+my $DEF_LOG_APPEND = 'true';
+my $DEF_LOG_PATH = '/nextone/ivms/bn.log';
+my $DEF_LOG_NAME = 'com.nextone.app';
+my $DEF_LOG_MAXBYTES = 10000000;
+my $DEF_LOG_FILES = 1;
+my $DEF_LOG_PATTERN = 1;
+my $DEF_RATER_DIALCODE_TYPE = 'atdest';
+my $DEF_RATER_CACHE_STATE = 'on';
+my @DEF_RATER_CACHE_NAME = ['routes','carrierplans','regions'];
+my @DEF_RATER_CACHE_MAX = '200,300,10000';
+my $DEF_RATER_URL = 'http://127.0.0.1:8080/ivms/rater';
+my $DEF_RATER_NORMALCALLDURATION = '1';
+my $DEF_RATER_ERRORCALLDURATION = -1;
+my $DEF_RATER_DEBUGLOGPATH = '/nextone/ivms/raterdebug.txt';
+my $DEF_RATER_JMS_STATE = 'off';
+my $DEF_RATER_MODE = 'rate';
+my $DEF_CDR_PARTITION = 7200;
+#my $DEF_HR_SUMMARY = 6;
+my $DEF_XMLAPI_URL = 'http://127.0.0.1:8080/ivms/xmlapi';
+my $DEF_XMLAPI_VERSION = '1.0';
+my $DEF_ADMIN_SESSIONID = 'greatseneca';
+my $DEF_SMTP_SERVER = '';
+my $DEF_POP_SERVER = '';
+my $DEF_EMAIL_USER = '';
+my $DEF_EMAIL_PASSWORD = '';
+my $DEF_EMAIL_FROM = 'iportal-ecall@nextone.com';
+my $DEF_MSW_ADDRESS = '204.180.228.32';
+my $DEF_DEPLOY_DIR = '/jboss-3.2.5/server/rsm/deploy/bnapp';
+my $DEF_DEPLOY_TMP_DIR = '/jboss-3.2.5/server/rsm/tmp/deploy';
+my $DEF_DEPLOY_SERVICE = 'bn-service.bak';
+my $DEF_DEPLOY_JBOSS_VERSION = '3.2.5';
+my $DEF_REPORT_PAGELENGTH_DEFAULT = 100;
+my $DEF_REPORT_PAGELENGTH_MAX = 1000;
+my $DEF_REPORT_SAVELIMIT_MAX = 100000;
+my $DEF_CHROMOCODE_COLOR_HIGH = '#66cc66';
+my $DEF_CHROMOCODE_COLOR_MEDIUM = '#FF9933';
+my $DEF_CHROMOCODE_COLOR_LOW = '#FFFF00';
+my $DEF_RERATER_AUTO = 'false';
+my $DEF_RERATER_INSTANCES = 2;
+my $DEF_SERVICE_SUMMARY_NAME = 'SummaryService';
+my $DEF_SERVICE_SUMMARY_CLASS = 'com.nextone.bn.summarizer.SummaryService';
+my $DEF_SERVICE_SUMMARY_STARTATSTARTUP = 'true';
+my $DEF_SERVICE_SUMMARY_INITIALSTARTDATE = 'NOW';
+my $DEF_SERVICE_SUMMARY_SCHEDULEPERIOD = 1800000;
+my $DEF_SERVICE_SUMMARY_INITIALREPETITIONS = -1;
+my $DEF_SERVICE_SUMMARY_WORKERPOOLSIZE = 2;
+my $DEF_SERVICE_SUMMARY_TIMEOUT = 5000;
+my $DEF_SERVICE_RERATER_NAME = 'ReraterService';
+my $DEF_SERVICE_RERATER_CLASS = 'com.nextone.bn.rerater.ReraterService';
+my $DEF_SERVICE_RERATER_STARTATSTARTUP = 'true';
+my $DEF_SERVICE_RERATER_INITIALSTARTDATE = 'NOW';
+my $DEF_SERVICE_RERATER_SCHEDULEPERIOD = 300000;
+my $DEF_SERVICE_RERATER_INITIALREPETITIONS = '-1';
+my $DEF_SERVICE_RERATER_WORKERPOOLSIZE = 2;
+my $DEF_SERVICE_RERATER_TIMEOUT = 5000;
+my $DEF_SERVICE_UA_NAME = 'UAService';
+my $DEF_SERVICE_UA_CLASS = 'com.nextone.bn.useraccess.UAService';
+my $DEF_SERVICE_UA_STARTATSTARTUP = 'true';
+my $DEF_SERVICE_UA_INITIALSTARTDATE = 'NOW';
+my $DEF_SERVICE_UA_SCHEDULEPERIOD = 300000;
+my $DEF_SERVICE_UA_INITIALREPETITIONS = '-1';
+my $DEF_SERVICE_UA_WORKERPOOLSIZE = 2;
+my $DEF_SERVICE_UA_TIMEOUT = 5000;
+my $DEF_SERVICE_ALARMD_NAME = 'Alarmd';
+my $DEF_SERVICE_ALARMD_CLASS = 'com.nextone.bn.alarm.Alarmd';
+my $DEF_SERVICE_CDRALARMMANAGER_NAME = 'CDRAlarmManager';
+my $DEF_SERVICE_CDRALARMMANAGER_CLASS = 'com.nextone.bn.alarm.CDRAlarmManager';
+my $DEF_SERVICE_ALARM_INMEMORY = 'true';
+my $DEF_SERVICE_ALARM_QUEUE_SIZE = 500;
+my $DEF_SERVICE_ALARM_GENERATETESTDATA = 'false';
+my $DEF_SERVICE_ALARM_TESTDATAPATH = '/root/testDataAlarms.txt';
+my $DEF_SERVICE_STREAMER_TIMEOUT = 5000;
+my $DEF_SERVICE_STREAMER_READBLOCKSIZE = 50;
+my @DEF_SERVICE_STREAMER_CONFIGFILES = '/nextone/ivms/stream1.xml,/nextone/ivms/stream2.xml';
+my $DEF_SERVICE_STREAMER_NAME = 'Streamer';
+my $DEF_SERVICE_STREAMER_CLASS = 'com.nextone.bn.streamer.CDRDataReaderManager';
+my $DEF_SERVICE_STREAMER_STARTATSTARTUP = 'true';
+my $DEF_SERVICE_STREAMER_INITIALSTARTDATE = 'NOW';
+my $DEF_SERVICE_STREAMER_SCHEDULEPERIOD = 600000;
+my $DEF_SERVICE_STREAMER_INITIALREPETITIONS = '-1';
+my @DEF_BNSERVICEMBEANS = 'summary,rerater,ua,alarmd,cdralarmmanager,audittrailpurge,dbsync,sessioncleaner,routesestimationservice,faultpurge,performancepurge,performancepollmanager,rsmfaultmanager,outagepurge';
+my $DEF_COMMON_THREADSLEEPTIME = 5000;
+my $DEF_COMMON_LIMITPAGESIZE = 10000;
+my $DEF_LOG_XML_PATH = '/nextone/ivms/xmlmsg.log';
+my $DEF_LOG_XML_NAME = 'com.nextone.xml';
+my $DEF_LOG_XML_LEVEL = 'ALL';
+my $DEF_XML_USEXMLAPI = 'false';
+my $DEF_IVMSDIR;
+my $DEF_IVMSCFG_FN = 'bn';
+my $DEF_IVMSCFG_EXT= 'properties';
+my $DEF_SERVICE_SEND_NAME = 'SendService';
+my $DEF_SERVICE_SEND_CLASS = 'com.nextone.bn.devicecomm.SendService';
+my $DEF_SERVICE_SEND_STARTATSTARTUP = 'true';
+my $DEF_SERVICE_SEND_INITIALSTARTDATE = 'NOW';
+my $DEF_SERVICE_SEND_SCHEDULEPERIOD = 30000;
+my $DEF_SERVICE_SEND_INITIALREPETITIONS = '-1';
+my $DEF_SERVICE_STREAMER_INITIALREPETITIONS = '-1';
+my $DEF_SERVICE_RECEIVE_NAME = 'ReceiveService';
+my $DEF_SERVICE_RECEIVE_CLASS = 'com.nextone.bn.devicecomm.ReceiveService';
+my $DEF_SERVICE_RECEIVE_STARTATSTARTUP = 'true';
+my $DEF_SERVICE_RECEIVE_INITIALSTARTDATE = 'NOW';
+my $DEF_SERVICE_RECEIVE_SCHEDULEPERIOD = 30000;
+my $DEF_SERVICE_RECEIVE_INITIALREPETITIONS = '-1';
+my $DEF_SERVICE_CLEANUPDEVICE_NAME = 'CleanupDeviceService';
+my $DEF_SERVICE_CLEANUPDEVICE_CLASS = 'com.nextone.bn.devicecomm.CleanupDeviceService';
+my $DEF_SERVICE_CLEANUPDEVICE_STARTATSTARTUP = 'true';
+my $DEF_SERVICE_CLEANUPDEVICE_INITIALSTARTDATE = 'NOW';
+my $DEF_SERVICE_CLEANUPDEVICE_SCHEDULEPERIOD = 600000;
+my $DEF_SERVICE_CLEANUPDEVICE_INITIALREPETITIONS = '-1';
+my $DEF_ISERVER_VIP = '0.0.0.0';
+my $DEF_ISERVER_IP = '10.3.0.3';
+my $DEF_ISERVER_READPASS='';
+my $DEF_ISERVER_WRITEPASS='';
+my $DEF_SESSION_CONFIG_TIMEOUT='30';
+my $DEF_RECEPTOR_VALIDATECDRS='0';
+my $DEF_LOG_BADCDR_PATH='/nextone/ivms/badcdr.log';
+my $DEF_LOG_BADCDR_NAME='com.nextone.bn.badcdr';
+my $DEF_LOG_BADCDR_LEVEL='ALL';
+my $DEF_LOG_BADCDR_FILES='1000';
+my $DEF_SVG_PURGE_TIME='30';
+my $DEF_ALARMSCRIPTS_PATH='/opt/nxtn/rsm/alarmscripts/';
+
+my $DEF_SERVICE_SESSIONCLEANER_NAME='SessionCleaner';
+my $DEF_SERVICE_SESSIONCLEANER_CLASS='com.nextone.bn.util.security.ExpiredSessionCleanService';
+my $DEF_SERVICE_SESSIONCLEANER_STARTATSTARTUP='true';
+my $DEF_SERVICE_SESSIONCLEANER_INITIALSTARTDATE='NOW';
+my $DEF_SERVICE_SESSIONCLEANER_SCHEDULEPERIOD='600000';
+my $DEF_SERVICE_SESSIONCLEANER_INITIALREPETITIONS='-1';
+my $DEF_WEBSERVICE_MAX_REQUESTSIZE='1000';
+my $DEF_USER_TRANSACTION_TIMEOUT_SECS='86400';
+my $DEF_REPORT_ENC_STR='[ENC]'; 
+my $DEF_LCR_RECREATEOLDROUTES='false';
+my $DEF_RATER_REGIONBYROUTE='true';
+my $DEF_SERVICE_ROUTESESTIMATIONSERVICE_NAME='RoutesEstimationService';
+my $DEF_SERVICE_ROUTESESTIMATIONSERVICE_CLASS='com.nextone.bn.rating.RoutesEstimationService';
+my $DEF_SERVICE_ROUTESESTIMATIONSERVICE_STARTATSTARTUP='false';
+my $DEF_SERVICE_ROUTESESTIMATIONSERVICE_INITIALSTARTDATE='NOW';
+my $DEF_SERVICE_ROUTESESTIMATIONSERVICE_SCHEDULEPERIOD=3600000;
+my $DEF_SERVICE_ROUTESESTIMATIONSERVICE_INITIALREPETITIONS=-1;
+my $ROUTESESTIMATE_THRESHOLD=10;
+my $DEF_ESTIMATE_1000ROUTES_DEFAULT=100;
+my $DEF_ESTIMATE_THRESHOLD=50;
+my $DEF_ESTIMATE_DEFAULTVALUE='';
+
+my $DEF_CDR_BATCH_SIZE=1000;
+my $DEF_CDR_EXPORT_INTERVAL=300000;
+my $DEF_DATACHECK_PAGESIZE=100;
+my $DEF_ALLOW_DUMMY_KEY='false';
+my $DEF_DATACHECK_MULTFACTOR=300;
+my $DEF_NER_ISDNCODES='21,26';
+my $DEF_NER_SIPRESPONSECODES='403,404';
+my $DEF_CONN_TIMEOUT=50000;
+my $DEF_CONN_RATIO=5;
+my $DEF_ALLOW_MULTIPLE_SESSIONS='false';
+my $DEF_HIDE_PASSWORD='false'; 
+
+my $DEF_EP_SHOWBATCHSIZEONLY=true;
+my $DEF_EP_BATCHSIZE=255;
+
+my $DEF_CDREXPORT_MAXFILESIZE='10MB';
+my $DEF_CDREXPORT_WRITEBLOCKSIZE=200;
+my $DEF_CDREXPORT_WHERECLAUSE_USECDRID='true';
+my $DEF_CDREXPORT_WHERE_MAXTIMEWINDOW=10;
+#FP-57972, Import file minimum lines for rerating cdrs.
+my $DEF_IMPORT_FILELEN=0;
+
+#FP-58297, Heartbeat debug thread flag
+my $HA_THREAD_INFO_FLAG=true;
+
+# Added for the calea changes to set the default property
+my @DEF_WEBSERVICECONFIG= 'com.nextone.generated.callplan.CallPlanType','com.nextone.generated.audittrail.AuditTrailType','com.nextone.generated.callplanbinding.CallPlanBindingType','com.nextone.generated.callplanroute.CallPlanRouteType','com.nextone.generated.capability.CapabilityType','com.nextone.generated.codecprofile.CodecProfileType','com.nextone.generated.deviceconfig.DeviceConfigType','com.nextone.generated.deviceconfigparams.DeviceConfigParamsType','com.nextone.generated.endpoint.EndpointType','com.nextone.generated.iedgegroup.IedgeGroupType','com.nextone.generated.realm.RealmType','com.nextone.generated.reports.ReportType','com.nextone.generated.subnet.SubnetType','com.nextone.generated.trigger.TriggerType','com.nextone.generated.vnet.VnetType';
+my $iView;
+my $mswstring="";
+my $mgtip="";
+my $upgrade;
+my $ff_install = 0;
+
+# ----- Added stuff for EMS
+# performance poll manager
+my $DEF_service_performancepollmanager_name='PerformancePollManager';
+my $DEF_service_performancepollmanager_class='com.nextone.bn.performance.PerformancePollManager';
+
+# RSM Fault Manager Service Standard parameters
+my $DEF_service_faultmanager_name='RSMFaultManager';
+my $DEF_service_faultmanager_class='com.nextone.bn.fault.RSMFaultManager';
+my $DEF_faultmanager_retrycount=3;
+my $DEF_faultmanager_waitperiod=10000;
+# Fault purge Service Standard parameters
+my $DEF_service_faultpurge_name='FaultPurgeService';
+my $DEF_service_faultpurge_class='com.nextone.bn.purging.FaultPurgeService';
+my $DEF_service_faultpurge_StartAtStartup='true';
+my $DEF_service_faultpurge_InitialStartDate='NOW';
+my $DEF_service_faultpurge_InitialRepetitions='-1';
+
+# Performance purge Service Standard parameters
+my $DEF_service_performancepurge_name='PerformancePurgeService';
+my $DEF_service_performancepurge_class='com.nextone.bn.purging.PerformancePurgeService';
+my $DEF_service_performancepurge_StartAtStartup='true';
+my $DEF_service_performancepurge_InitialStartDate='NOW';
+my $DEF_service_performancepurge_InitialRepetitions='-1';
+
+#Fault and Performance common parameters start
+#SNMP parameters
+my $DEF_snmp_ReadCommunity='public';
+my $DEF_snmp_WriteCommunity='public';
+my $DEF_snmp_Retries='0';
+my $DEF_snmp_Timeout='20';
+my $DEF_snmp_TrapPorts='162';
+#SNMP v3 parameters
+my $DEF_snmp_SecurityLevel='authPriv';
+my $DEF_snmp_AuthProtocol='MD5';
+my $DEF_snmp_AuthPassword='nextone123';
+my $DEF_snmp_PrivProtocol='DES';
+my $DEF_snmp_PrivPassword='nextone1234';
+my $DEF_snmp_engineID='';
+my $DEF_snmp_UserName='nextone';
+my $DEF_snmp_ContextName='nextone';
+
+#SWM Parameters
+my $DEF_swm_maxConcurrentDownloads='1';
+my $DEF_swm_maxConcurrentActivations='1';
+my $DEF_swm_retryLimit='5';
+my $DEF_swm_timeout='30';
+my $DEF_security_PasswordExpiryDays='30';
+
+my $DEF_user_noOfConcurrentLogin=10;
+
+
+my $DEF_applicationHeartbeatNBIP='';
+my $DEF_applicationHeartbeatNBSnmpCommunity='public';
+my $DEF_applicationHeartbeatFrequency=1;
+my $DEF_applicationHeartbeatCLLIcode='';
+my $DEF_applicationHeartbeatPerceivedSeverity=6;
+
+my $DEF_deviceHostname1CLLIcode='';
+my $DEF_deviceHostname2CLLIcode='';
+my $DEF_serverHostnames='';
+
+my $DEF_globalconfigSnmpNMSIPAddress='' ;
+my $DEF_globalconfigSnmpNMSCommunity='public' ;
+my $DEF_globalconfigSnmpSelectedAlarms='infoTraps' ;
+my $DEF_pamDebug='Disable';
+my $DEF_radiusAuthentication = 'false';
+my $DEF_orderByCode = 'false'; 
+
+#SNMP MIBS
+my $DEF_MIB_FILES='RFC1213-MIB.txt,DISMAN-EVENT-MIB.txt,IF-MIB.txt,SNMPv2-MIB.txt,NEXTONE-NOTIFICATION-MIB.txt,NET-SNMP-MIB.txt,NET-SNMP-AGENT-MIB.txt,NETWORK-SERVICES-MIB.txt,ENTITY-SENSOR-MIB.txt,IP-MIB.txt,TCP-MIB.txt,HOST-RESOURCES-MIB.txt,SIP-TC-MIB.txt,SIP-COMMON-MIB.txt,SIP-SERVER-MIB.txt,UCD-SNMP-MIB.txt,NEXTONE-CALLTAP-MIB.txt,NEXTPOINT-RATELIMITING-OUTCALL-MIB.txt,NEXTONE-IP-LAYER-RATELIMITING-MIB.txt,NEXTONE-SESSION-LAYER-RATELIMITING-MIB.txt,NEXTONE-COMMON-NOTIFICATION-MIB.txt,NEXTPOINT-TRAP-RESYNC-MIB.txt,NEXTPOINT-DYNAMIC-BLACKLIST-MIB.txt';
+
+# period for RSM table synchronizer in secs
+my $DEF_fault_rsmalarm_syncperiod='20';
+my $DEF_fault_rsmalarm_trapTablePurgePeriod = 7 ;
+#Purge interval in hours
+my $DEF_fault_purge_scheduleinterval='12';
+my $DEF_fault_rsmalarm_Purge_RaisedAlarms='true';
+#Fault management parameters start
+# changing this property might lead to uncertainity in Alarm Proccessing
+my $DEF_fault_queue_capacity='10000';
+
+#Events and Alarms purging period in days
+my $DEF_fault_purge_Event_Period='7';
+my $DEF_fault_purge_Alarm_Period='7';
+
+#Severity color coding parameters
+my $DEF_severity_Color_Critical='#FF0000';
+my $DEF_severity_Color_Major='#FF9933';
+my $DEF_severity_Color_Minor='#FFFF00';
+my $DEF_severity_Color_Warning='#0000A0';
+my $DEF_severity_Color_Clear='#808000';
+my $DEF_severity_Color_Info='#FFFFFF';
+my $DEF_severity_Color_Unknown='#C0C0C0';
+
+#Trap filter configuration parameters
+my @DEF_trap_Filter_Suppress_deviceIPs='';
+my @DEF_trap_Filter_Suppress_trapOIDs='';
+
+#Performance management parameters start
+# polling frequency in seconds
+my $DEF_performance_polling_frequency='300';
+
+# polling table creation interval in hours
+my $DEF_performance_polling_tablecreationinterval='24';
+
+# performance polling options
+# STOP_WHEN_NEW_POLL_COME='1'
+# CONTINUOUS='2'
+my $DEF_performance_polling_option='1';
+
+my $DEF_performance_polling_delta='100';
+
+# purging parameters for performance start
+# purge scheduling interval in hours
+my $DEF_performance_purge_scheduleinterval='12';
+
+# purge period in days
+my $DEF_performance_purge_statstables='7';
+
+
+# device ssh connection permission 
+my $DEF_device_isSSHConnectionAllowed='true';
+
+# device ssh connection permission 
+my $DEF_sync_dynamicendpoints='false';
+
+#DBOptimization enable/disable 
+my $DEF_mysql_optimization_enable='false';
+
+#DB Optimization Time HH:MM
+my $DEF_mysql_optimization_time='1:0';
+
+#DB Optimization interval for conseucative cycles in hours
+my $DEF_mysql_optimization_interval=24;
+
+# ---- END of Stuff Added for EMS
+
+my ($prog, %opt);
+($prog = $0) =~ s{(.*/)}{};
+
+getopts('f:d:m:i:g:u:p:t:w:h:x', \%opt) or usage() and exit;
+usage() and exit if $opt{h};
+if(defined($opt{x}))
+{
+	$ff_install = 1;
+}
+if(defined($opt{d}))
+{
+    $DEF_IVMSDIR = "$opt{d}";
+}
+if (!defined($opt{f}))
+{
+    $opt{f} = "$DEF_IVMSDIR/".$DEF_IVMSCFG_FN.".$DEF_IVMSCFG_EXT";
+}
+my $defMSWUser;
+my $defMSWPwd;
+my $defMSWHostName;
+my $defMSWPort;
+# Added for the mgt ip
+my $defMgtIp;
+my $isSCM = 0;
+if (exists($opt{i}))
+{
+$isSCM = `/usr/local/nextone/bin/nxconfig.pl -s server-type |grep 'Attr. Value' | grep 'active' |wc -l`;
+
+	chomp($isSCM);
+	$iView=1;
+	if (exists($opt{g}))
+	{
+		$upgrade=1;
+	}
+	$defMSWUser="$opt{u}";
+	$defMSWPwd="$opt{p}";
+	$defMSWHostName="$opt{t}";
+	$defMSWPort="$opt{w}";
+	$defMgtIp="$opt{m}";
+}
+
+my $config;
+# read the given config file
+if (-f "$opt{f}" && -T "$opt{f}")
+{
+    $config = new Config::Simple(filename=>"$opt{f}", mode=>O_RDWR);
+}
+else
+{
+    die("Cannot read config file $opt{f}");
+}
+
+my %cfghash = $config->param_hash();
+my $loglevel = defined($cfghash{'default.log.level'})?$cfghash{'default.log.level'}:$DEF_LOG_LEVEL;
+my $logpath = defined($cfghash{'default.log.path'})?$cfghash{'default.log.path'}:$DEF_LOG_PATH;
+my $logname = defined($cfghash{'default.log.name'})?$cfghash{'default.log.name'}:$DEF_LOG_NAME;
+my $logmaxbytes = defined($cfghash{'default.log.maxbytes'})?($cfghash{'default.log.maxbytes'} eq '.')?'':$cfghash{'default.log.maxbytes'}:$DEF_LOG_MAXBYTES;
+my $logfiles = defined($cfghash{'default.log.files'})?$cfghash{'default.log.files'}:$DEF_LOG_FILES;
+my $logpattern = defined($cfghash{'default.log.pattern'})?$cfghash{'default.log.pattern'}:$DEF_LOG_PATTERN;
+my $raterdialcodetype = defined($cfghash{'default.rater.dialcodetype'})?$cfghash{'default.rater.dialcodetype'}:$DEF_RATER_DIALCODE_TYPE;
+my $ratercachestate = defined($cfghash{'default.rater.cache.state'})?$cfghash{'default.rater.cache.state'}:$DEF_RATER_CACHE_STATE;
+my $ratercachenameref = defined($cfghash{'default.rater.cache.name'})?$cfghash{'default.rater.cache.name'}:\@DEF_RATER_CACHE_NAME;
+my @ratercachename = @$ratercachenameref;
+my $ratercachenamestr;
+if (defined(@ratercachename))
+{
+    $ratercachenamestr = &convArrayToStr(\@ratercachename, ",");
+} else {
+    $ratercachenamestr = &convArrayToStr(\@DEF_RATER_CACHE_NAME, ",");
+}
+$ratercachenamestr="rater.cache.name=".$ratercachenamestr;
+my $ratercachemaxref = defined($cfghash{'default.rater.cache.max'})?$cfghash{'default.rater.cache.max'}:\@DEF_RATER_CACHE_MAX;
+my @ratercachemax = @$ratercachemaxref;
+my $ratercachemaxstr;
+if (defined(@ratercachemax))
+{
+    $ratercachemaxstr = &convArrayToStr(\@ratercachemax, ",");
+} else {
+    $ratercachemaxstr = &convArrayToStr(\@DEF_RATER_CACHE_MAX, ",");
+}
+$ratercachemaxstr="rater.cache.max=".$ratercachemaxstr;
+
+my $raterurl = defined($cfghash{'default.rater.url'})?$cfghash{'default.rater.url'}:$DEF_RATER_URL;
+my $raternormalcallduration = defined($cfghash{'default.rater.normalcallduration'})?$cfghash{'default.rater.normalcallduration'}:$DEF_RATER_NORMALCALLDURATION;
+my $ratererrorcallduration = defined($cfghash{'default.rater.errorcallduration'})?$cfghash{'default.rater.errorcallduration'}:$DEF_RATER_ERRORCALLDURATION;
+my $raterdebuglogpath = defined($cfghash{'default.rater.debuglogpath'})?$cfghash{'default.rater.debuglogpath'}:$DEF_RATER_DEBUGLOGPATH;
+my $raterjmsstate  = defined($cfghash{'default.rater.jms.state'})?$cfghash{'default.rater.jms.state'}:$DEF_RATER_JMS_STATE;
+my $ratermode = defined($cfghash{'default.rater.mode'})?$cfghash{'default.rater.mode'}:$DEF_RATER_MODE;
+my $cdrpartition = defined($cfghash{'default.cdr.partition'})?$cfghash{'default.cdr.partition'}:$DEF_CDR_PARTITION;
+#my $hrsummary = defined($cfghash{'default.hr.summary'})?$cfghash{'default.hr.summary'}:$DEF_HR_SUMMARY;
+
+my $xmlapiurl = defined($cfghash{'default.xmlapi.url'})?$cfghash{'default.xmlapi.url'}:$DEF_XMLAPI_URL;
+my $xmlapiversion = defined($cfghash{'default.xmlapi.version'})?$cfghash{'default.xmlapi.version'}:$DEF_XMLAPI_VERSION;
+my $adminsessionid = defined($cfghash{'default.admin.sessionid'})?$cfghash{'default.admin.sessionid'}:$DEF_ADMIN_SESSIONID;
+my $smtpserver = defined($cfghash{'default.smtp.server'})?$cfghash{'default.smtp.server'}:$DEF_SMTP_SERVER;
+my $popserver = defined($cfghash{'default.pop.server'})?$cfghash{'default.pop.server'}:$DEF_POP_SERVER;
+my $emailuser = defined($cfghash{'default.email.user'})?$cfghash{'default.email.user'}:$DEF_EMAIL_USER;
+my $emailpassword = defined($cfghash{'default.email.password'})?$cfghash{'default.email.password'}:$DEF_EMAIL_PASSWORD;
+my $emailfrom = defined($cfghash{'default.email.from'})?$cfghash{'default.email.from'}:$DEF_EMAIL_FROM;
+#Changed based on the comment from rajnish to get rid of the unused properties
+#my $mswaddress = defined($cfghash{'default.msw.address'})?$cfghash{'default.msw.address'}:$DEF_MSW_ADDRESS;
+my $deploydir = defined($cfghash{'default.deploy.dir'})?$cfghash{'default.deploy.dir'}:$DEF_DEPLOY_DIR;
+my $deploytmpdir = defined($cfghash{'default.deploy.tmp.dir'})?$cfghash{'default.deploy.tmp.dir'}:$DEF_DEPLOY_TMP_DIR;
+my $deployservice = defined($cfghash{'default.deploy.service'})?$cfghash{'default.deploy.service'}:$DEF_DEPLOY_SERVICE;
+my $deployjbossversion = defined($cfghash{'default.deploy.jboss.version'})?$cfghash{'default.deploy.jboss.version'}:$DEF_DEPLOY_JBOSS_VERSION;
+my $reportpagelengthdefault = defined($cfghash{'default.report.pagelength.default'})?$cfghash{'default.report.pagelength.default'}:$DEF_REPORT_PAGELENGTH_DEFAULT;
+my $reportpagelengthmax = defined($cfghash{'default.report.pagelength.max'})?$cfghash{'default.report.pagelength.max'}:$DEF_REPORT_PAGELENGTH_MAX;
+my $reportsavelimitmax = defined($cfghash{'default.report.savelimit.max'})?$cfghash{'default.report.savelimit.max'}:$DEF_REPORT_SAVELIMIT_MAX;
+my $chromocodecolorhigh = defined($cfghash{'default.chromocode.color.high'})?$cfghash{'default.chromocode.color.high'}:$DEF_CHROMOCODE_COLOR_HIGH;
+my $chromocodecolormedium = defined($cfghash{'default.chromocode.color.medium'})?$cfghash{'default.chromocode.color.medium'}:$DEF_CHROMOCODE_COLOR_MEDIUM;
+my $chromocodecolorlow = defined($cfghash{'default.chromocode.color.low'})?$cfghash{'default.chromocode.color.low'}:$DEF_CHROMOCODE_COLOR_LOW;
+my $reraterauto = defined($cfghash{'default.rerater.auto'})?$cfghash{'default.rerater.auto'}:$DEF_RERATER_AUTO;
+my $reraterinstances = defined($cfghash{'default.rerater.instances'})?$cfghash{'default.rerater.instances'}:$DEF_RERATER_INSTANCES;
+my $servicesummaryname = defined($cfghash{'default.service.summary.name'})?$cfghash{'default.service.summary.name'}:$DEF_SERVICE_SUMMARY_NAME;
+my $servicesummaryclass = defined($cfghash{'default.service.summary.class'})?$cfghash{'default.service.summary.class'}:$DEF_SERVICE_SUMMARY_CLASS;
+my $servicesummarystartatstartup = defined($cfghash{'default.service.summary.startatstartup'})?$cfghash{'default.service.summary.startatstartup'}:$DEF_SERVICE_SUMMARY_STARTATSTARTUP;
+my $servicesummaryinitialstartdate = defined($cfghash{'default.service.summary.initialstartdate'})?$cfghash{'default.service.summary.initialstartdate'}:$DEF_SERVICE_SUMMARY_INITIALSTARTDATE;
+my $servicesummaryscheduleperiod = defined($cfghash{'default.service.summary.scheduleperiod'})?$cfghash{'default.service.summary.scheduleperiod'}:$DEF_SERVICE_SUMMARY_SCHEDULEPERIOD;
+my $servicesummaryinitialrepetitions = defined($cfghash{'default.service.summary.initialrepetitions'})?$cfghash{'default.service.summary.initialrepetitions'}:$DEF_SERVICE_SUMMARY_INITIALREPETITIONS;
+my $servicesummaryworkerpoolsize = defined($cfghash{'default.service.summary.WorkerPoolSize'})?$cfghash{'default.service.summary.WorkerPoolSize'}:$DEF_SERVICE_SUMMARY_WORKERPOOLSIZE;
+my $servicesummarytimeout = defined($cfghash{'default.service.summary.timeout'})?$cfghash{'default.service.summary.timeout'}:$DEF_SERVICE_SUMMARY_TIMEOUT;
+my $servicereratername = defined($cfghash{'default.service.rerater.name'})?$cfghash{'default.service.rerater.name'}:$DEF_SERVICE_RERATER_NAME;
+my $servicereraterclass = defined($cfghash{'default.service.rerater.class'})?$cfghash{'default.service.rerater.class'}:$DEF_SERVICE_RERATER_CLASS;
+my $servicereraterstartatstartup = defined($cfghash{'default.service.rerater.startatstartup'})?$cfghash{'default.service.rerater.startatstartup'}:$DEF_SERVICE_RERATER_STARTATSTARTUP;
+my $servicereraterscheduleperiod = defined($cfghash{'default.service.rerater.scheduleperiod'})?$cfghash{'default.service.rerater.scheduleperiod'}:$DEF_SERVICE_RERATER_SCHEDULEPERIOD;
+my $servicereraterinitialstartdate = defined($cfghash{'default.service.rerater.initialstartdate'})?$cfghash{'default.service.rerater.initialstartdate'}:$DEF_SERVICE_RERATER_INITIALSTARTDATE;
+my $servicereraterinitialrepetitions = defined($cfghash{'default.service.rerater.initialrepetitions'})?$cfghash{'default.service.rerater.initialrepetitions'}:$DEF_SERVICE_RERATER_INITIALREPETITIONS;
+my $servicereraterworkerpoolsize = defined($cfghash{'default.service.rerater.workerpoolsize'})?$cfghash{'default.service.rerater.workerpoolsize'}:$DEF_SERVICE_RERATER_WORKERPOOLSIZE;
+my $servicereratertimeout = defined($cfghash{'default.service.rerater.timeout'})?$cfghash{'default.service.rerater.timeout'}:$DEF_SERVICE_RERATER_TIMEOUT;
+my $serviceuaname = defined($cfghash{'default.service.ua.name'})?$cfghash{'default.service.ua.name'}:$DEF_SERVICE_UA_NAME;
+my $serviceuaclass = defined($cfghash{'default.service.ua.class'})?$cfghash{'default.service.ua.class'}:$DEF_SERVICE_UA_CLASS;
+my $serviceuastartatstartup = defined($cfghash{'default.service.ua.startatstartup'})?$cfghash{'default.service.ua.startatstartup'}:$DEF_SERVICE_UA_STARTATSTARTUP;
+my $serviceuascheduleperiod = defined($cfghash{'default.service.ua.scheduleperiod'})?$cfghash{'default.service.ua.scheduleperiod'}:$DEF_SERVICE_UA_SCHEDULEPERIOD;
+my $serviceuainitialstartdate = defined($cfghash{'default.service.ua.initialstartdate'})?$cfghash{'default.service.ua.initialstartdate'}:$DEF_SERVICE_UA_INITIALSTARTDATE;
+my $serviceuainitialrepetitions = defined($cfghash{'default.service.ua.initialrepetitions'})?$cfghash{'default.service.ua.initialrepetitions'}:$DEF_SERVICE_UA_INITIALREPETITIONS;
+my $serviceuaworkerpoolsize = defined($cfghash{'default.service.ua.workerpoolsize'})?$cfghash{'default.service.ua.workerpoolsize'}:$DEF_SERVICE_UA_WORKERPOOLSIZE;
+my $serviceuatimeout = defined($cfghash{'default.service.ua.timeout'})?$cfghash{'default.service.ua.timeout'}:$DEF_SERVICE_UA_TIMEOUT;
+my $servicealarmdname = defined($cfghash{'default.service.alarmd.name'})?$cfghash{'default.service.alarmd.name'}:$DEF_SERVICE_ALARMD_NAME;
+my $servicealarmdclass = defined($cfghash{'default.service.alarmd.class'})?$cfghash{'default.service.alarmd.class'}:$DEF_SERVICE_ALARMD_CLASS;
+my $servicecdralarmmanagername = defined($cfghash{'default.service.cdralarmmanager.name'})?$cfghash{'default.service.cdralarmmanager.name'}:$DEF_SERVICE_CDRALARMMANAGER_NAME;
+my $servicecdralarmmanagerclass = defined($cfghash{'default.service.cdralarmmanager.class'})?$cfghash{'default.service.cdralarmmanager.class'}:$DEF_SERVICE_CDRALARMMANAGER_CLASS;
+my $servicealarminmemory = defined($cfghash{'default.service.alarm.inmemory'})?$cfghash{'default.service.alarm.inmemory'}:$DEF_SERVICE_ALARM_INMEMORY;
+my $servicealarmqueuesize = defined($cfghash{'default.statisticsRecoveryQueuesizeLimit'})?$cfghash{'default.statisticsRecoveryQueuesizeLimit'}:$DEF_SERVICE_ALARM_QUEUE_SIZE;
+my $servicealarmalarmgeneratetestdata = defined($cfghash{'default.service.alarm.generatetestdata'})?$cfghash{'default.service.alarm.generatetestdata'}:$DEF_SERVICE_ALARM_GENERATETESTDATA;
+my $servicealarmtestdatapath = defined($cfghash{'default.service.alarm.testdatapath'})?$cfghash{'default.service.alarm.testdatapath'}:$DEF_SERVICE_ALARM_TESTDATAPATH;
+my $servicestreamername = defined($cfghash{'default.service.streamer.name'})?$cfghash{'default.service.streamer.name'}:$DEF_SERVICE_STREAMER_NAME;
+my $servicestreamerclass = defined($cfghash{'default.service.streamer.class'})?$cfghash{'default.service.streamer.class'}:$DEF_SERVICE_STREAMER_CLASS;
+my $servicestreamerconfigfilesref = defined($cfghash{'default.service.streamer.configfiles'})?$cfghash{'default.service.streamer.configfiles'}:\@DEF_SERVICE_STREAMER_CONFIGFILES;
+my @servicestreamerconfigfiles = @$servicestreamerconfigfilesref;
+my $servicestreamerconfigfilesstr;
+if (defined(@servicestreamerconfigfiles))
+{
+    $servicestreamerconfigfilesstr = &convArrayToStr(\@servicestreamerconfigfiles, ",");
+} else {
+    $servicestreamerconfigfilesstr = &convArrayToStr(\@DEF_SERVICE_STREAMER_CONFIGFILES, ",");
+}
+$servicestreamerconfigfilesstr="service.streamer.configfiles=".$servicestreamerconfigfilesstr;
+
+
+my $servicestreamerstartatstartup = defined($cfghash{'default.service.streamer.startatstartup'})?$cfghash{'default.service.streamer.startatstartup'}:$DEF_SERVICE_STREAMER_STARTATSTARTUP;
+my $servicestreamerscheduleperiod = defined($cfghash{'default.service.streamer.scheduleperiod'})?$cfghash{'default.service.streamer.scheduleperiod'}:$DEF_SERVICE_STREAMER_SCHEDULEPERIOD;
+my $servicestreamerinitialstartdate = defined($cfghash{'default.service.streamer.initialstartdate'})?$cfghash{'default.service.streamer.initialstartdate'}:$DEF_SERVICE_STREAMER_INITIALSTARTDATE;
+my $servicestreamerinitialrepetitions = defined($cfghash{'default.service.streamer.initialrepetitions'})?$cfghash{'default.service.streamer.initialrepetitions'}:$DEF_SERVICE_STREAMER_INITIALREPETITIONS;
+my $servicestreamertimeout = defined($cfghash{'default.service.streamer.timeout'})?$cfghash{'default.service.streamer.timeout'}:$DEF_SERVICE_STREAMER_TIMEOUT;
+my $servicestreamerreadblocksize = defined($cfghash{'default.service.streamer.readblocksize'})?$cfghash{'default.service.streamer.readblocksize'}:$DEF_SERVICE_STREAMER_READBLOCKSIZE;
+my $servicesendname = defined($cfghash{'default.service.send.name'})?$cfghash{'default.service.send.name'}:$DEF_SERVICE_SEND_NAME;
+my $servicesendclass = defined($cfghash{'default.service.send.class'})?$cfghash{'default.service.send.class'}:$DEF_SERVICE_SEND_CLASS;
+my $servicesendstartatstartup = defined($cfghash{'default.service.send.startatstartup'})?$cfghash{'default.service.send.startatstartup'}:$DEF_SERVICE_SEND_STARTATSTARTUP;
+my $servicesendscheduleperiod = defined($cfghash{'default.service.send.scheduleperiod'})?$cfghash{'default.service.send.scheduleperiod'}:$DEF_SERVICE_SEND_SCHEDULEPERIOD;
+my $servicesendinitialstartdate = defined($cfghash{'default.service.send.initialstartdate'})?$cfghash{'default.service.send.initialstartdate'}:$DEF_SERVICE_SEND_INITIALSTARTDATE;
+my $servicesendinitialrepetitions = defined($cfghash{'default.service.send.initialrepetitions'})?$cfghash{'default.service.send.initialrepetitions'}:$DEF_SERVICE_SEND_INITIALREPETITIONS;
+my $servicereceivename = defined($cfghash{'default.service.receive.name'})?$cfghash{'default.service.receive.name'}:$DEF_SERVICE_RECEIVE_NAME;
+my $servicereceiveclass = defined($cfghash{'default.service.receive.class'})?$cfghash{'default.service.receive.class'}:$DEF_SERVICE_RECEIVE_CLASS;
+my $servicereceivestartatstartup = defined($cfghash{'default.service.receive.startatstartup'})?$cfghash{'default.service.receive.startatstartup'}:$DEF_SERVICE_RECEIVE_STARTATSTARTUP;
+my $servicereceivescheduleperiod = defined($cfghash{'default.service.receive.scheduleperiod'})?$cfghash{'default.service.receive.scheduleperiod'}:$DEF_SERVICE_RECEIVE_SCHEDULEPERIOD;
+my $servicereceiveinitialstartdate = defined($cfghash{'default.service.receive.initialstartdate'})?$cfghash{'default.service.receive.initialstartdate'}:$DEF_SERVICE_RECEIVE_INITIALSTARTDATE;
+my $servicereceiveinitialrepetitions = defined($cfghash{'default.service.receive.initialrepetitions'})?$cfghash{'default.service.receive.initialrepetitions'}:$DEF_SERVICE_RECEIVE_INITIALREPETITIONS;
+my $servicecleanupdevicename = defined($cfghash{'default.service.cleanupdevice.name'})?$cfghash{'default.service.cleanupdevice.name'}:$DEF_SERVICE_CLEANUPDEVICE_NAME;
+my $servicecleanupdeviceclass = defined($cfghash{'default.service.cleanupdevice.class'})?$cfghash{'default.service.cleanupdevice.class'}:$DEF_SERVICE_CLEANUPDEVICE_CLASS;
+my $servicecleanupdevicestartatstartup = defined($cfghash{'default.service.cleanupdevice.startatstartup'})?$cfghash{'default.service.cleanupdevice.startatstartup'}:$DEF_SERVICE_CLEANUPDEVICE_STARTATSTARTUP;
+my $servicecleanupdevicescheduleperiod = defined($cfghash{'default.service.cleanupdevice.scheduleperiod'})?$cfghash{'default.service.cleanupdevice.scheduleperiod'}:$DEF_SERVICE_CLEANUPDEVICE_SCHEDULEPERIOD;
+my $servicecleanupdeviceinitialstartdate = defined($cfghash{'default.service.cleanupdevice.initialstartdate'})?$cfghash{'default.service.cleanupdevice.initialstartdate'}:$DEF_SERVICE_CLEANUPDEVICE_INITIALSTARTDATE;
+my $servicecleanupdeviceinitialrepetitions = defined($cfghash{'default.service.cleanupdevice.initialrepetitions'})?$cfghash{'default.service.cleanupdevice.initialrepetitions'}:$DEF_SERVICE_CLEANUPDEVICE_INITIALREPETITIONS;
+my $lcrRecreateoldroutes= defined($cfghash{'default.lcr.recreateoldroutes'})?$cfghash{'default.lcr.recreateoldroutes'}:$DEF_LCR_RECREATEOLDROUTES;
+my $raterregionbyroute= defined($cfghash{'default.rater.regionbyroute'})?$cfghash{'default.rater.regionbyroute'}:$DEF_RATER_REGIONBYROUTE;
+#my $bnservicembeansref = defined($cfghash{'default.bn.servicembeans'})?$cfghash{'default.bn.servicembeans'}:\@DEF_BNSERVICEMBEANS;
+my $bnservicembeansref = @DEF_BNSERVICEMBEANS;
+my @bnservicembeans = @$bnservicembeansref;
+my $bnservicembeansstr;
+if (defined(@bnservicembeans))
+{
+    $bnservicembeansstr = &convArrayToStr(\@bnservicembeans, ",");
+} else {
+    $bnservicembeansstr = &convArrayToStr(\@DEF_BNSERVICEMBEANS, ",");
+}
+$bnservicembeansstr="bn.servicembeans=".$bnservicembeansstr;
+
+my @DEF_REGISTEREDHANDLER= 'webServiceHandler,mswinfoRequesthandler,deviceRequestHandler';
+my $registeredHandlerref = defined($cfghash{'default.registeredHandler'})?$cfghash{'default.registeredHandler'}:\@DEF_REGISTEREDHANDLER;
+my @registeredHandler = @$registeredHandlerref;
+my $registeredHandlerstr;
+if (defined(@registeredHandler))
+{
+    $registeredHandlerstr = &convArrayToStr(\@registeredHandler, ",");
+} else {
+    $registeredHandlerstr = &convArrayToStr(\@DEF_REGISTEREDHANDLER, ",");
+}
+
+
+my $commonthreadsleeptime = defined($cfghash{'default.commonthreadsleeptime'})?$cfghash{'default.commonthreadsleeptime'}:$DEF_COMMON_THREADSLEEPTIME;
+my $commonlimitpagesize = defined($cfghash{'default.commonlimitpagesize'})?$cfghash{'default.commontlimitpagesize'}:$DEF_COMMON_LIMITPAGESIZE;
+my $logxmlpath = defined($cfghash{'default.log.xml.path'})?$cfghash{'default.log.xml.path'}:$DEF_LOG_XML_PATH;
+my $logappendmode = defined($cfghash{'log.append'})?$cfghash{'log.append'}:$DEF_LOG_APPEND;
+my $logxmlname = defined($cfghash{'default.log.xml.name'})?$cfghash{'default.log.xml.name'}:$DEF_LOG_XML_NAME;
+my $logxmllevel = defined($cfghash{'default.log.xml.level'})?$cfghash{'default.log.xml.level'}:$DEF_LOG_XML_LEVEL;
+my $xmlusexmlapi = defined($cfghash{'default.xml.usexmlapi'})?$cfghash{'default.xml.usexmlapi'}:$DEF_XML_USEXMLAPI;
+# Changes based on the comment from rajnish
+# These properties are no longer needed
+#my $iserverip = defined($cfghash{'default.iserver.ip'})?$cfghash{'default.iserver.ip'}:$DEF_ISERVER_IP;
+#my $iservervip = defined($cfghash{'default.iserver.vip'})?$cfghash{'default.iserver.vip'}:$DEF_ISERVER_VIP;
+#my $iserverreadpass = defined($cfghash{'default.iserver.readpass'})?$cfghash{'default.iserver.readpass'}:$DEF_ISERVER_READPASS;
+#my $iserverwritepass = defined($cfghash{'default.iserver.writepass'})?$cfghash{'default.iserver.writepass'}:$DEF_ISERVER_WRITEPASS;
+my $sessionconfigtimeout = defined($cfghash{'default.session.config.Timeout'})?$cfghash{'default.session.config.Timeout'}:$DEF_SESSION_CONFIG_TIMEOUT;
+my $receptorvalidatecdrs = defined($cfghash{'default.receptor.validatecdrs'})?$cfghash{'default.receptor.validatecdrs'}:$DEF_RECEPTOR_VALIDATECDRS;
+my $logbadcdrpath = defined($cfghash{'default.log.badcdr.path'})?$cfghash{'default.log.badcdr.path'}:$DEF_LOG_BADCDR_PATH;
+my $logbadcdrname = defined($cfghash{'default.log.badcdr.name'})?$cfghash{'default.log.badcdr.name'}:$DEF_LOG_BADCDR_NAME;
+my $logbadcdrlevel = defined($cfghash{'default.log.badcdr.level'})?$cfghash{'default.log.badcdr.level'}:$DEF_LOG_BADCDR_LEVEL;
+my $logbadcdrfiles = defined($cfghash{'default.log.badcdr.files'})?$cfghash{'default.log.badcdr.files'}:$DEF_LOG_BADCDR_FILES;
+my $serviceoutagepurgeclass = defined($cfghash{'default.service.outagepurge.class'})?$cfghash{'default.service.outagepurge.class'}:"com.nextone.bn.purging.OutagePurgeService";
+my $serviceoutagepurgeStartAtStartup = defined($cfghash{'default.service.outagepurge.StartAtStartup'})?$cfghash{'default.service.outagepurge.StartAtStartup'}:"true";
+my $serviceoutagepurgeInitialStartDate = defined($cfghash{'default.service.outagepurge.InitialStartDate'})?$cfghash{'default.service.outagepurge.InitialStartDate'}:"NOW";
+my $serviceoutagepurgeSchedulePeriod = defined($cfghash{'default.service.outagepurge.SchedulePeriod'})?$cfghash{'default.service.outagepurge.SchedulePeriod'}:"86400000";
+my $serviceoutagepurgeInitialRepetitions = defined($cfghash{'default.service.outagepurge.InitialRepetitions'})?$cfghash{'default.service.outagepurge.InitialRepetitions'}:"-1";
+my $serviceaudittrailpurgeclass = defined($cfghash{'default.service.audittrailpurge.class'})?$cfghash{'default.service.audittrailpurge.class'}:"com.nextone.bn.audittrail.AuditTrailPurgeService";
+my $serviceaudittrailpurgeStartAtStartup = defined($cfghash{'default.service.audittrailpurge.StartAtStartup'})?$cfghash{'default.service.audittrailpurge.StartAtStartup'}:"true";
+my $serviceaudittrailpurgeInitialStartDate = defined($cfghash{'default.service.audittrailpurge.InitialStartDate'})?$cfghash{'default.service.audittrailpurge.InitialStartDate'}:"NOW";
+my $serviceaudittrailpurgeSchedulePeriod = defined($cfghash{'default.service.audittrailpurge.SchedulePeriod'})?$cfghash{'default.service.audittrailpurge.SchedulePeriod'}:"86400000";
+my $serviceaudittrailpurgeInitialRepetitions = defined($cfghash{'default.service.audittrailpurge.InitialRepetitions'})?$cfghash{'default.service.audittrailpurge.InitialRepetitions'}:"-1";
+my $uaauto = defined($cfghash{'default.ua.auto'})?$cfghash{'default.ua.auto'}:"true";
+my $servicedbsyncname = defined($cfghash{'default.service.dbsync.name'})?$cfghash{'default.service.dbsync.name'}:"DBSyncDetectService";
+my $servicedbsyncclass = defined($cfghash{'default.service.dbsync.class'})?$cfghash{'default.service.dbsync.class'}:"com.nextone.bn.dbsync.DBSyncDetectService";
+my $servicedbsyncStartAtStartup = defined($cfghash{'default.service.dbsync.StartAtStartup'})?$cfghash{'default.service.dbsync.StartAtStartup'}:"true";
+my $servicedbsyncInitialStartDate = defined($cfghash{'default.service.dbsync.InitialStartDate'})?$cfghash{'default.service.dbsync.InitialStartDate'}:"NOW";
+my $servicedbsyncSchedulePeriod = defined($cfghash{'default.service.dbsync.SchedulePeriod'})?$cfghash{'default.service.dbsync.SchedulePeriod'}:"3600000";
+my $servicedbsyncInitialRepetitions = defined($cfghash{'default.service.dbsync.InitialRepetitions'})?$cfghash{'default.service.dbsync.InitialRepetitions'}:"-1";
+my $servicedbsyncWorkerPoolSize = defined($cfghash{'default.service.dbsync.WorkerPoolSize'})?$cfghash{'default.service.dbsync.WorkerPoolSize'}:"2";
+my $servicedbsyncTimeout = defined($cfghash{'default.service.dbsync.Timeout'})?$cfghash{'default.service.dbsync.Timeout'}:"5000";
+my $receptorlogpath = defined($cfghash{'default.receptor.log.path'})?$cfghash{'default.receptor.log.path'}:"/nextone/ivms/receptor.log";
+my $alarmbenchmarking = defined($cfghash{'default.alarm.benchmarking'})?$cfghash{'default.alarm.benchmarking'}:"false";
+my $licenseinitgap = defined($cfghash{'default.license.initgap'})?$cfghash{'default.license.initgap'}:"168";
+my $iviewjnlpfiletimeout = defined($cfghash{'default.iview.jnlpfile.timeout'})?$cfghash{'default.iview.jnlpfile.timeout'}:"60000";
+my $lcrsetdialcode = defined($cfghash{'default.lcr.SetDialCode'})?$cfghash{'default.lcr.SetDialCode'}:"true";
+my $lcrsetdialcodemanual = defined($cfghash{'default.lcr.SetDialCodeManual'})?$cfghash{'default.lcr.SetDialCodeManual'}:"true";
+my $serviceoutagepurgename = defined($cfghash{'default.service.outagepurge.name'})?$cfghash{'default.service.outagepurge.name'}:"OutagePurgeService";
+my $serviceaudittrailpurgename = defined($cfghash{'default.service.audittrailpurge.name'})?$cfghash{'default.service.audittrailpurge.name'}:"AuditTrailPurgeService";
+my $deployservice = defined($cfghash{'default.deploy.service'})?$cfghash{'default.deploy.service'}:"bn-service.bak";
+my $outputcachecleanuptimeinterval = defined($cfghash{'default.output.cache.cleanup.time.interval'})?$cfghash{'default.output.cache.cleanup.time.interval'}:"3600000";
+
+my $webServiceHandler = defined($cfghash{'default.webServiceHandler'})?$cfghash{'default.webServiceHandler'}:"com.nextone.bn.devicecomm.WebServiceRequestHandler";
+my $defaulthidepassword=defined($cfghash{'default.hide.password'})?$cfghash{'default.hide.password'}:$DEF_HIDE_PASSWORD;
+my $defaultallowmultiplesessions=defined($cfghash{'default.security.MultipleSessionsAllowed'})?$cfghash{'default.security.MultipleSessionsAllowed'}:$DEF_ALLOW_MULTIPLE_SESSIONS;
+
+my $mswinfoRequesthandler = defined($cfghash{'default.mswinfoRequesthandler'})?$cfghash{'default.mswinfoRequesthandler'}:"com.nextone.bn.devicecomm.MSWInfoWebServiceRequestHandler";
+
+my $deviceRequestHandler = defined($cfghash{'default.deviceRequestHandler'})?$cfghash{'default.deviceRequestHandler'}:"com.nextone.bn.devicecomm.DeviceDetailRequestHandler";
+
+my $outagePurgeDays = defined($cfghash{'default.outagePurgeDays'})?$cfghash{'default.outagePurgeDays'}:"10";
+my $auditPurgeDays = defined($cfghash{'default.auditPurgeDays'})?$cfghash{'default.auditPurgeDays'}:"10";
+my $raterinvalidcdrlogpath = defined($cfghash{'default.rater.invalidcdrlogpath'})?$cfghash{'default.rater.invalidcdrlogpath'}:'cdrlog';
+my $raterblock = defined($cfghash{'default.rater.block'})?$cfghash{'default.rater.block'}:'false';
+my $svgpurgetime = defined($cfghash{'svgPurgeTime'})?$cfghash{'svgPurgeTime'}:$DEF_SVG_PURGE_TIME;
+my $alarmscriptspath = defined($cfghash{'alarms.alarmscripts.path'})?$cfghash{'alarms.alarmscripts.path'}:$DEF_ALARMSCRIPTS_PATH;
+
+
+my $serviceroutesestimationservicename = defined($cfghash{'default.service.routesestimationservice.name'})?$cfghash{'default.service.routesestimationservice.name'}: $DEF_SERVICE_ROUTESESTIMATIONSERVICE_NAME;
+my $serviceroutesestimationserviceclass =defined($cfghash{'default.service.routesestimationservice.class'})?$cfghash{'default.service.routesestimationservice.class'}:$DEF_SERVICE_ROUTESESTIMATIONSERVICE_CLASS ;
+my $serviceroutesestimationserviceStartAtStartup = defined($cfghash{'default.service.routesestimationservice.StartAtStartup'})?$cfghash{'default.service.routesestimationservice.StartAtStartup'}:$DEF_SERVICE_ROUTESESTIMATIONSERVICE_STARTATSTARTUP ;
+my $serviceroutesestimationserviceInitialStartDate =defined($cfghash{'default.service.routesestimationservice.InitialStartDate'})?$cfghash{'default.service.routesestimationservice.InitialStartDate'}: $DEF_SERVICE_ROUTESESTIMATIONSERVICE_INITIALSTARTDATE;
+my $serviceroutesestimationserviceSchedulePeriod =defined($cfghash{'default.service.routesestimationservice.SchedulePeriod'})?$cfghash{'default.service.routesestimationservice.SchedulePeriod'}: $DEF_SERVICE_ROUTESESTIMATIONSERVICE_SCHEDULEPERIOD;
+my $serviceroutesestimationserviceInitialRepetitions =defined($cfghash{'default.service.routesestimationservice.InitialRepetitions'})?$cfghash{'default.service.routesestimationservice.InitialRepetitions'}: $DEF_SERVICE_ROUTESESTIMATIONSERVICE_INITIALREPETITIONS;
+my $routesestimatethreshold = defined($cfghash{'default.routesestimate.threshold'})?$cfghash{'default.routesestimate.threshold'}: $ROUTESESTIMATE_THRESHOLD;
+my $BatchSize = defined($cfghash{'BatchSize'})?$cfghash{'BatchSize'}:$DEF_CDR_BATCH_SIZE;
+my $CDRExportInterval= defined($cfghash{'CDRExportInterval'})?$cfghash{'CDRExportInterval'}:$DEF_CDR_EXPORT_INTERVAL;
+
+my $cdrexportmaxfilesize= defined($cfghash{'cdrexport.maxfilesize'})?$cfghash{'cdrexport.maxfilesize'}:$DEF_CDREXPORT_MAXFILESIZE;
+my $cdrexportwriteblocksize= defined($cfghash{'cdrexport.writeblocksize'})?$cfghash{'cdrexport.writeblocksize'}:$DEF_CDREXPORT_WRITEBLOCKSIZE;
+my $cdrexportwhereclauseusecdrid= defined($cfghash{'cdrexport.whereclause.usecdrid'})?$cfghash{'cdrexport.whereclause.usecdrid'}:$DEF_CDREXPORT_WHERECLAUSE_USECDRID;
+my $cdrexportwhereclausemaxtimewindow= defined($cfghash{'cdrexport.whereclause.maxtimewindow'})?$cfghash{'cdrexport.whereclause.maxtimewindow'}:$DEF_CDREXPORT_WHERE_MAXTIMEWINDOW;
+
+my $datacheckpagesize = defined($cfghash{'datacheck.pagesize'})?$cfghash{'datacheck.pagesize'}:$DEF_DATACHECK_PAGESIZE;
+my $allowdummykey = defined($cfghash{'allow.dummyKey'})?$cfghash{'allow.dummyKey'}:$DEF_ALLOW_DUMMY_KEY;
+my $datacheckmultfactor = defined($cfghash{'datacheck.multfactor'})?$cfghash{'datacheck.multfactor'}:$DEF_DATACHECK_MULTFACTOR;
+my $Nerisdncodes = defined($cfghash{'Nerisdncodes'})?$cfghash{'Nerisdncodes'}:$DEF_NER_ISDNCODES;
+my $Nersipresponsecodes = defined($cfghash{'Nersipresponsecodes'})?$cfghash{'Nersipresponsecodes'}:$DEF_NER_SIPRESPONSECODES;
+my $connectiontimeout = defined($cfghash{'connection.timeout'})?$cfghash{'connection.timeout'}:$DEF_CONN_TIMEOUT;
+my $connectionratio = defined($cfghash{'connection.ratio'})?$cfghash{'connection.ratio'}:$DEF_CONN_RATIO;
+
+my $showBatchSizeOnly = defined($cfghash{'endpoints.showBatchSizeOnly'})?$cfghash{'endpoints.showBatchSizeOnly'}:$DEF_EP_SHOWBATCHSIZEONLY;
+my $epbatchsize = defined($cfghash{'endpoints.batchsize'})?$cfghash{'endpoints.batchsize'}:$DEF_EP_BATCHSIZE;
+my $importfilelen = defined($cfghash{'rating.ImportFileMinLine'})?$cfghash{'rating.ImportFileMinLine'}:$DEF_IMPORT_FILELEN;
+my $hathreadinfo = defined($cfghash{'ha.print.thread.info'})?$cfghash{'ha.print.thread.info'}:$HA_THREAD_INFO_FLAG;
+
+my $servicesessioncleanername=defined($cfghash{'default.service.sessioncleaner.name'})?$cfghash{'default.service.sessioncleaner.name'}:$DEF_SERVICE_SESSIONCLEANER_NAME;
+my $servicesessioncleanerclass=defined($cfghash{'default.service.sessioncleaner.class'})?$cfghash{'default.service.sessioncleaner.class'}:$DEF_SERVICE_SESSIONCLEANER_CLASS;
+my $servicesessioncleanerStartAtStartup=defined($cfghash{'default.service.sessioncleaner.StartAtStartup'})?$cfghash{'default.service.sessioncleaner.StartAtStartup'}:$DEF_SERVICE_SESSIONCLEANER_STARTATSTARTUP;
+my $servicesessioncleanerInitialStartDate=defined($cfghash{'default.service.sessioncleaner.InitialStartDate'})?$cfghash{'default.service.sessioncleaner.InitialStartDate'}:$DEF_SERVICE_SESSIONCLEANER_INITIALSTARTDATE;
+my $servicesessioncleanerSchedulePeriod=defined($cfghash{'default.service.sessioncleaner.SchedulePeriod'})?$cfghash{'default.service.sessioncleaner.SchedulePeriod'}:$DEF_SERVICE_SESSIONCLEANER_SCHEDULEPERIOD;
+my $servicesessioncleanerInitialRepetitions=defined($cfghash{'default.service.sessioncleaner.InitialRepetitions'})?$cfghash{'default.service.sessioncleaner.InitialRepetitions'}:$DEF_SERVICE_SESSIONCLEANER_INITIALREPETITIONS;
+
+my $webserviceMaxRequestsize=defined($cfghash{'default.webservice.max.requestsize'})?$cfghash{'default.webservice.max.requestsize'}:$DEF_WEBSERVICE_MAX_REQUESTSIZE;
+
+my $defaulttransactiontimeoutinsec=defined($cfghash{'default.user.transaction.timeout.secs'})?$cfghash{'default.user.transaction.timeout.secs'}<$DEF_USER_TRANSACTION_TIMEOUT_SECS?$DEF_USER_TRANSACTION_TIMEOUT_SECS:$cfghash{'default.user.transaction.timeout.secs'}:$DEF_USER_TRANSACTION_TIMEOUT_SECS;
+my $defaultreportencstr=defined($cfghash{'default.enc.str'})?$cfghash{'default.enc.str'}:$DEF_REPORT_ENC_STR;
+
+my $estimate1000routesdefault=defined($cfghash{'default.'})?$cfghash{'default.'}:$DEF_ESTIMATE_1000ROUTES_DEFAULT;
+my $estimatethreshold=defined($cfghash{'default.'})?$cfghash{'default.'}:$DEF_ESTIMATE_THRESHOLD;
+my $estimatedefaultvalue=defined($cfghash{'default.'})?$cfghash{'default.'}:$DEF_ESTIMATE_DEFAULTVALUE;
+
+# ----- Stuff for EMS
+
+# performance poll manager
+my $serviceperformancepollmanagername=defined($cfghash{'default.service.performancepollmanager.name'})?$cfghash{'default.service.performancepollmanager.name'}:$DEF_service_performancepollmanager_name;
+my $serviceperformancepollmanagerclass=defined($cfghash{'default.service.performancepollmanager.class'})?$cfghash{'default.service.performancepollmanager.class'}:$DEF_service_performancepollmanager_class;
+
+# RSM Fault Manager Service Standard parameters
+my $servicefaultmanagername=defined($cfghash{'default.service.faultmanager.name'})?$cfghash{'default.service.faultmanager.name'}:$DEF_service_faultmanager_name;
+my $servicefaultmanagerclass=defined($cfghash{'default.service.faultmanager.class'})?$cfghash{'default.service.faultmanager.class'}:$DEF_service_faultmanager_class;
+my $faultmanagerretrycount=defined($cfghash{'default.faultmanager.retrycount'})?$cfghash{'default.faultmanager.retrycount'}:$DEF_faultmanager_retrycount;
+my $faultmanagerwaitperiod=defined($cfghash{'default.faultmanager.waitperiod'})?$cfghash{'default.faultmanager.waitperiod'}:$DEF_faultmanager_waitperiod;
+
+# Fault purge Service Standard parameters
+my $servicefaultpurgename = defined($cfghash{'default.service.faultpurge.name'})?$cfghash{'default.service.faultpurge.name'}:$DEF_service_faultpurge_name;
+my $servicefaultpurgeclass = defined($cfghash{'default.service.faultpurge.class'})?$cfghash{'default.service.faultpurge.class'}:$DEF_service_faultpurge_class;
+my $servicefaultpurgeStartAtStartup = defined($cfghash{'default.service.faultpurge.StartAtStartup'})?$cfghash{'default.service.faultpurge.StartAtStartup'}:$DEF_service_faultpurge_StartAtStartup;
+my $servicefaultpurgeInitialStartDate = defined($cfghash{'default.service.faultpurge.InitialStartDate'})?$cfghash{'default.service.faultpurge.InitialStartDate'}:$DEF_service_faultpurge_InitialStartDate;
+my $servicefaultpurgeInitialRepetitions = defined($cfghash{'default.service.faultpurge.InitialRepetitions'})?$cfghash{'default.service.faultpurge.InitialRepetitions'}:$DEF_service_faultpurge_InitialRepetitions;
+
+# Performance purge Service Standard parameters
+my $serviceperformancepurgename = defined($cfghash{'default.service.performancepurge.name'})?$cfghash{'default.service.performancepurge.name'}:$DEF_service_performancepurge_name;
+my $serviceperformancepurgeclass = defined($cfghash{'default.service.performancepurge.class'})?$cfghash{'default.service.performancepurge.class'}:$DEF_service_performancepurge_class;
+my $serviceperformancepurgeStartAtStartup = defined($cfghash{'default.service.performancepurge.StartAtStartup'})?$cfghash{'default.service.performancepurge.StartAtStartup'}:$DEF_service_performancepurge_StartAtStartup;
+my $serviceperformancepurgeInitialStartDate = defined($cfghash{'default.service.performancepurge.InitialStartDate'})?$cfghash{'default.service.performancepurge.InitialStartDate'}:$DEF_service_performancepurge_InitialStartDate;
+my $serviceperformancepurgeInitialRepetitions = defined($cfghash{'default.service.performancepurge.InitialRepetitions'})?$cfghash{'default.service.performancepurge.InitialRepetitions'}:$DEF_service_performancepurge_InitialRepetitions;
+
+#Fault and Performance common parameters start
+#SNMP parameters
+my $snmpReadCommunity = defined($cfghash{'default.snmp.ReadCommunity'})?$cfghash{'default.snmp.ReadCommunity'}:$DEF_snmp_ReadCommunity;
+my $snmpWriteCommunity = defined($cfghash{'default.snmp.WriteCommunity'})?$cfghash{'default.snmp.WriteCommunity'}:$DEF_snmp_WriteCommunity;
+my $snmpRetries = defined($cfghash{'default.snmp.Retries'})?$cfghash{'default.snmp.Retries'}:$DEF_snmp_Retries;
+my $snmpTimeout = defined($cfghash{'default.snmp.Timeout'})?$cfghash{'default.snmp.Timeout'}:$DEF_snmp_Timeout;
+my $snmpTrapPorts = defined($cfghash{'default.snmp.TrapPorts'})?$cfghash{'default.snmp.TrapPorts'}:$DEF_snmp_TrapPorts;
+
+#SNMP v3 parameters
+my $snmpSecurityLevel = defined($cfghash{'default.snmp.SecurityLevel'})?$cfghash{'default.snmp.SecurityLevel'}:$DEF_snmp_SecurityLevel;
+my $snmpAuthProtocol = defined($cfghash{'default.snmp.AuthProtocol'})?$cfghash{'default.snmp.AuthProtocol'}:$DEF_snmp_AuthProtocol;
+my $snmpAuthPassword = defined($cfghash{'default.snmp.AuthPassword'})?$cfghash{'default.snmp.AuthPassword'}:$DEF_snmp_AuthPassword;
+my $snmpPrivProtocol = defined($cfghash{'default.snmp.PrivProtocol'})?$cfghash{'default.snmp.PrivProtocol'}:$DEF_snmp_PrivProtocol;
+my $snmpPrivPassword = defined($cfghash{'default.snmp.PrivPassword'})?$cfghash{'default.snmp.PrivPassword'}:$DEF_snmp_PrivPassword;
+my $snmpengineID = defined($cfghash{'default.snmp.engineID'})?$cfghash{'default.snmp.engineID'}:$DEF_snmp_engineID;
+my $snmpUserName = defined($cfghash{'default.snmp.UserName'})?$cfghash{'default.snmp.UserName'}:$DEF_snmp_UserName;
+my $snmpContextName = defined($cfghash{'default.snmp.ContextName'})?$cfghash{'default.snmp.ContextName'}:$DEF_snmp_ContextName;
+
+#SNMP MIBS
+my $mibFiles = $DEF_MIB_FILES;
+
+# period for RSM table synchronizer in secs
+my $faultrsmalarmsyncperiod = defined($cfghash{'default.fault.rsmalarm.syncperiod'})?$cfghash{'default.fault.rsmalarm.syncperiod'}:$DEF_fault_rsmalarm_syncperiod;
+
+# period for RSM trap table purge in days 
+my $faultrsmalarmtraptablepurgeperiod = defined($cfghash{'default.fault.rsmalarm.trapTablePurgePeriod'})?$cfghash{'default.fault.rsmalarm.trapTablePurgePeriod'}:$DEF_fault_rsmalarm_trapTablePurgePeriod;
+
+#Purge interval in hours
+my $faultpurgescheduleinterval = defined($cfghash{'default.fault.purge.scheduleinterval'})?$cfghash{'default.fault.purge.scheduleinterval'}:$DEF_fault_purge_scheduleinterval;
+
+my $faultPurgeRaisedAlarms= defined($cfghash{'default.fault.rsmalarm.PurgeRaisedAlarms'})?$cfghash{'default.fault.rsmalarm.PurgeRaisedAlarms'}:$DEF_fault_rsmalarm_Purge_RaisedAlarms;
+
+#Fault management parameters start
+# changing this property might lead to uncertainity in Alarm Proccessing
+my $faultqueuecapacity = defined($cfghash{'default.fault.queue.capacity'})?$cfghash{'default.fault.queue.capacity'}:$DEF_fault_queue_capacity;
+
+#Events and Alarms purging period in days
+my $faultpurgeEventPeriod = defined($cfghash{'default.fault.purge.Event.Period'})?$cfghash{'default.fault.purge.Event.Period'}:$DEF_fault_purge_Event_Period;
+my $faultpurgeAlarmPeriod = defined($cfghash{'default.fault.purge.Alarm.Period'})?$cfghash{'default.fault.purge.Alarm.Period'}:$DEF_fault_purge_Alarm_Period;
+
+
+#Severity color coding parameters
+my $severityColorCritical = defined($cfghash{'default.severity.Color.Critical'})?$cfghash{'default.severity.Color.Critical'}:$DEF_severity_Color_Critical;
+my $severityColorMajor = defined($cfghash{'default.severity.Color.Major'})?$cfghash{'default.severity.Color.Major'}:$DEF_severity_Color_Major;
+my $severityColorMinor = defined($cfghash{'default.severity.Color.Minor'})?$cfghash{'default.severity.Color.Minor'}:$DEF_severity_Color_Minor;
+my $severityColorWarning = defined($cfghash{'default.severity.Color.Warning'})?$cfghash{'default.severity.Color.Warning'}:$DEF_severity_Color_Warning;
+my $severityColorClear = defined($cfghash{'default.severity.Color.Clear'})?$cfghash{'default.severity.Color.Clear'}:$DEF_severity_Color_Clear;
+my $severityColorInfo = defined($cfghash{'default.severity.Color.Info'})?$cfghash{'default.severity.Color.Info'}:$DEF_severity_Color_Info;
+my $severityColorUnknown = defined($cfghash{'default.severity.Color.Unknown'})?$cfghash{'default.severity.Color.Unknown'}:$DEF_severity_Color_Unknown;
+
+#Trap filter configuration parameters
+my $trapFilterSuppressDeviceIPs;
+my $trapFilterSuppressDeviceIPsRef = defined($cfghash{'default.trap.Filter.Suppress.deviceIPs'})?$cfghash{'default.trap.Filter.Suppress.deviceIPs'}:\@DEF_trap_Filter_Suppress_deviceIPs;
+my @trapFilterSuppressDeviceIPsArray = @$trapFilterSuppressDeviceIPsRef;
+if (defined(@trapFilterSuppressDeviceIPsArray))
+{
+    $trapFilterSuppressDeviceIPs = &convArrayToStr(\@trapFilterSuppressDeviceIPsArray, ",");
+} else {
+    $trapFilterSuppressDeviceIPs = &convArrayToStr(\@DEF_trap_Filter_Suppress_deviceIPs, ",");
+}
+
+my $trapFilterSuppressTrapOIDs;
+my $trapFilterSuppressTrapOIDsRef = defined($cfghash{'default.trap.Filter.Suppress.trapOIDs'})?$cfghash{'default.trap.Filter.Suppress.trapOIDs'}:\@DEF_trap_Filter_Suppress_trapOIDs;
+my @trapFilterSuppressTrapOIDsArray = @$trapFilterSuppressTrapOIDsRef;
+if (defined(@trapFilterSuppressTrapOIDsArray))
+{
+    $trapFilterSuppressTrapOIDs = &convArrayToStr(\@trapFilterSuppressTrapOIDsArray, ",");
+} else {
+    $trapFilterSuppressTrapOIDs = &convArrayToStr(\@DEF_trap_Filter_Suppress_trapOIDs, ",");
+}
+
+
+#Performance management parameters start
+# polling frequency in seconds
+my $performancepollingfrequency = defined($cfghash{'default.performance.polling.frequency'})?$cfghash{'default.performance.polling.frequency'}:$DEF_performance_polling_frequency;
+
+# polling table creation interval in hours
+my $performancepollingtablecreationinterval = defined($cfghash{'default.performance.polling.tablecreationinterval'})?$cfghash{'default.performance.polling.tablecreationinterval'}:$DEF_performance_polling_tablecreationinterval;
+
+# performance polling options
+# STOP_WHEN_NEW_POLL_COME=1
+# CONTINUOUS=2
+my $performancepollingoption = defined($cfghash{'default.performance.polling.option'})?$cfghash{'default.performance.polling.option'}:$DEF_performance_polling_option;
+
+my $performancepollingdelta = defined($cfghash{'default.performance.polling.delta'})?$cfghash{'default.performance.polling.delta'}:$DEF_performance_polling_delta;
+
+
+# purging parameters for performance start
+# purge scheduling interval in hours
+my $performancepurgescheduleinterval = defined($cfghash{'default.performance.purge.scheduleinterval'})?$cfghash{'default.performance.purge.scheduleinterval'}:$DEF_performance_purge_scheduleinterval;
+
+# purge period in days
+my $performancepurgestatstables = defined($cfghash{'default.performance.purge.statstables'})?$cfghash{'default.performance.purge.statstables'}:$DEF_performance_purge_statstables;
+
+# device ssh connection permission 
+my $isSSHConnectionAllowed = defined($cfghash{'default.device.isSSHConnectionAllowed'})?$cfghash{'default.device.isSSHConnectionAllowed'}:$DEF_device_isSSHConnectionAllowed;
+
+my $syncdynamicendpoints = defined($cfghash{'default.sync.dynamicendpoints'})?$cfghash{'default.sync.dynamicendpoints'}:$DEF_sync_dynamicendpoints;
+
+# SWM parameters
+
+my $swmMaxConcurrentDownloads = defined($cfghash{'default.swm.maxConcurrentDownloads'})?$cfghash{'default.swm.maxConcurrentDownloads'}:$DEF_swm_maxConcurrentDownloads;
+my $swmMaxConcurrentActivations = defined($cfghash{'default.swm.maxConcurrentActivations'})?$cfghash{'default.swm.maxConcurrentActivations'}:$DEF_swm_maxConcurrentActivations;
+my $swmRetryLimit = defined($cfghash{'default.swm.retryLimit'})?$cfghash{'default.swm.retryLimit'}:$DEF_swm_retryLimit;
+my $swmTimeout = defined($cfghash{'default.swm.timeout'})?$cfghash{'default.swm.timeout'}:$DEF_swm_timeout;
+
+my $securityPasswordExpiryDays = defined($cfghash{'default.security.PasswordExpiryDays'})?$cfghash{'default.security.PasswordExpiryDays'}:$DEF_security_PasswordExpiryDays;
+
+my $user_noOfConcurrentLogin = defined($cfghash{'default.user.noOfConcurrentLogin'})?$cfghash{'default.user.noOfConcurrentLogin'}:$DEF_user_noOfConcurrentLogin;
+
+
+my $heartbeat_northboundIPAddress = defined($cfghash{'default.heartbeat.northbound.IPAddress'})?$cfghash{'default.heartbeat.northbound.IPAddress'}:$DEF_applicationHeartbeatNBIP;
+my $heartbeat_northboundSnmpCommunity = defined($cfghash{'default.heartbeat.northbound.snmpCommunity'})?$cfghash{'default.heartbeat.northbound.snmpCommunity'}:$DEF_applicationHeartbeatNBSnmpCommunity;
+my $heartbeat_frequency = defined($cfghash{'default.heartbeat.frequency'})?$cfghash{'default.heartbeat.frequency'}:$DEF_applicationHeartbeatFrequency;
+my $heartbeat_CLLIcode = defined($cfghash{'default.heartbeat.CLLIcode'})?$cfghash{'default.heartbeat.CLLIcode'}:$DEF_applicationHeartbeatCLLIcode;
+my $heartbeat_perceivedSeverity= defined($cfghash{'default.heartbeat.perceivedSeverity'})?$cfghash{'default.heartbeat.perceivedSeverity'}:$DEF_applicationHeartbeatPerceivedSeverity;
+
+my $deviceCLLICode_hostname1 = defined($cfghash{'default.deviceCLLICode.hostname1'})?$cfghash{'default.deviceCLLICode.hostname1'}:$DEF_deviceHostname1CLLIcode;
+my $deviceCLLICode_hostname2 = defined($cfghash{'default.deviceCLLICode.hostname2'})?$cfghash{'default.deviceCLLICode.hostname2'}:$DEF_deviceHostname2CLLIcode;
+my $server_hostnames = defined($cfghash{'default.server.hostnames'})?$cfghash{'default.server.hostnames'}:$DEF_serverHostnames;
+
+my $globalconfig_snmpNMSIPAddress= defined($cfghash{'default.globalconfig.snmp.nms.IPAddress'})?$cfghash{'default.globalconfig.snmp.nms.IPAddress'}:$DEF_globalconfigSnmpNMSIPAddress;
+my $globalconfig_snmpNMSCommunity= defined($cfghash{'default.globalconfig.snmp.nms.community'})?$cfghash{'default.globalconfig.snmp.nms.community'}:$DEF_globalconfigSnmpNMSCommunity;
+my $globalconfig_snmpSelectedAlarms= defined($cfghash{'default.globalconfig.snmp.selectedAlarms'})?$cfghash{'default.globalconfig.snmp.selectedAlarms'}:$DEF_globalconfigSnmpSelectedAlarms;
+
+my $pamDebug= defined($cfghash{'default.pam.debug'})?$cfghash{'default.pam.debug'}:$DEF_pamDebug;
+my $radiusAuthentication = defined($cfghash{'radiusAuthentication.enable'})?$cfghash{'radiusAuthentication.enable'}:$DEF_radiusAuthentication;
+my $mysql_optimization_enable=defined($cfghash{'mysql.optimization.enable'})?$cfghash{'mysql.optimization.enable'}:$DEF_mysql_optimization_enable;
+my $mysql_optimization_time=defined($cfghash{'mysql.optimization.time'})?$cfghash{'mysql.optimization.time'}:$DEF_mysql_optimization_time;
+my $mysql_optimization_interval=defined($cfghash{'mysql.optimization.interval'})?$cfghash{'mysql.optimization.interval'}:$DEF_mysql_optimization_interval;
+
+my $orderByCode = defined($cfghash{'orderByCode.enable'})?$cfghash{'orderByCode.enable'}:$DEF_orderByCode;
+
+=head1
+my @webservicecongigobjectsref = defined($cfghash{'webservicecongigobjects'})?$cfghash{'webservicecongigobjects'}:@DEF_WEBSERVICECONFIG;
+my @webservicecongigobjects = @webservicecongigobjectsref;
+my $webservicecongigobjectsstr;
+if (defined(@webservicecongigobjects))
+{
+    $webservicecongigobjectsstr = &convArrayToStr(@webservicecongigobjects, ",");
+} else {
+    $webservicecongigobjectsstr = &convArrayToStr(@DEF_WEBSERVICECONFIG, ",");
+}
+=cut
+
+
+
+#####################################
+## Get the values from user interface
+#####################################
+my $ivmscdrpartitionStr="";
+my $ivmsraterstr="";
+my $ivmsemailstr="";
+if($defMgtIp ne "")
+{
+  $mgtip = "ivmsServerIp=$defMgtIp";
+}else
+{
+  $mgtip = "ivmsServerIp=127.0.0.1";
+}
+
+if(!$iView)
+{
+ #$cdrpartition = &getVal("Specify the cdr table partition size in hrs [$cdrpartition] ", $cdrpartition, "true");
+ #print STDOUT "\n";
+    if($cdrpartition<60) {
+	$cdrpartition = $cdrpartition * 3600;
+    }
+    $ivmscdrpartitionStr="cdr.partition=$cdrpartition";
+
+ #$raternormalcallduration = &getVal("Specify the rater normal call duration [$raternormalcallduration] ", $raternormalcallduration, "true");
+ #print STDOUT "\n";
+
+ #$ratererrorcallduration = &getVal("Specify the rater error call duration [$ratererrorcallduration] ", $ratererrorcallduration, "true");
+ #print STDOUT "\n";
+
+ #$raterdialcodetype = &getVal("Specify the rater dial code type [$raterdialcodetype] ", $raterdialcodetype, "true");
+ #print STDOUT "\n";
+
+ $ivmsraterstr=
+ "rater.normalcallduration=$raternormalcallduration
+  rater.errorcallduration=$ratererrorcallduration
+  rater.debuglogpath=$raterdebuglogpath
+  #rater.performancelogpath=/nextone/ivms/raterperformance.txt
+  rater.jms.state=$raterjmsstate";
+
+  # $smtpserver = &getVal("Specify the SMTP Server [$smtpserver] ", $smtpserver, "true");
+  #print STDOUT "\n";
+
+  #$popserver = &getVal("Specify the POP Server [$popserver] ", $popserver, "true");
+  #print STDOUT "\n";
+
+  # $emailuser = &getVal("Specify the Email User [$emailuser] ", $emailuser, "true");
+  #print STDOUT "\n";
+
+  #if($emailuser eq 'None')
+  #{
+  #$emailuser = '';
+  #}
+  #$emailpassword = &getVal("Specify the Email Password [$emailpassword] ", $emailpassword, "true");
+  #print STDOUT "\n";
+  #if($emailpassword eq 'None')
+  #{
+  #     $emailpassword = '';
+  # }
+
+
+ # Check the format of the mail if not valid then reprompt to enter a valid email id
+ #while(1)
+ #{
+	 #   $emailfrom = &getVal("Specify the Email From  [$emailfrom] ", $emailfrom, "true");
+	 #   if(&CheckEmail($emailfrom) ==1)
+	 #{
+	 #last;
+	 # }
+	 #print STDOUT "\n";
+# }
+ $ivmsemailstr=
+ "
+ smtp.server=$smtpserver
+ pop.server=$popserver
+ email.user=$emailuser
+ email.password=$emailpassword
+ email.from=$emailfrom
+ ";
+
+ }
+
+open(FILE, ">$opt{f}") or die $!;
+
+#ReadMode('normal');
+if($iView)
+{
+	if($upgrade)
+	{
+		$mswstring=&updateMswInfo();
+
+	}
+	else
+	{
+		$mswstring=&getMswInfoFromUser();
+	}
+	    $bnservicembeansstr="bn.servicembeans=audittrailpurge,sessioncleaner \n";
+        $sessionconfigtimeout ='1440' ;
+}
+
+sub getMswInfoFromUser()
+{
+	my @MSWName=();
+	my @MSWIp=();
+	my @Description=();
+	my @MSWUserName=();
+	my @MSWPassword=();
+	my @MSWDBIp=();
+	my @MSWPort=();
+	my @MgttIp=();
+	my @AutosyncMaster=();
+	my $defmswname=`hostname`;
+	chomp($defmswname);
+	my $msxcnt = 1;
+	if (!$ff_install) {
+		while(1)
+		{
+			if($msxcnt >1){
+				$defmswname = "";
+				$defMgtIp = "";
+			}
+			push(@MSWName,&getValue("MSXName",$defmswname));
+			push(@MSWIp,&getValue("MSXIp",$defMgtIp));
+			push(@Description,&getValue("Description",));
+			push(@MSWUserName,&getValue("MSXUserName",$defMSWUser));
+			push(@MSWPassword,&getValue("MSXPassword",$defMSWPwd));
+			push(@MSWPort,&getValue("MSXPort","5432"));
+			push(@MSWDBIp,&getValue("MSXDBIp",$defMgtIp));
+			push(@AutosyncMaster,"0");
+
+			if(!$isSCM)
+			{
+				last;
+			}
+			my $resp=&GetBooleanCharResponse("Do you want to add peer msx details?");
+			if (($resp eq 'n') || ($msxcnt >2))
+			{
+				last;
+			}
+			$msxcnt = $msxcnt+1;
+		}
+	}
+	else {
+		my $myMSWName=`hostname`;
+		chomp($myMSWName);
+		my $myMgmtIP = &getMyMgmtIP();
+		$mgtip = "ivmsServerIp=$myMgmtIP";
+		chomp($myMSWName);
+		push(@MSWName,$myMSWName);
+		push(@MSWIp,$myMgmtIP);
+		push(@Description,$myMSWName);
+		push(@MSWUserName,'ivmsclient');
+		push(@MSWPassword,'ivmsclient');
+		push(@MSWPort,'5432');
+		push(@MSWDBIp,$myMgmtIP);
+		push(@AutosyncMaster,'0');
+		if($isSCM) {
+			my $peerMSWName=&getPeerMSWName();
+			my $peerMgmtIP=&getPeerMgmtIP();
+			chomp($peerMSWName);
+			push(@MSWName,$peerMSWName);
+			push(@MSWIp,$peerMgmtIP);
+			push(@Description,$peerMSWName);
+			push(@MSWUserName,'ivmsclient');
+			push(@MSWPassword,'ivmsclient');
+			push(@MSWPort,'5432');
+			push(@MSWDBIp,$peerMgmtIP);
+			push(@AutosyncMaster,'0');
+		}
+	}
+
+	my $numMSWS=$#MSWName+1;
+	my $mswNameList="bn.msws=";
+	my $rest;
+	my $cnt=0;
+	while($cnt <$numMSWS)
+	{
+		if($cnt>0)
+		{
+			$mswNameList=$mswNameList.",";
+		}
+		$mswNameList=$mswNameList.@MSWName[$cnt];
+		$rest=$rest.@MSWName[$cnt].".MSWIp=".@MSWIp[$cnt]."\n";
+		$rest=$rest.@MSWName[$cnt].".Description=".@Description[$cnt]."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWUserName=".@MSWUserName[$cnt]."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWPassword=".@MSWPassword[$cnt]."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWPort=".@MSWPort[$cnt]."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWDBIp=".@MSWDBIp[$cnt]."\n";
+		$rest=$rest.@MSWName[$cnt].".AutosyncMaster=".@AutosyncMaster[$cnt]."\n";
+		$cnt++;
+	}
+
+	return $mswNameList."\n".$rest;
+
+
+
+}
+
+sub getMyMgmtIP() {
+	my $myMSWName=`hostname`;
+	chomp($myMSWName);
+	my $myMgmtIP=`/usr/local/nextone/bin/nxconfig.pl -S | grep -w mgmt-ip | grep $myMSWName | tr -s ' ' | cut -d ' ' -f4`;
+	chomp($myMgmtIP);
+	return $myMgmtIP;
+}
+
+sub getPeerMSWName() {
+	my $myMSWName=`hostname`;
+	chomp($myMSWName);
+	my $peerMSWName=`/usr/local/nextone/bin/nxconfig.pl -S | grep -w mgmt-ip | grep -v $myMSWName | tr -s ' ' | cut -d ' ' -f5`;
+	chomp($peerMSWName);
+	return $peerMSWName;
+}
+
+sub getPeerMgmtIP() {
+	my $myMSWName=`hostname`;
+	chomp($myMSWName);
+	my $peerMgmtIP=`/usr/local/nextone/bin/nxconfig.pl -S | grep -w mgmt-ip | grep -v $myMSWName | tr -s ' ' | cut -d ' ' -f4`;
+	chomp($peerMgmtIP);
+	return $peerMgmtIP;
+}
+
+sub updateMswInfo()
+{
+	my @MSWName=();
+	my @MSWIp=();
+	my @Description=();
+	my @MSWUserName=();
+	my @MSWPassword=();
+	my @MSWDBIp=();
+	my @MSWPort=();
+	my @MgttIp=();
+	my @AutosyncMaster=();
+
+	my $mswNamesref = $cfghash{'default.bn.msws'};
+	my @MSWName = ();
+	if(ref($mswNamesref) eq "ARRAY")
+	{
+		@MSWName = @$mswNamesref;
+	}
+	else
+	{
+		push(@MSWName,$mswNamesref)
+	}
+
+
+	my $numMSWS=$#MSWName+1;
+	my $mswNameList="bn.msws=";
+	my $rest;
+	my $cnt=0;
+	while($cnt <$numMSWS)
+	{
+		$mswNameList=$mswNameList.@MSWName[$cnt];
+        if (!$ff_install)
+        {
+		my $IP = &getValue("MSXIp",($cfghash{"default.".$MSWName[$cnt].".MSWIp"}));
+		$rest=$rest.@MSWName[$cnt].".MSWIp=".$IP."\n";
+		$rest=$rest.@MSWName[$cnt].".Description=".&getValue("Description",($cfghash{"default.".$MSWName[$cnt]."Description"}))."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWUserName=".&getValue("MSXUserName",($cfghash{"default.".$MSWName[$cnt].".MSWUserName"}))."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWPassword=".&getValue("MSXPassword",($cfghash{"default.".$MSWName[$cnt].".MSWPassword"}))."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWPort=".&getValue("MSXPort",($cfghash{"default.".$MSWName[$cnt].".MSWPort"}))."\n";
+		$rest=$rest.@MSWName[$cnt].".MSWDBIp=".$IP."\n";
+		$rest=$rest.@MSWName[$cnt].".AutosyncMaster=".($cfghash{"default.".$MSWName[$cnt].".AutosyncMaster"})."\n";
+        } else {
+            my $IP = ($cfghash{"default.".$MSWName[$cnt].".MSWIp"});
+            $rest=$rest.@MSWName[$cnt].".MSWIp=".$IP."\n";
+            $rest=$rest.@MSWName[$cnt].".Description=".($cfghash{"default.".$MSWName[$cnt]."Description"})."\n";
+            $rest=$rest.@MSWName[$cnt].".MSWUserName=".($cfghash{"default.".$MSWName[$cnt].".MSWUserName"})."\n";
+            $rest=$rest.@MSWName[$cnt].".MSWPassword=".($cfghash{"default.".$MSWName[$cnt].".MSWPassword"})."\n";
+            $rest=$rest.@MSWName[$cnt].".MSWPort=".($cfghash{"default.".$MSWName[$cnt].".MSWPort"})."\n";
+            $rest=$rest.@MSWName[$cnt].".MSWDBIp=".$IP."\n";
+            $rest=$rest.@MSWName[$cnt].".AutosyncMaster=".($cfghash{"default.".$MSWName[$cnt].".AutosyncMaster"})."\n";
+        }
+		$cnt++;
+		if($cnt <$numMSWS)
+		{
+			$mswNameList = $mswNameList.",";
+            if (!$ff_install)
+            {
+			my $resp = &GetBooleanCharResponse("Update details for peer ".@MSWName[$cnt].", pressing N will delete these details");
+			if($resp eq 'n')
+			{
+				last;
+			}
+            }
+
+		}
+	}
+
+	return $mswNameList."\n".$rest;
+
+
+
+}
+
+sub getValue()
+{
+	my($Variable,$default)=@_;
+	print "Enter the value for $Variable [$default]";
+	my $resp=<>;
+	chomp($resp);
+	if($resp eq "")
+	{
+		$resp=$default;
+	}
+	return $resp;
+}
+
+sub GetBooleanCharResponse ()
+{
+        while(1)
+        {
+                my ($mess) = @_;
+                $mess = $mess." [y\/n] :\n";
+		print $mess;
+                my $resp = <>;
+                $resp =lc($resp);
+                $resp =substr($resp,0,1);
+                if ($resp eq 'n')
+                {
+                        return 'n';
+                }
+                if ($resp eq 'y')
+                {
+                        return 'y';
+                }
+        }
+}
+
+generateCfg(*FILE, 0);
+close(FILE);
+
+exit 0;
+
+
+sub getVal
+{
+    my ($prompt, $default, $canEmpty) = @_;
+
+    my $val = '';
+    while (1)
+    {
+        print STDOUT $prompt;
+        $val = <>;
+        chomp($val);
+        if ($val eq '')
+        {
+            $val = $default;
+        }
+        if ($val eq '' && !$canEmpty)
+        {
+            print STDERR "Please enter a valid input\n";
+        }
+        else
+        {
+            last;
+        }
+    }
+
+    return $val;
+}
+
+
+sub convArrayToStr()
+{
+     my($array,$fs)=@_;
+     my $str="";
+     my $element;
+     my $i = -1;
+     foreach $element(@$array) {
+	if ( $i ge 0) {
+		$str=$str.",".$element;
+	}
+	else {
+		$str=$str.$element;
+	}
+	$i = $i +1;
+     }
+     return $str;
+}
+sub usage
+{
+    print << "EOF";
+
+Usage: $prog [-f cfgfile -d dir]
+    -h            : this (help) message
+    -f cfgfile    : current configuration file
+    -d dir	  : path to /nextone/ivms directory
+    -m mgt-Ip     : ip of ivmsServer
+
+example: $prog -f bn.properties -d /nextone/ivms -p 127.0.0.1
+
+EOF
+}
+
+
+##
+## Check for valid email format
+## Thi valid emial is required for the alarm code to send an email
+##
+sub CheckEmail {
+my $email = $_[0];
+if ($email =~ /(@.*@)|(\.\.)|(@\.)|(^\.)/ ||
+     $email !~ /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/)
+    {
+       return 0;
+    } else
+    {
+      return 1;
+    }
+}
+
+sub generateCfg
+{
+    my ($fileHandle, $inst) = @_;
+
+    print {$fileHandle}  << "END";
+
+
+
+
+# LCR properties
+lcr.SetDialCode=$lcrsetdialcode
+lcr.SetDialCodeManual=$lcrsetdialcodemanual
+lcr.recreateoldroutes=$lcrRecreateoldroutes
+#frmsrc|aftersrccp|atdest
+rater.regionbyroute=$raterregionbyroute
+rater.dialcodetype=$raterdialcodetype
+rater.cache.state=$ratercachestate
+$ratercachenamestr
+$ratercachemaxstr
+rater.url=$raterurl
+
+$ivmsraterstr
+
+#raw|rate|drop  default=rate
+rater.mode=$ratermode
+rater.invalidcdrlogpath=$raterinvalidcdrlogpath
+rater.block=$raterblock
+svgPurgeTime=$svgpurgetime
+
+#cdr tables partitioned by seconds - defaults to 1200
+$ivmscdrpartitionStr
+
+#HR Summary table number 
+#hr.summary = $hrsummary  
+
+xmlapi.url=$xmlapiurl
+xmlapi.version=$xmlapiversion
+
+admin.sessionid=$adminsessionid
+
+# alarm related properties
+
+$ivmsemailstr
+
+deploy.service=$deployservice
+
+#Output cache cleanup time interval
+output.cache.cleanup.time.interval=$outputcachecleanuptimeinterval
+
+
+report.pagelength.default=$reportpagelengthdefault
+report.pagelength.max=$reportpagelengthmax
+report.savelimit.max=$reportsavelimitmax
+
+chromocode.color.high=$chromocodecolorhigh
+chromocode.color.medium=$chromocodecolormedium
+chromocode.color.low=$chromocodecolorlow
+
+#rerater related  properties
+rerater.auto=$reraterauto
+rerater.instances=$reraterinstances
+
+# summary service standard parameters
+service.summary.name=$servicesummaryname
+service.summary.class=$servicesummaryclass
+service.summary.StartAtStartup=$servicesummarystartatstartup
+service.summary.InitialStartDate=$servicesummaryinitialstartdate
+service.summary.SchedulePeriod=$servicesummaryscheduleperiod
+service.summary.InitialRepetitions=$servicesummaryinitialrepetitions
+
+# outage purge service standard parameters
+service.outagepurge.name=$serviceoutagepurgename
+service.outagepurge.class=$serviceoutagepurgeclass
+service.outagepurge.StartAtStartup=$serviceoutagepurgeStartAtStartup
+service.outagepurge.InitialStartDate=$serviceoutagepurgeInitialStartDate
+service.outagepurge.SchedulePeriod=$serviceoutagepurgeSchedulePeriod
+service.outagepurge.InitialRepetitions=$serviceoutagepurgeInitialRepetitions
+
+# audittrail purge service standard parameters
+service.audittrailpurge.name=$serviceaudittrailpurgename
+service.audittrailpurge.class=$serviceaudittrailpurgeclass
+service.audittrailpurge.StartAtStartup=$serviceaudittrailpurgeStartAtStartup
+service.audittrailpurge.InitialStartDate=$serviceaudittrailpurgeInitialStartDate
+service.audittrailpurge.SchedulePeriod=$serviceaudittrailpurgeSchedulePeriod
+service.audittrailpurge.InitialRepetitions=$serviceaudittrailpurgeInitialRepetitions
+
+# iview expired sessiion cleaner service standard parameters
+service.sessioncleaner.name=$servicesessioncleanername
+service.sessioncleaner.class=$servicesessioncleanerclass
+service.sessioncleaner.StartAtStartup=$servicesessioncleanerStartAtStartup
+service.sessioncleaner.InitialStartDate=$servicesessioncleanerInitialStartDate
+service.sessioncleaner.SchedulePeriod=$servicesessioncleanerSchedulePeriod
+service.sessioncleaner.InitialRepetitions=$servicesessioncleanerInitialRepetitions
+
+# sumary service custom parameter
+service.summary.WorkerPoolSize=$servicesummaryworkerpoolsize
+service.summary.Timeout=$servicesummarytimeout
+
+# Rerater service standard parameters
+service.rerater.name=$servicereratername
+service.rerater.class=$servicereraterclass
+service.rerater.StartAtStartup=$servicereraterstartatstartup
+service.rerater.InitialStartDate=$servicereraterinitialstartdate
+service.rerater.SchedulePeriod=$servicereraterscheduleperiod
+service.rerater.InitialRepetitions=$servicereraterinitialrepetitions
+
+# Rerater service custom parameter
+service.rerater.WorkerPoolSize=$servicereraterworkerpoolsize
+service.rerater.Timeout=$servicereratertimeout
+
+# UA service standard parameters
+service.ua.name=$serviceuaname
+service.ua.class=$serviceuaclass
+service.ua.StartAtStartup=$serviceuastartatstartup
+service.ua.InitialStartDate=$serviceuainitialstartdate
+service.ua.SchedulePeriod=$serviceuascheduleperiod
+service.ua.InitialRepetitions=$serviceuainitialrepetitions
+
+# UA service custom parameter
+service.ua.WorkerPoolSize=$serviceuaworkerpoolsize
+service.ua.Timeout=$serviceuatimeout
+ua.auto=$uaauto
+
+# alarmd service
+service.alarmd.name=$servicealarmdname
+service.alarmd.class=$servicealarmdclass
+
+# cdr alarm manager
+service.cdralarmmanager.name=$servicecdralarmmanagername
+service.cdralarmmanager.class=$servicecdralarmmanagerclass
+service.alarm.inmemory=$servicealarminmemory
+statisticsRecoveryQueuesizeLimit=$servicealarmqueuesize
+service.alarm.generateTestData=$servicealarmalarmgeneratetestdata
+service.alarm.testDataPath=$servicealarmtestdatapath
+
+# cdr streamer service custom parameters
+service.streamer.Timeout=$servicestreamertimeout
+service.streamer.readblocksize=$servicestreamerreadblocksize
+#service.streamer.configfiles=c:/tools/cygwin/nextone/ivms/stream1.xml, c:/tools/cygwin/nextone/ivms/stream2.xml
+$servicestreamerconfigfilesstr
+
+# cdr streamer service standard parameters
+service.streamer.name=$servicestreamername
+service.streamer.class=$servicestreamerclass
+service.streamer.StartAtStartup=$servicestreamerstartatstartup
+service.streamer.InitialStartDate=$servicestreamerinitialstartdate
+service.streamer.SchedulePeriod=$servicestreamerscheduleperiod
+service.streamer.InitialRepetitions=$servicestreamerinitialrepetitions
+
+# Send service standard parameters
+service.send.name=$servicesendname
+service.send.class=$servicesendclass
+service.send.StartAtStartup=$servicesendstartatstartup
+service.send.InitialStartDate=$servicesendinitialstartdate
+service.send.SchedulePeriod=$servicesendscheduleperiod
+service.send.InitialRepetitions=$servicesendinitialrepetitions
+
+# Receive service standard parameters
+# service.receive.name=$servicereceivename
+# service.receive.class=$servicereceiveclass
+# service.receive.StartAtStartup=$servicereceivestartatstartup
+# service.receive.InitialStartDate=$servicereceiveinitialstartdate
+# service.receive.SchedulePeriod=$servicereceivescheduleperiod
+# service.receive.InitialRepetitions=$servicereceiveinitialrepetitions
+
+
+
+# Cleanup Device service standard parameters
+# service.cleanupdevice.name=CleanupDeviceService
+# service.cleanupdevice.class=com.nextone.bn.devicecomm.CleanupDeviceService
+# service.cleanupdevice.StartAtStartup=true
+# service.cleanupdevice.InitialStartDate=NOW
+# service.cleanupdevice.SchedulePeriod=30000
+# service.cleanupdevice.InitialRepetitions=-1
+
+# DBSync service standard parameters
+service.dbsync.name=$servicedbsyncname
+service.dbsync.class=$servicedbsyncclass
+service.dbsync.StartAtStartup=$servicedbsyncStartAtStartup
+service.dbsync.InitialStartDate=$servicedbsyncInitialStartDate
+service.dbsync.SchedulePeriod=$servicedbsyncSchedulePeriod
+service.dbsync.InitialRepetitions=$servicedbsyncInitialRepetitions
+
+# DBSync service custom parameter
+service.dbsync.WorkerPoolSize=$servicedbsyncWorkerPoolSize
+service.dbsync.Timeout=$servicedbsyncTimeout
+
+service.routesestimationservice.name=$serviceroutesestimationservicename
+service.routesestimationservice.class=$serviceroutesestimationserviceclass
+service.routesestimationservice.StartAtStartup=$serviceroutesestimationserviceclass
+service.routesestimationservice.InitialStartDate=$serviceroutesestimationserviceInitialStartDate
+service.routesestimationservice.SchedulePeriod=$serviceroutesestimationserviceSchedulePeriod
+service.routesestimationservice.InitialRepetitions=$serviceroutesestimationserviceInitialRepetitions
+routesestimate.threshold=$routesestimatethreshold
+
+
+# service mbeans
+# bn.servicembeans=summary, rerater, ua, alarmd, cdralarmmanager,send,receive,cleanupdevice
+$bnservicembeansstr
+
+common.ThreadSleepTime=$commonthreadsleeptime
+common.LimitPageSize=$commonlimitpagesize
+
+
+#choose different request route
+xml.usexmlapi=$xmlusexmlapi
+
+alarm.benchmarking=$alarmbenchmarking
+
+license.initgap=$licenseinitgap
+#iview jnlp file timeout in msec
+iview.jnlpfile.timeout=$iviewjnlpfiletimeout
+
+
+# list of provisional tables to archive
+#archive.provtables=tablename,isAdminOnly,isBackupOnly;
+archive.provtables=groups,true,true;license,true,true;users,true,true;actions,false,true;filters,false,true;endpoints,false,false;routes,false,false;regions,false,false;rates,false,false;periods,false,false;msws,true,true;carriers,false,false;service_carriers,false,false;
+registeredHandler=$registeredHandlerstr
+webServiceHandler=$webServiceHandler
+mswinfoRequesthandler=$mswinfoRequesthandler
+deviceRequestHandler=$deviceRequestHandler
+auditPurgeDays=$auditPurgeDays
+outagePurgeDays=$outagePurgeDays
+
+#This is the list of all web services mapping that are required to map filter and config objects to web service names. They are required for device comm apis to be work properly as device comm apis do not take web services name as input, while web services name is mandatory for web service back end framework. In this case  XML mapping file are used to figure out the web service name from config object and filter object class names.
+webservice.MappingXMLs=audittrail.xml, callplan.xml, callplanbinding.xml, callplanroute.xml, codecprofile.xml, deviceconfigparams.xml, endpoint.xml, genericendpoint.xml, h323endpoint.xml, mastergatekeeperendpoint.xml, serverendpoint.xml, sipendpoint.xml, iedgegroup.xml, mswinfo.xml, realm.xml, subnet.xml, trigger.xml, vnet.xml, BaseEndpoint.xml,collectorn.xml,warrantn.xml,interceptedcalls.xml,blacklistedendpointsN.xml,ratelimits.xml,fwzone.xml,serviceset.xml,psfconfigparams.xml, Events.xml, Alarms.xml, emergencynumber.xml
+
+#This is maximum size of bulk request that can be processed thru webservice
+webservice.max.requestsize=$webserviceMaxRequestsize
+
+# Session configuration parameters
+# Session timeout value in minutes
+session.config.Timeout=$sessionconfigtimeout
+
+# Directory for alarms action scripts
+alarms.alarmscripts.path=$alarmscriptspath
+
+estimate.1000routes.default=$estimate1000routesdefault
+estimate.threshold=$estimatethreshold
+estimate.defaultvalue=$estimatedefaultvalue
+
+#CDR Export
+BatchSize=$BatchSize
+CDRExportInterval=$CDRExportInterval
+#maximum size that the CDR file is allowed to reach
+#before being switched to new file.
+#values with the suffixes "KB", "MB" or "GB"
+cdrexport.maxfilesize=$cdrexportmaxfilesize
+#No of CDRs to be buffered before writing to a CDR file
+cdrexport.writeblocksize=$cdrexportwriteblocksize
+cdrexport.whereclause.usecdrid=$cdrexportwhereclauseusecdrid
+cdrexport.whereclause.maxtimewindow=$cdrexportwhereclausemaxtimewindow
+# Data Check
+datacheck.pagesize=$datacheckpagesize
+datacheck.multfactor=$datacheckmultfactor
+
+# Allow DummyKey
+allow.dummyKey=$allowdummykey
+
+#NER Reports
+Nerisdncodes=$Nerisdncodes
+Nersipresponsecodes=$Nersipresponsecodes
+
+connection.timeout=$connectiontimeout
+connection.ratio=$connectionratio
+
+# hide/unhide password while entering
+hide.password=$defaulthidepassword
+
+# allow/disallow multiple sessions with same login ID
+security.MultipleSessionsAllowed=$defaultallowmultiplesessions
+
+# EMS Related Properties Start
+
+service.performancepollmanager.name=$serviceperformancepollmanagername
+service.performancepollmanager.class=$serviceperformancepollmanagerclass
+# RSM Fault Manager Service Standard parameters
+service.faultmanager.name=$servicefaultmanagername
+service.faultmanager.class=$servicefaultmanagerclass
+faultmanager.retrycount=$faultmanagerretrycount
+faultmanager.waitperiod=$faultmanagerwaitperiod
+# Fault purge Service Standard parameters
+service.faultpurge.name=$servicefaultpurgename
+service.faultpurge.class=$servicefaultpurgeclass
+service.faultpurge.StartAtStartup=$servicefaultpurgeStartAtStartup
+service.faultpurge.InitialStartDate=$servicefaultpurgeInitialStartDate
+service.faultpurge.InitialRepetitions=$servicefaultpurgeInitialRepetitions
+# Performance purge Service Standard parameters
+service.performancepurge.name=$serviceperformancepurgename
+service.performancepurge.class=$serviceperformancepurgeclass
+service.performancepurge.StartAtStartup=$serviceperformancepurgeStartAtStartup
+service.performancepurge.InitialStartDate=$serviceperformancepurgeInitialStartDate
+service.performancepurge.InitialRepetitions=$serviceperformancepurgeInitialRepetitions
+#Fault and Performance common parameters start
+#SNMP parameters
+snmp.ReadCommunity=$snmpReadCommunity
+snmp.WriteCommunity=$snmpWriteCommunity
+snmp.Retries=$snmpRetries
+snmp.Timeout=$snmpTimeout
+snmp.TrapPorts=$snmpTrapPorts
+#SNMP v3 parameters
+snmp.SecurityLevel=$snmpSecurityLevel
+snmp.AuthProtocol=$snmpAuthProtocol
+snmp.AuthPassword=$snmpAuthPassword
+snmp.PrivProtocol=$snmpPrivProtocol
+snmp.PrivPassword=$snmpPrivPassword
+snmp.engineID=$snmpengineID
+snmp.UserName=$snmpUserName
+snmp.ContextName=$snmpContextName
+#SNMP MIBS
+mib.Files=$mibFiles
+# period for RSM table synchronizer in secs
+fault.rsmalarm.syncperiod=$faultrsmalarmsyncperiod
+# period for RSM trap table purge 
+fault.rsmalarm.trapTablePurgePeriod=$faultrsmalarmtraptablepurgeperiod
+#Purge interval in hours
+fault.purge.scheduleinterval=$faultpurgescheduleinterval
+fault.rsmalarm.PurgeRaisedAlarms= $faultPurgeRaisedAlarms
+#Fault and Performance common parameters end
+#Fault management parameters start
+# changing this property might lead to uncertainity in Alarm Proccessing
+fault.queue.capacity=$faultqueuecapacity
+#Events and Alarms purging period in days
+fault.purge.Event.Period=$faultpurgeEventPeriod
+fault.purge.Alarm.Period=$faultpurgeAlarmPeriod
+#Severity color coding parameters
+severity.Color.Critical=$severityColorCritical
+severity.Color.Major=$severityColorMajor
+severity.Color.Minor=$severityColorMinor
+severity.Color.Warning=$severityColorWarning
+severity.Color.Clear=$severityColorClear
+severity.Color.Info=$severityColorInfo
+severity.Color.Unknown=$severityColorUnknown
+
+#Trap filter configuration parameters
+trap.Filter.Suppress.deviceIPs=$trapFilterSuppressDeviceIPs
+trap.Filter.Suppress.trapOIDs=$trapFilterSuppressTrapOIDs
+#Fault management parameters end
+#Performance management parameters start
+# polling frequency in seconds
+performance.polling.frequency=$performancepollingfrequency
+# polling table creation interval in hours
+performance.polling.tablecreationinterval=$performancepollingtablecreationinterval
+# performance polling options
+# STOP_WHEN_NEW_POLL_COME
+# CONTINUOUS
+performance.polling.option=$performancepollingoption
+
+performance.polling.delta=$performancepollingdelta
+
+#Performance management parameters end
+# purging parameters for performance start
+# purge scheduling interval in hours
+performance.purge.scheduleinterval=$performancepurgescheduleinterval
+# purge period in days
+performance.purge.statstables=$performancepurgestatstables
+#purging parameters end
+
+#SWM Parameters starts here
+swm.maxConcurrentDownloads=$swmMaxConcurrentDownloads
+swm.maxConcurrentActivations=$swmMaxConcurrentActivations
+swm.retryLimit=$swmRetryLimit
+swm.timeout=$swmTimeout
+
+#SWM Parameters starts here
+
+security.PasswordExpiryDays=$securityPasswordExpiryDays
+
+user.noOfConcurrentLogin=$user_noOfConcurrentLogin
+
+
+heartbeat.northbound.IPAddress=$heartbeat_northboundIPAddress
+heartbeat.northbound.snmpCommunity=$heartbeat_northboundSnmpCommunity
+heartbeat.frequency=$heartbeat_frequency
+heartbeat.CLLIcode=$heartbeat_CLLIcode
+heartbeat.perceivedSeverity=$heartbeat_perceivedSeverity
+
+#Global configuration related parameters
+
+globalconfig.snmp.nms.IPAddress=$globalconfig_snmpNMSIPAddress
+globalconfig.snmp.nms.community=$globalconfig_snmpNMSCommunity
+globalconfig.snmp.selectedAlarms=$globalconfig_snmpSelectedAlarms
+
+
+deviceCLLICode.hostname1=$deviceCLLICode_hostname1
+deviceCLLICode.hostname2=$deviceCLLICode_hostname2
+server.hostnames=$server_hostnames
+
+# EMS Related Properties END
+
+endpoints.showBatchSizeOnly=$showBatchSizeOnly
+endpoints.batchsize=$epbatchsize
+
+
+#User transaction timeout
+user.transaction.timeout.secs=$defaulttransactiontimeoutinsec
+
+# encode string used in reports while decoding
+enc.str=$defaultreportencstr
+
+#Rerate import file check
+rating.ImportFileMinLine=$importfilelen
+
+#Heartbeat thread print flag for debug
+ha.print.thread.info=$hathreadinfo
+
+# PAM Debug
+pam.debug=$pamDebug
+
+#db.authentication.enable- false/true
+db.authentication.enable=false
+
+# Radius Authentication Enabled/Disabled
+radiusAuthentication.enable=$radiusAuthentication
+
+#DBOptimization enable/disable  true/false
+mysql.optimization.enable=$mysql_optimization_enable
+
+#DB Optimization Time HH:MM
+mysql.optimization.time=$mysql_optimization_time
+
+#DB Optimization interval for conseucative cycles in hours
+mysql.optimization.interval=$mysql_optimization_interval
+
+#sort in Error codes view
+orderByCode.enable=$orderByCode
+
+#device ssh permission related 
+device.isSSHConnectionAllowed=$isSSHConnectionAllowed
+
+#Property to set whether or not to sync dynamic endpoints
+sync.dynamicendpoints=$syncdynamicendpoints
+
+
+$mswstring
+
+$mgtip
+    
+END
+
+
+}
+
+
+1;
+
+

@@ -1,0 +1,260 @@
+##################################################
+Revision history for Log::Log4perl
+##################################################
+
+0.23 09/09/2002
+    * Both Log4perl/log4perl is now accepted in conf file
+    * Added documentation to Log::Log4perl::Appender
+    * Made Time::HiRes optional. If it's missing, PatternLayout will
+      just use full seconds as %r.
+    * SimpleDateFormat "%d{HH:SS}", including predefined formats (DATE etc.)
+    * Added another cut-and-paste example to the docs (EXAMPLE)
+    * Added new logdie/logwarn/error_warn/error_die/logcarp/
+      logcluck/logcroak/logconfess functions written by 
+      Erik Selberg <erik@selberg.com>
+    * Added PatternLayout documentation
+    * Changed suppression of duplicate newline in log message algorithm
+    * Custom levels and inc_level/dec_level/more_logging/less_logging
+      added by Erik Selberg <erik@selberg.com>
+
+0.22 8/17/2002
+    * Threshold settings of appenders: 
+        $appender->threshold($ERROR);
+        log4j.appender.A.Threshold = ERROR
+    * Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
+      submitted two patches: 
+      - extended init() to take obj references (added, also added a test
+        case and documentation)
+      - fixed %F and %L if Log4perl is used by a wrapper class (accepted,
+        but changed variable name to Log::Log4perl::caller_depth as
+        a tribute to Log::Dispatch::Config, added test case 022Wrap
+        and documentation
+
+0.21 8/08/2002
+    * Synopsis shows code samples in Log4perl.pm/README
+    * Slight Log4j incompatibility but useful: %F{n} lets you
+      limit the number of entries the source file path is logged
+    * Erik W. Selberg (erik@selberg.com) suggested having PatternLayout.pm
+      suppress another \n if the messages already contains a \n and the
+      format requires a %n. Done.
+    * Erik W. Selberg (erik@selberg.com) suggested loggers should take
+      any number of messages and concatenate them. Done.
+    * Fixed double-init problem and added a test case. Now the entire
+      configuration is cleared before the second init(). However, this
+      surfaced a problem with init_and_watch: If a program obtains
+      references to one or more loggers, rewriting the configuration
+      file during program execution and re-initing makes these reference
+      point to loggers which hold obsolete configurations. Fixed that by
+      code in debug(), info(), etc. which *replaces* (shudder) the
+      logger reference the program hands in to them with a new one of
+      the same category. This happens every time if 'init_and_watch' has
+      been enabled. However, this introduces a small runtime penalty.
+      This is different from the original log4j, which does some
+      half-assed re-initialization, because Java isn't expressive enough
+      to allow for it. Making this thread-safe might be tough, though. 
+    * Added DEBUG statements to Logger.pm and Config.pm to trace execution
+      (debugging won't work because of "eval"s). Both files define a 
+      constant named DEBUG towards the top of the file, which will
+      have perl optimize away the debug statements in case it's set to 0.
+    * A warning is issued now (once) if init() hasn't been called or
+      no appenders have been defined.
+    * Added ':levels' target to Log::Log4perl to import $DEBUG, $ERROR,
+      etc. levels (just like 'use Log::Log4perl::Level' works).
+    * Added ':easy' target to allow for simple setup
+    * Code references can be passed in as log messages to avoid parameter
+      passing penalty
+
+0.20 7/23/2002
+    * Strip trailing spaces in config file
+    * Accept line continuations in properties file
+    * Refactored Logger.pm for speed, defined the logging behavior when 
+      the logger is created, not when a message is logged
+    * Fixing test suites so that SimpleFormat newline is accounted for
+    * Fixed a bug with root inheritance where the category name wasn't
+      coming through
+    * added init_and_watch
+
+0.19 07/16/2002
+    * Added Log::Log4perl::TestBuffer back in the distribution, otherwise
+      regression test suite would fail.
+
+0.18 07/16/2002
+    * Failed attempt to fix the Log::Dispatch::Buffer problem.
+
+0.17 07/11/2002
+    * Updated documentation according to Dave Rolsky's suggestions
+    * Lots of other documentation fixes
+    * Fixed bug in renderer, %M was displayed as the logger function
+      bumped up the level by 1
+    * Fixed %% bug
+
+0.16 07/10/2002
+    * Updated documentation for CPAN release
+    * Applied Kevin's patch to limit it to one Log::Dispatcher
+
+0.15 07/10/2002
+    * There were name conflicts in Log::Dispatch, because we used *one*
+      Log::Dispatch object for the *all* loggers in the Log::Log4perl
+      universe (it still worked because we were using log_to() for
+      Log::Dispatch to send messages to specific appenders only). Now
+      every logger has its own Log::Dispatch object. Logger.pm doesn't
+      call Kevin's anti-dupe logic anymore -- is this ok? Maybe there's
+      some leftovers which need to be cleaned up.
+    * Kevin fixed t/014ConfErrs.t after last night's Appender.pm change
+
+0.14 07/09/2002
+    * (!) Added new class Log::Log4perl::Appender as a wrapper around
+      Log::Dispatch::*. Layouts are no longer attached to the loggers,
+      but to the appenders instead. $app->layout($layout) sets the
+      layout. $logger->add_appender($app) is the new syntax to add
+      an appender to a logger. The $logger->layout method is gone
+      for that reason.
+    * Added documentation on categories
+    * Added documentation on Log::Log4perl::Appender,
+      Log::Log4perl::Layout::SimpleLayout,
+      Log::Log4perl::Layout::PatternLayout.
+
+0.13 07/09/2002
+    * in the config files, 'debug' is not a level, 'DEBUG' is
+    * expanded the layouts so that we can add subclassess, added
+      SimpleLayout, note that api usage changes
+      -$logger->layout('buf',"The message is here: %m");
+      +$logger->layout(new
+      Log::Log4perl::Layout::PatternLayout('buf',"The message is
+      here: %m"));
+    * did benchmarks, see doc/benchmark*, t/013Bench.t
+    * further tweaked errors for bad configuration, added a test for those
+
+0.12 07/08/2002
+    * Log::Log4perl::Logger->get_logger now accessible via 
+      Log::Log4perl->get_logger()
+    * Log::Log4perl::Config->init now accessible via 
+      Log::Log4perl->init()
+    * Adapted test cases to new shortcuts
+    * Constrained some files to 80 chars width
+    * Added test case t/009Deuce.t for two appenders in one category
+      via the config file
+    * Changed default layout in case there's none defined (SimpleLayout)
+    * Implemented dictatory date format for %d: yyyy/mm/dd hh:mm:ss
+
+0.11 07/07/2002
+    * added documentation to Log/Log4perl.pm
+    * added is_debug/is_error/is_info etc. functions to Logger.pm,
+      test cases to t/002Logger.t
+
+0.10 07/05/2002
+    * %p should return level name of the calling function, so 
+      $logger->warn('bad thing!!') should print 'WARN - bad thing'
+      even if the category is set to debug, so took level_str out of
+      Logger.pm (kg)
+
+0.09 07/03/2002
+    * %p should return level name, not number, adding level_str to Logger.pm (kg)
+    * Level.pm - discriminating: priorities are 1-4, levels are
+      'info','debug',etc (kg)
+
+0.08  07/03/2002
+    * Non-root loggers are working now off the config file
+
+0.07  07/02/2002
+    * Updated documentation
+    * removed "diagnostics"
+
+0.06  07/01/2002
+    * Bug discovered by Kevin Goess <cpan@goess.org>, revealed
+      in 004-Config.t: Wrong layout used if Appender is inherited.
+      Fixed.
+    * Changed Log::Log4perl::TestBuffer to keep track of the
+      object population -- so we can easily reference them
+      in the Log::Log4perl test cases. Got rid of get_buffer().
+    * Added a reset() method to Log::Log4perl and Log::Log4perl::Logger
+      for easier testing. It resets all persistent loggers to 
+      the inital state.
+    * Added documentation
+
+0.05  06/30/2002
+    * Fixed bug with mapped priorities between java/Log::Dispatch
+    * Java/Perl integration with conf file
+
+0.04  06/30/2002
+    * Layout tests
+    * %r to layout
+    * Added lib4j configuration file stuff and tests
+
+0.03  06/30/2002
+    * Layout
+    * Curly braces in Layout first ops
+
+0.02  06/30/2002
+    * Created Logger and test cases
+
+0.01  06/22/2002
+    * Where it all began
+
+TODO (not assigned to anybody yet):
+##################################################
+    * Make Log::Log4perl::Layout:: optional and accept just "PatternLayout"
+    * BasicConfigurator() vs. :easy, PropertyConfigurator()
+    * Log/throw exception (either warn/die or real exceptions)
+    * get_logger() thread safety (two try to create it at the same time)
+    * hierarchy-wide threshold (p.14), log4j.threshold = ERROR
+    * Object rendering
+    * NDC/MDC
+    * Internal DEBUG for log4perl (log4perl.debug = 1)
+    * log4j.logger.blah = INHERITED, app
+    * variable subst: a=b log4j.blah = ${a}
+    * log4j.renderer.blah = blah
+    * I wonder if it might not be a mistake to have the base level be
+      '0', might be safer to make it '1', less chance of those
+      false-but-is-defined errors I think that's what log4j uses
+    * permission problems, init() creates the files, maybe read later by
+      different uid, no way to set umask?
+    * I really want a format specifier to print the pid, helps with web apps
+    * Custom filters
+    * XML config files
+
+TODO Kevin:
+##################################################
+    * Bug: If the *same* appender is being attached to several loggers,
+      appender inheritance doesn't work as expected: Even if the 
+      appender appears twice in the inheritance tree, it's only executed once.
+      But it actually needs to be run twice.
+    * Dave Rolsky says: A couple other things: The JavaMap docs mention
+      that SocketAppender has no Log::Dispatch equivalent. You could
+      create an IO::Socket object and pass it to Log::Dispatch::Handle.
+    * test cases should use platform independend directory separator
+      (Mac's pre-OSX ':'?) DONE need level validation on Logger::level()
+      DONE Create new module negotiating between Java-style config files
+      and perl-style appenders
+    * Module for reading XML-style config files
+    * revisit  CategoryFactory idea, give the user opportunity to override
+      log levels with their own?
+    * possible bug: was logging to a category, then took my appender off
+      that category, am still seeing stuff in my log, something didn't
+      take about the reload
+
+TODO Mike:
+##################################################
+    * %20.30d
+    * Kevin says:
+      >WARN in the config file
+      >   init_and_watch(...);
+      >   while (1){
+      >      ...blah...
+      >      $logger->level($INFO);
+      >      $logger->info(...);
+      >      sleep 5;
+      >   }
+      What's happening if the reload happens right after the level() call 
+      and the config file sets the level to WARN?
+    * Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
+    * Layout.pm: 't', 'x', 'X'
+    * Additivity flag -- set/get as API and in cfg file
+      (log4j.additivity.loggername = true|false)
+    * README tests (Pod::Tests or something)
+    * Thread safety
+    * Just had a wild idea: Could we possibly utilize the compiler
+      frontend to eliminate log statements that are not going to be
+      triggered? This would be a HUGE performance increase!
+
+##################################################

@@ -1,0 +1,12 @@
+Changes
+MANIFEST
+Makefile.PL
+Tail.pm.debug
+Tail.pm
+logwatch
+README
+select_demo
+t/10open.t
+t/20tail.t
+t/30name_change.t
+META.yml                                 Module meta-data (added by MakeMaker)

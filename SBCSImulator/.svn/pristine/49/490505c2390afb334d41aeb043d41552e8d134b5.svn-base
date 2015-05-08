@@ -1,0 +1,12 @@
+#Please enter the required detials in the config file.
+#No of Virtual IPs to be added:- 
+trapSimCount=10
+#Starting IP address:-
+initialIp=10.201.1.10
+#RSM IP:-
+rsmIp=10.201.1.150
+#Please select an option for the types of traps to be sent(trapId):-
+#1. WARM START 2. COlD START 3. AUTHENTICATION FAILURE 4. LINK UP 5. LINK DOWN 6. ALL 
+trapId=4
+#Please select the path for snmpd.conf
+path=/etc/snmp/snmpd.conf

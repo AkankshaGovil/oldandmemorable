@@ -1,0 +1,20 @@
+# log type FILE | CONSOLE
+logType = FILE
+
+# log file name
+filename = /var/log/narsagent.log
+
+# log level INFO | ERROR | WARN | DEBUG1 | DEBUG2 | DEBUG3 | DEBUG4 | NONE
+level = INFO
+
+# mode is 'create' or 'append'
+mode = append
+
+# maximum log file size in bytes
+maxSize = 10485760
+
+# maximum file rotation index
+maxIndex = 3
+
+# if no file rotatation is done, truncate this much percentage off the top of the file
+truncatePercent = 10

@@ -1,0 +1,212 @@
+#VERSION 4.3rc65
+drop schema bn cascade;
+SET search_path = msw, pg_catalog;
+
+CREATE OR REPLACE FUNCTION drop_table(TEXT)
+RETURNS VOID
+STRICT
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    BEGIN
+    EXECUTE 'DROP TABLE ' || $1;
+    EXCEPTION WHEN UNDEFINED_TABLE THEN
+        /* do nothing */
+    RETURN;
+    END;
+RETURN;
+END;
+$$;
+
+select drop_table(users);
+select drop_table(groups);
+select drop_table(license);
+select drop_table(msws);
+select drop_table(sessions);
+select drop_table(trails);
+
+
+CREATE TABLE groups (
+  PartitionId smallint NOT NULL default '-1',
+  GroupName varchar(32) NOT NULL default '',
+  Cap varchar,
+  EnforceVPort smallint NOT NULL default '0',
+  Created timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  LastModified timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  FullEstimation  varchar(200) NOT NULL default '-1',
+  PartialEstimation  varchar(200) NOT NULL default '-1',
+  RoutesGenerated varchar(20) NOT NULL default '-1',
+  PartialRoutesGenerated varchar(20) NOT NULL default '-1',
+
+  PRIMARY KEY (PartitionId),
+  UNIQUE (GroupName)
+) ;
+
+
+
+--DROP TABLE users;
+CREATE TABLE users (
+  UserId BigSerial NOT NULL,
+  UserName varchar(32) NOT NULL default '',
+  PartitionId smallint NOT NULL default '-1',
+  PasswordId varchar(32) default NULL,
+  PwdChangeTime bigint default 0,
+  Cap varchar,
+  Created timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  LastModified timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  PRIMARY KEY  (UserId),
+  UNIQUE (UserName),
+  UNIQUE (UserName,PartitionId),
+  FOREIGN KEY (PartitionId) REFERENCES groups(PartitionId) ON UPDATE CASCADE ON DELETE CASCADE
+) ;
+CREATE INDEX users_GroupId ON users (PartitionId);
+
+--
+-- other tables - license, errors and msws
+--
+--DROP TABLE license;
+CREATE TABLE license (
+  Filename varchar(80) NOT NULL default '',
+  File bytea,
+  Created timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  LastModified timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  PRIMARY KEY  (filename)
+) ;
+
+--DROP TABLE msws;
+CREATE TABLE msws (
+  MSWId Serial NOT NULL ,
+  ClusterId smallint NOT NULL,
+  MSWName varchar(32) NOT NULL default '',
+  MSWIp bigint NOT NULL default '0',
+  Flag  smallint NOT NULL default '0',
+  Description varchar(64) NOT NULL default '',
+  Created timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  LastModified timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  MswUsername varchar (16),
+  MswPassword varchar (16),
+  MswPort int default '3306',
+  MswDB varchar (32) default '127.0.0.1',
+  AutosyncMaster smallint NOT NULL default '-1',
+  Estimation1000Routes float NOT NULL default '0',
+
+  PRIMARY KEY  (MSWId),
+  UNIQUE (MSWName)
+) ;
+
+
+--DROP TABLE sessions;
+CREATE TABLE sessions (
+  UserName varchar(32) NOT NULL,
+  PartitionId smallint NOT NULL default '-1',
+  SessionId varchar(64) NOT NULL,
+  ip bigint default '0',
+  Created timestamp without time zone NOT NULL,
+  PRIMARY KEY (SessionId)
+) ;
+
+--DROP TABLE trails;
+CREATE TABLE trails (
+  TrailId BigSerial,
+  UserName varchar(32) NOT NULL default '',
+  PartitionId smallint NOT NULL default '-1',
+  ClientAddr varchar(32) NOT NULL default '',
+  DBAction varchar(32) NOT NULL default '',
+  DBKey varchar(32) default NULL,
+  Status varchar(32) default NULL,
+  Detail varchar,
+  Created timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  starttime timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  endtime timestamp without time zone NOT NULL default '1970-01-01 00:00:00',
+  sid varchar(64) NOT NULL default '',
+  PRIMARY KEY  (TrailId)
+) ;
+
+---------------------- set default values ----------------------
+--
+-- The following lines create the default entries required in iVMS tables
+--
+INSERT INTO groups (PartitionId, GroupName, Cap, EnforceVPort, Created, LastModified ,fullestimation,partialestimation,routesgenerated, partialroutesgenerated) VALUES (1,'admin','<?xml version=\'1.0\'?>\n<CAPABILITIES admin=\'true\' root=\'true\'>\n  <Report>\n  <Asr>\n      <Chromocode normal=\'60\' questionable=\'58\' />\n    </Asr>\n  <Ner>\n      <Chromocode normal=\'80\' questionable=\'60\' />\n    </Ner>\n  <Qos>\n      <Chromocode normal=\'80\' questionable=\'70\' />\n    </Qos>\n  <Business>\n      <Profit normal=\'5\' questionable=\'0\' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read=\'false\' readwrite=\'true\' />\n  <Routes read=\'false\' readwrite=\'true\'>\n    <DialPlans readwrite=\'true\' />\n  </Routes>\n  <Rates read=\'false\' readwrite=\'true\' />\n  <Alarm ARM=\'true\'>\n    <Log read=\'false\' readwrite=\'true\' />\n    <CDR read=\'false\' readwrite=\'true\' />\n    <Actions read=\'false\' ARM=\'true\' script=\'true\' generic=\'true\' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n<E911>true</E911>\n</CAPABILITIES>',0,now(),now(),0.0,0.0,0,0);
+
+INSERT INTO groups (PartitionId, GroupName, Cap, EnforceVPort, Created, LastModified ,fullestimation,partialestimation,routesgenerated, partialroutesgenerated) VALUES (-1,'<global>','<?xml version=\'1.0\'?>\n<CAPABILITIES admin=\'true\' root=\'true\'>\n  <Report>\n  <Asr>\n      <Chromocode normal=\'60\' questionable=\'58\' />\n    </Asr>\n  <Ner>\n      <Chromocode normal=\'80\' questionable=\'60\' />\n    </Ner>\n  <Qos>\n      <Chromocode normal=\'80\' questionable=\'70\' />\n    </Qos>\n  <Business>\n      <Profit normal=\'5\' questionable=\'0\' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read=\'false\' readwrite=\'true\' />\n  <Routes read=\'false\' readwrite=\'true\'>\n    <DialPlans readwrite=\'true\' />\n  </Routes>\n  <Rates read=\'false\' readwrite=\'true\' />\n  <Alarm ARM=\'true\'>\n    <Log read=\'false\' readwrite=\'true\' />\n    <CDR read=\'false\' readwrite=\'true\' />\n    <Actions read=\'false\' ARM=\'true\' script=\'true\' generic=\'true\' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n<E911>true</E911>\n</CAPABILITIES>',0,now(),now(),0.0,0.0,0,0);
+
+INSERT INTO groups (PartitionId, GroupName, Cap, EnforceVPort, Created, LastModified ,fullestimation,partialestimation,routesgenerated, partialroutesgenerated) VALUES (-2,'','<?xml version=\'1.0\'?>\n<CAPABILITIES admin=\'true\' root=\'true\'>\n  <Report>\n  <Asr>\n      <Chromocode normal=\'60\' questionable=\'58\' />\n    </Asr>\n  <Ner>\n      <Chromocode normal=\'80\' questionable=\'60\' />\n    </Ner>\n  <Qos>\n      <Chromocode normal=\'80\' questionable=\'70\' />\n    </Qos>\n  <Business>\n      <Profit normal=\'5\' questionable=\'0\' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read=\'false\' readwrite=\'true\' />\n  <Routes read=\'false\' readwrite=\'true\'>\n    <DialPlans readwrite=\'true\' />\n  </Routes>\n  <Rates read=\'false\' readwrite=\'true\' />\n  <Alarm ARM=\'true\'>\n    <Log read=\'false\' readwrite=\'true\' />\n    <CDR read=\'false\' readwrite=\'true\' />\n    <Actions read=\'false\' ARM=\'true\' script=\'true\' generic=\'true\' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n<E911>true</E911>\n</CAPABILITIES>',0,now(),now(),0.0,0.0,0,0);
+
+INSERT INTO users (UserId, UserName, PartitionId, PasswordId, Cap, Created, LastModified ) VALUES (1,'root',1,'hGyVtnlrHBskPMTU5frLr59NWpU=','<?xml version=\'1.0\'?>\n<CAPABILITIES admin=\'true\' sysadmin=\'true\' root=\'true\'>\n  <Report>\n  <Asr>\n      <Chromocode normal=\'60\' questionable=\'58\' />\n    </Asr>\n  <Ner>\n      <Chromocode normal=\'80\' questionable=\'60\' />\n    </Ner>\n  <Qos>\n      <Chromocode normal=\'80\' questionable=\'70\' />\n    </Qos>\n  <Business>\n      <Profit normal=\'5\' questionable=\'0\' />\n    </Business>\n    <Billing />\n  </Report>\n  <Endpoints read=\'false\' readwrite=\'true\' />\n  <Routes read=\'false\' readwrite=\'true\'>\n    <DialPlans readwrite=\'true\' />\n  </Routes>\n  <Rates read=\'false\' readwrite=\'true\' />\n  <Alarm ARM=\'true\'>\n    <Log read=\'false\' readwrite=\'true\' />\n    <CDR read=\'false\' readwrite=\'true\' />\n    <Actions read=\'false\' ARM=\'true\' script=\'true\' generic=\'true\' />\n  </Alarm>\n  <TimeZone>local</TimeZone>\n<E911>true</E911>\n</CAPABILITIES>',now(),now());
+
+-- Install license
+INSERT into license (Filename,File,Created,LastModified) VALUES
+('bn.lc','<LICENSE CUSTOMER = \'NexTone Customer\' VERSION = \'2.1\' PRODUCT = \'iVMS\' PRODUCTVERSION=\'4\' EXPIRES=\'timeless\'>
+    <SERVER hostid=\'unbound\'/>
+    <AGENT hostid=\'unbound\'/>
+    <FEATURES RAM=\'0\' ARM=\'0\' ESM=\'0\' WIM=\'1\' BBM=\'0\' LCR=\'0\' OSP=\'0\' QOS=\'0\' TCS=\'0\' NOC=\'0\' ICM=\'1\' WSM=\'1\' UPP=\'0\' />
+    <ENF TERM = \'0\' INIT = \'0\'/>
+    <SIGNATURE id=\'691cafddd83103a6b520fed9262d115f\'/>
+</LICENSE>','2005-10-07 11:04:39','2005-12-19 15:23:30');
+
+---------------------- create user defined functions  ----------------------
+CREATE OR REPLACE FUNCTION inet_ntoa(int8)
+  RETURNS text AS
+$$
+    SELECT (
+        (($1>>24) & 255::int8) || '.' ||
+        (($1>>16) & 255::int8) || '.' ||
+        (($1>>8)  & 255::int8) || '.' ||
+        ($1     & 255::int8)
+        )::TEXT;
+$$
+  LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION inet_aton(text) RETURNS int8
+AS
+$$
+  SELECT
+  (
+    (split_part($1,'.',1)::INT8*16777216) +
+    (split_part($1,'.',2)::INT8*65536) +
+    (split_part($1,'.',3)::INT8*256) +
+    (split_part($1,'.',4)::INT8)
+  )::INT8;
+$$
+LANGUAGE 'sql';
+
+
+CREATE OR REPLACE FUNCTION getClusterId()
+  RETURNS int4 AS
+$BODY$
+        BEGIN
+                RETURN 1;
+        END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+ALTER FUNCTION getClusterId() OWNER TO ivmsclient;
+
+---------------------- update clusterids to '1'  ----------------------
+update blacklist_ips set clusterid='1' where clusterid='-1';
+update callingplans set clusterid='1' where clusterid='-1';
+update callingroutes set clusterid='1' where clusterid='-1';
+update cdcprofiles set clusterid='1' where clusterid='-1';
+update cpbindings set clusterid='1' where clusterid='-1';
+update emergnums set clusterid='1' where clusterid='-1';
+update endpoints set clusterid='1' where clusterid='-1';
+update fw_zone set clusterid='1' where clusterid='-1';
+update iedgegroups  set clusterid='1' where clusterid='-1';
+update ratelimitbucket  set clusterid='1' where clusterid='-1';
+update ratelimitlayers  set clusterid='1' where clusterid='-1';
+update realms  set clusterid='1' where clusterid='-1';
+update services_set set clusterid='1' where clusterid='-1';
+update subnets  set clusterid='1' where clusterid='-1';
+update triggers  set clusterid='1' where clusterid='-1';
+update vnet  set clusterid='1' where clusterid='-1';
+
+
+---------------------- grant privileges ----------------------
+grant all on groups to ivmsclient;
+grant all on users to ivmsclient;
+grant all on license to ivmsclient;
+grant all on msws to ivmsclient;
+grant all on sessions to ivmsclient;
+grant all on trails to ivmsclient;
+#VERSION 4.3rc6
+
+

@@ -1,0 +1,7 @@
+<LICENSE PRODUCT='NARS' VERSION='1.0' EXPIRES='Sat Nov 16 12:10:34 2002'>
+	<SERVER hostid='unbound'/>
+	<AGENT hostid='unbound'/>
+	<AGENT hostid='unbound'/>
+	<FEATURES RAM='1' ARM='1' ESM='1' WIM='1'/>
+</LICENSE>
+

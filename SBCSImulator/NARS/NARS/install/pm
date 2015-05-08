@@ -1,0 +1,202 @@
+#!/bin/sh 
+#isstandby=
+
+LOGDIR=/var/log
+LOGFILE=ha-log
+PS=/bin/ps
+CHECKPROC=/sbin/checkproc
+
+JBOSS_HOME=/opt/nxtn/jboss
+MYSQL_DS=$JBOSS_HOME/server/rsm/deploy/mysql-ds.xml
+SERVER_LOG_DIR=$JBOSS_HOME/server/rsm/log
+if [ -f $MYSQL_DS ]
+then
+        user=`cat $MYSQL_DS | grep user-name| head -1 | cut -f 2 -d ">" | cut -f 1 -d "<"`
+        pass=`cat $MYSQL_DS | grep password | head -1 | cut -f 2 -d ">" | cut -f 1 -d "<"`
+else
+        echo "File $MYSQL_DS doesn't exist. Mysql data will not be dumped on Switchover" >> $LOGDIR/$LOGFILE 
+fi
+
+mysql="mysql --user=$user --password=$pass bn"
+
+timeout=300
+/etc/ha.d/resource.d/check-wget.sh $timeout&
+
+initialtime=360
+interval=60
+RETRIES=3
+RETRY_INTERVAL=1
+
+my_echo () {
+    echo "`date` $1" >> $LOGDIR/$LOGFILE
+}
+
+my_command_echo () {
+    my_echo "Command: \"$1\""
+    echo `$1` >> $LOGDIR/$LOGFILE 2>&1
+}
+
+
+check_process () {
+    retry=0
+    while [ $retry -lt $RETRIES ]
+    do
+        `$CHECKPROC $1` >> $LOGDIR/$LOGFILE 2>&1
+        proc_stat=$?
+        if [ $proc_stat != 0 ] && [ -z $isstandby ]
+        then
+             my_echo "check_process: $1 returned error try after $RETRY_INTERVAL"
+             retry=`expr $retry + 1`
+             sleep $RETRY_INTERVAL
+        else
+             break
+        fi
+    done
+
+    return $proc_stat
+}
+
+check_process_jboss () {
+    jb_retry=0
+    while [ $jb_retry -lt $RETRIES ]
+    do
+        jb_num_procs=`$PS  -elwwwf | grep org.jboss.Main | grep -c -v grep`
+        if [ $jb_num_procs -eq 0 ] && [ -z $isstandby ]
+        then
+             my_command_echo "$PS  -elwwwf"
+             my_echo "check_process_jboss: returned error try after $RETRY_INTERVAL"
+             jb_retry=`expr $jb_retry + 1`
+             sleep $RETRY_INTERVAL
+        else
+             break
+        fi
+    done
+
+    if [ $jb_num_procs -eq 0 ]
+    then
+       jb_proc_stat=1 
+    else
+       jb_proc_stat=0
+    fi
+
+    return $jb_proc_stat
+}
+
+DumpData() {
+
+	my_echo "****************************************************************************************"
+	my_command_echo "netstat -an"
+	my_command_echo "top -b -n 1"
+	my_command_echo "free -m"
+	my_command_echo "df -h"
+	my_command_echo "ps -aef"
+	my_command_echo "ifconfig"
+	my_command_echo "$mysql -BNe \"show processlist\""
+	my_command_echo "$mysql -BNe \"show innodb status\""
+	my_echo "****************************************************************************************"
+}
+
+standby() {
+        if [ -z $isstandby ]
+        then
+                isstandby="yes"
+                my_echo "Moving to standby"
+		        DumpData
+                /usr/lib64/heartbeat/hb_standby
+                sleep 30
+        else
+                my_echo "Already in standby $isstandby"
+                sleep 10
+        fi
+}
+
+#sleep a while when we first start
+sleep 60
+
+loopcnt=0 #FD check changes will start when this reaches 180 [1800 seconds after start]
+factorcnt=0 #FD check will be done when this reaches 18 [after every 180 seconds]
+
+echo "PATH = $PATH"   >> $LOGDIR/$LOGFILE
+
+for((;;))
+do
+# Checking whether the process exist
+
+    check_process mysqld
+    pm_x=$?
+    my_echo "mysqld check process return value:  $pm_x"
+
+    check_process_jboss
+    pm_y=$?
+    my_echo "jboss check process return value:  $pm_x"
+
+	if [ $pm_y != 0 ]
+	then
+		my_echo "Jboss Not Running...Skipping"
+		loopcnt=0
+		factorcnt=0
+		pm_z=0
+	else
+		if [ $loopcnt -gt $initialtime ] && [ $factorcnt -gt $interval ] && [ -z $isstandby ]
+		then
+			factorcnt=0
+			cnt=`lsof -p \`pgrep -x java\` | wc -l`
+			cnt=`expr $cnt - 1`
+
+			javapid=`pgrep -x java`	
+			my_command_echo "lsof cnt $cnt Java Pid $javapid "
+			
+			echo "https://127.0.0.1/rsm/agent?ActionClass=PING_MASTER&lsof=$cnt" > url.txt
+			#echo "https://172.16.1.95/rsm/agent?ActionClass=PING_MASTER&lsof=$cnt" > url.txt
+			
+			string=`wget -T $timeout -t 1 --http-user\=narsagent --http-passwd\=narsagent -O - -q -i url.txt`
+			my_echo "$string"
+			#string=`echo Success`
+			pm_z=$?
+			if [ $pm_z == 0 ]
+			then
+				if [ $string == "Success" ]
+				then
+					my_echo "FD limit okay $string"
+					pm_z=0
+				else
+					my_echo "FD limit reached $string"
+					pm_z=1
+				fi
+			fi
+			echo "$pm_z"
+		else
+			pm_z=0
+		fi
+	fi
+
+	my_echo "MySQL return value: $pm_x"
+	my_echo "JBoss return value: $pm_y"
+	my_echo "FD Limit return value: $pm_z"
+
+    if [ $pm_x != 0 ] || [ $pm_y != 0 ] || [ $pm_z != 0 ]
+    then
+    my_echo "standby"
+            standby
+    else
+    my_echo "active"
+            isstandby=
+    fi
+
+	factorcnt=`expr $factorcnt + 1`
+
+	if [ $loopcnt -le $initialtime ]
+	then
+		loopcnt=`expr $loopcnt + 1`
+		if [ $loopcnt -gt $initialtime ]
+		then
+			#To start checkng for FD first time
+			factorcnt=$interval
+		fi
+	fi
+
+	my_echo "factor $factorcnt loopcnt $loopcnt"
+
+    sleep 10
+
+done

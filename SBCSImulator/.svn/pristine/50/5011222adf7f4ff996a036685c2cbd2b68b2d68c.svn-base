@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Configure a new alarm</title>
+<base target="rbottom">
+</head>
+<body bgcolor="cccccc">
+<script language="JavaScript" src="options.js">
+document.write("Error: .js file not found");
+</script>
+
+<script language="javascript"> heading("Configure a new alarm - Array Overflow") </script>
+<form name="Form1" method="POST" action="http://204.180.228.224/cgi-bin/add.cgi">
+  <table border="0" width="100%">
+    <tr>      		
+    	<script language="javascript"> ask_EVENT("array overflow") </script>
+      	<script language="javascript"> ask_QUAL_DEF_LOG("") </script>
+       <script language="javascript"> ask_HOST("All") </script>
+    </tr>
+    <tr>
+       <script language="javascript"> ask_EQUALS("Array full") </script>
+       <script language="javascript"> ask_ACTION() </script>
+	    <script language="javascript"> ask_RESET() </script>
+    </tr>
+    <tr>
+    <script language="javascript"> ask_DESC("\"Action\" is taken when \"Event\" string match is found in the \"Type\" files on \"Host\"."); </script>
+    </tr>
+    <tr>
+      <td width="30%"><input type="submit" value="Configure Alarm"></td>
+      <td width="36%"><input type="reset" value="Reset" name="B2"></td>
+      <td width="34%">&nbsp;</td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+</form>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

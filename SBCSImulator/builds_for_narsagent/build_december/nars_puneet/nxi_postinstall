@@ -1,0 +1,6 @@
+#!/bin/bash
+source $nxi_shlib/log
+nxi_task='postinstall'
+log info "start..."
+log info 'completed.'
+exit 0

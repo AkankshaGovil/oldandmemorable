@@ -1,0 +1,39 @@
+#!/usr/local/bin/perl
+
+BEGIN {
+	# print "run called\n";
+}
+#print "running - @ARGV\n";
+#$SHELL=$ENV{SHELL};
+#print "shell is $SHELL\n";
+
+#push(@args, $SHELL);
+#push(@args, "-c");
+#push(@args, @ARGV);
+#exec(@args);
+
+my $lfh;
+my $tmpfile="/tmp/run.$$";
+
+if ( -f $ARGV[0]) {
+	open($lfh, $ARGV[0]);
+	shift @ARGV;
+}
+else {
+	#file is stdin
+	open TMPF, "> $tmpfile";
+	while (<STDIN>) {
+		print TMPF $_;
+	}
+	close TMPF;
+	open($lfh, "< $tmpfile");
+	#print "Can\'t find file $ARGV[0] \n";
+}
+	
+unshift @INC, sub { package asdfghjk; $lfh };
+{ do 'asdfghjk'; die $@ if $@; exit }
+
+END {
+	#print "cleaning file $tmpfile\n";
+	unlink($tmpfile);
+}

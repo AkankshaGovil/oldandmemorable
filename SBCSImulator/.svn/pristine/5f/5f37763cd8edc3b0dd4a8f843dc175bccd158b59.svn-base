@@ -1,0 +1,103 @@
+#!/bin/sh
+#
+# nextoneJBoss		This shell script takes care of starting and stopping
+#			JBoss server
+#
+
+### BEGIN INIT INFO
+# Provides: jboss
+# Required-Start: $network
+# Default-Start: 3 5
+# Required-Stop: 
+# Default-Stop: 0 1 2 6
+# Description: Start the RSM/RSM Lite
+### END INIT INFO
+
+#create tmp directory if necessary
+NEXTONE_TMP=/var/ivms/tmp;
+NEXTONE_CACHE=/opt/nxtn/rsm/cache;
+mkdir -p $NEXTONE_TMP
+mkdir -p $NEXTONE_CACHE
+
+#ulimit and core settings to be updated in case of RSM server install
+
+JAVA_HOME=/opt/nxtn/jdk
+JBOSS_HOME=/opt/nxtn/jboss
+JAVA_OPTS=%JAVA_OPTS_VALUE%
+export JAVA_HOME JAVA_OPTS
+export JBOSS_HOME
+umask 000
+
+STARTDIR=`pwd`;
+
+JBOSS_RUNNING='0'
+
+check_jboss() {
+		check_jboss_by_ps
+}
+
+check_jboss_by_ps() {
+	R=`ps -ef|grep org.jboss.Main|grep -c -v grep`
+	if [ $R -eq "0" ]; then
+		JBOSS_RUNNING='0'
+	else
+		JBOSS_RUNNING='1'
+	fi
+}
+
+check_jboss_by_checkproc() {
+	checkproc java
+	if [ $? -ne 0 ]; then
+		JBOSS_RUNNING='0'
+	else
+		JBOSS_RUNNING='1'
+	fi
+}
+
+case "$1" in
+	'start')
+	    check_jboss
+	    if [ $JBOSS_RUNNING -eq '0' ]; then
+	    	cd $JBOSS_HOME
+	    	rm -rf $JBOSS_HOME/server/rsm/work/jboss.web/localhost/ivms/SESSIONS.ser
+	    	rm -rf $JBOSS_HOME/server/rsm/work $JBOSS_HOME/server/rsm/data $JBOSS_HOME/server/rsm/tmp 
+			./bin/run.sh %MANAGEMENTIP% -c rsm > /dev/null  2>&1 &
+	    	echo "JBoss Startup in progress..."            
+        else
+            echo "JBoss is ALREADY running"
+        fi
+	    ;;
+	'stop')
+		check_jboss
+        if [ $JBOSS_RUNNING -eq '0' ]; then
+        	echo "JBoss is NOT running"
+		else
+	    	cd $JBOSS_HOME
+	    	./bin/shutdown.sh -S %SHUTDOWNIP%  > /dev/null 2>&1 &
+	    	while [ $JBOSS_RUNNING -eq '1' ]; do
+	            echo "JBoss Shutdown in progress..."
+	            sleep 5
+	            check_jboss
+            done
+       	fi	    	
+	    ;;
+	'status')
+	    check_jboss
+	    if [ $JBOSS_RUNNING -eq '1' ]; then
+	    	echo "running"
+	    else
+	    	echo "unused"
+	    fi
+	    ;;
+	'restart')
+	    $0 stop
+	    $0 start
+	    ;;
+	*)
+	    echo "Usage: ivms {start|stop|status|restart}"
+	    exit 1
+esac
+
+exit $?
+
+

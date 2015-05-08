@@ -1,0 +1,167 @@
+
+#!/bin/sh
+
+ls /msw1/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msw1"
+    if [ -r "/msw1/LOCK" ]
+        then
+                host=`cat /msw1/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msw1`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msw1/$f
+                        mv /msw1/$f /home/nextone/cdrs1/
+                done
+        fi
+else
+    echo "no new file in /msw1"
+fi
+
+ls /msw2/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msw2"
+    if [ -r "/msw2/LOCK" ]
+        then
+                host=`cat /msw2/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msw2`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msw2/$f
+                        mv /msw2/$f /home/nextone/cdrs2/
+                done
+        fi
+else
+#!/bin/sh
+
+ls /msw1/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msw1"
+    if [ -r "/msw1/LOCK" ]
+        then
+                host=`cat /msw1/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msw1`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msw1/$f
+                        mv /msw1/$f /home/nextone/cdrs1/
+                done
+        fi
+else
+    echo "no new file in /msw1"
+fi
+
+ls /msw2/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msw2"
+    if [ -r "/msw2/LOCK" ]
+        then
+                host=`cat /msw2/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msw2`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msw2/$f
+                        mv /msw2/$f /home/nextone/cdrs2/
+                done
+        fi
+else
+    echo "no new file in /msw2"
+fi
+
+[root@monnex03 narsagent]# 
+[root@monnex03 narsagent]# 
+[root@monnex03 narsagent]# 
+[root@monnex03 narsagent]# cat narsmv
+#!/bin/sh
+
+ls /msw1/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msw1"
+    if [ -r "/msw1/LOCK" ]
+        then
+                host=`cat /msw1/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msw1`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msw1/$f
+                        mv /msw1/$f /home/nextone/cdrs1/
+                done
+        fi
+else
+    echo "no new file in /msw1"
+fi
+
+ls /msw2/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msw2"
+    if [ -r "/msw2/LOCK" ]
+        then
+                host=`cat /msw2/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msw2`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msw2/$f
+                        mv /msw2/$f /home/nextone/cdrs2/
+                done
+        fi
+else
+    echo "no new file in /msw2"
+fi
+
+ls /msc1/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msc1"
+    if [ -r "/msc1/LOCK" ]
+        then
+                host=`cat /msc1/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msc1`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msc1/$f
+                        mv /msc1/$f /home/msc1/cdrs/
+                done
+        fi
+else
+    echo "no new file in /msc1"
+fi
+
+ls /msc2/* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo "file exists in /msc2"
+    if [ -r "/msc2/LOCK" ]
+        then
+                host=`cat /msc2/LOCK`
+                echo "found LOCK file from $host"
+        else
+                for f in `ls /msc2`
+                do
+                        t=`echo $f | perl -e 'while (<STDIN>) { /(\d+)/; print "$1\n"; }'`
+                        touch -t $t /msc2/$f
+                        mv /msc2/$f /home/msc2/cdrs/
+                done
+        fi
+else
+    echo "no new file in /msc2"
+fi

@@ -1,0 +1,125 @@
+#!/bin/bash
+
+. ./alinstall.sh
+
+ExportInterceptedCallList()
+{
+cat <<__CMDTEXT
+
+echo "begin transaction;" > /var/tmp/interceptedlist.pgsql
+pg_dump -Umsw --column-inserts --data-only -t li_interceptedcalls >> /var/tmp/interceptedlist.pgsql
+echo "end transaction;" >> /var/tmp/interceptedlist.pgsql
+
+__CMDTEXT
+}
+
+ExportWarrantList()
+{
+cat <<__CMDTEXT
+
+echo "begin transaction;" > /var/tmp/warrantlist.pgsql
+pg_dump -Umsw --column-inserts --data-only -t li_warrant >> /var/tmp/warrantlist.pgsql
+echo "end transaction;" >> /var/tmp/warrantlist.pgsql
+
+__CMDTEXT
+}
+
+
+ExportCollectorList()
+{
+cat <<__CMDTEXT
+
+echo "begin transaction;" > /var/tmp/li_collector.pgsql
+pg_dump -Umsw --column-inserts --data-only -t li_collector >> /var/tmp/li_collector.pgsql
+echo "end transaction;" >> /var/tmp/li_collector.pgsql
+
+__CMDTEXT
+}
+
+
+if [ -n "$SWMF" ]; then
+        echo "SWM Case" 1> /dev/null 2>&1
+else
+        export SWMF=0
+fi
+
+
+MACHINEID=`hostname`
+if [ -z "$MACHINEID" ]; then
+    echo -e "\nERROR: \$MACHINEID is null, exit 1\n"
+	exit 1
+fi
+
+PEERISERVER=`DbGetPeerIserver $MACHINEID | sed -e 's/^\s//g'| sed -e 's/\s$//g'`
+if [ -z "$PEERISERVER" ]; then
+    echo -e "\nERROR: \$PEERISERVER is null, exit 1\n"
+	exit 1
+fi
+
+echo "Exporting Intercepted call list file on peer..."
+RemoteExecution $PEERISERVER ExportInterceptedCallList
+if [ $? -ne 0 ]; then
+    echo -e "\nERROR: remote command execution failed, exit 1\n"
+	exit 1
+fi
+
+
+echo "Exporting warrant list file on peer..."
+RemoteExecution $PEERISERVER ExportWarrantList
+if [ $? -ne 0 ]; then
+    echo -e "\nERROR: remote command execution failed, exit 1\n"
+	exit 1
+fi
+
+echo "Exporting warrant list file on peer..."
+RemoteExecution $PEERISERVER ExportCollectorList
+if [ $? -ne 0 ]; then
+    echo -e "\nERROR: remote command execution failed, exit 1\n"
+	exit 1
+fi
+
+#copy intercepted pgsqls  file from the peer MSX 
+echo "Copying files from  peer..."
+if [ $SWMF -eq 1 ]; then
+        scp -i /var/lib/nextone/install/ssh/sshkey -o stricthostkeychecking=no -o NumberOfPasswordPrompts=0 -o ConnectTimeout=5 root@$PEERISERVER:/var/tmp/interceptedlist.pgsql /var/tmp/interceptedlist.pgsql 
+        scp -i /var/lib/nextone/install/ssh/sshkey -o stricthostkeychecking=no -o NumberOfPasswordPrompts=0 -o ConnectTimeout=5 root@$PEERISERVER:/var/tmp/warrantlist.pgsql    /var/tmp/warrantlist.pgsql 
+        scp -i /var/lib/nextone/install/ssh/sshkey -o stricthostkeychecking=no -o NumberOfPasswordPrompts=0 -o ConnectTimeout=5 root@$PEERISERVER:/var/tmp/li_collector.pgsql    /var/tmp/li_collector.pgsql 
+else
+        scp  root@$PEERISERVER:/var/tmp/interceptedlist.pgsql  /var/tmp/interceptedlist.pgsql  2>&1 >> /var/log/iserverinstall.log
+        scp  root@$PEERISERVER:/var/tmp/warrantlist.pgsql  /var/tmp/warrantlist.pgsql  2>&1 >> /var/log/iserverinstall.log
+        scp  root@$PEERISERVER:/var/tmp/li_collector.pgsql  /var/tmp/li_collector.pgsql  2>&1 >> /var/log/iserverinstall.log
+fi
+
+if [ $? -ne 0 ]; then
+    echo -e "\nERROR: scp returned failure, exit 1\n"
+	exit 1
+fi
+
+
+#sleep for 5 secs
+sleep 5
+
+echo "Importing intercepted call list table ..."
+psql -Umsw < /var/tmp/interceptedlist.pgsql 2>&1 >> /var/log/iserverinstall.log
+if [ $? -ne 0 ]; then
+    echo -e "\nERROR: remote command execution failed, exit 1\n"
+	exit 1
+fi
+
+echo "Importing warrant list table ..."
+psql -Umsw < /var/tmp/warrantlist.pgsql 2>&1 >> /var/log/iserverinstall.log
+if [ $? -ne 0 ]; then
+    echo -e "\nERROR: remote command execution failed, exit 1\n"
+	exit 1
+fi
+
+
+echo "Importing warrant list table ..."
+psql -Umsw < /var/tmp/li_collector.pgsql 2>&1 >> /var/log/iserverinstall.log
+if [ $? -ne 0 ]; then
+    echo -e "\nERROR: remote command execution failed, exit 1\n"
+	exit 1
+fi
+
+echo -e "\nImport of intrecepted calls,warrant and collector list were successful, please start  the iserver!\n"
+exit 0

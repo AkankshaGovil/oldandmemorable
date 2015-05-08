@@ -1,0 +1,82 @@
+#!/bin/sh
+#Configure this script with a line in cron like following.
+#The following line executes this script everyday at 22:00 hrs.
+#0 22 * * * ( /usr/local/bin/cdrdel )
+
+# It will sleep for querytime * factor seconds before the next invocation
+# can be started.
+# In case of small querytime (few seconds), two executions are quaranteed
+# to be mintime apart
+# server should be localhost as pidfile is created on the server
+
+prog=`basename $0`;
+pid=$$;
+logfile=/tmp/$prog.log
+pidfile=/tmp/$prog.pid
+tmpfile=/tmp/$prog.$$
+mysql=/usr/bin/mysql
+
+exec >>$logfile 2>&1
+
+LOCK=0
+old=60;
+limit=50000;
+host=localhost;
+user=root;
+pass='';
+mintime=150;
+factor=1;
+
+DeleteCdrLock()
+{
+    $mysql -h $host -u $user -f -vvv --password=$pass <<EOF
+    use nars;
+    select now();
+    select @t1:=unix_timestamp();
+    lock tables cdrs WRITE;
+    delete from cdrs where date_time <= date_sub(curdate(), interval $old day) limit $limit;
+    unlock tables;
+    lock tables ratedcdr WRITE;
+    delete from ratedcdr where datetime <= date_sub(curdate(), interval $old day) limit $limit;
+    unlock tables;
+    select @t2:=unix_timestamp();
+    select @t2-@t1 into OUTFILE "$tmpfile" from license;
+EOF
+}
+
+DeleteCdr()
+{
+    $mysql -h $host -u $user -f -vvv --password=$pass <<EOF
+    use nars;
+    select now();
+    select @t1:=unix_timestamp();
+    delete from cdrs where date_time <= date_sub(curdate(), interval $old day) limit $limit;
+    delete from ratedcdr where datetime <= date_sub(curdate(), interval $old day) limit $limit;
+#    select count(*) from cdrs where date_time <= date_sub(curdate(), interval $old day) limit $limit;
+#    select count(*) from ratedcdr where datetime <= date_sub(curdate(), interval $old day) limit $limit;
+    select @t2:=unix_timestamp();
+    select @t2-@t1 into OUTFILE "$tmpfile" from license;
+EOF
+}
+
+if [ -f $pidfile ]
+then
+    echo "pidfile $pidfile exists process $$ exiting..."
+else
+    touch $pidfile
+    if [ $LOCK -ne 0 ]
+    then
+        DeleteCdrLock
+    else
+        DeleteCdr
+    fi
+    querytime=`cat $tmpfile`
+    querytime=`expr $querytime \* $factor`
+    if [ $querytime -lt $mintime ]
+    then
+        querytime=$mintime;
+    fi
+    sleep $querytime
+    rm -f $tmpfile
+    rm -f $pidfile
+fi

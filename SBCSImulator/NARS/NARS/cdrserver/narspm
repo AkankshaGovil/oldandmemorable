@@ -1,0 +1,76 @@
+#!/bin/sh
+
+#########################################################################################
+##
+## NARS process manager script
+##
+## Usage:
+##   run this as a cron job, i.e., a typical crontab entry might be
+##       0,15,30,45 * * * * ( cd /usr/local/narsagent; ./narspm >> /usr/local/narsagent/narspm.log 2>&1 )
+##   which will check for the narsgent every 15 minutes
+##
+#########################################################################################
+
+ECHO=/bin/echo
+KILL=/bin/kill
+
+SCRIPTDIR=`dirname $0`
+
+NUM_INST=1
+
+PID_EXT="pid"
+LOGPPPIDFN="$SCRIPTDIR/logpp"
+CDRSERVERPIDFN="$SCRIPTDIR/nars"
+RATEUNRATEDPIDFN="$SCRIPTDIR/narsbatch"
+
+LOGPPPIDFILE="$LOGPPPIDFN.$PID_EXT"
+CDRSERVERPIDFILE="$CDRSERVERPIDFN.$PID_EXT"
+RATEUNRATEDPIDFILE="$RATEUNRATEDPIDFN.$PID_EXT"
+RM="rm -f"
+
+PCHECKS="$LOGPPPIDFILE:logpp"
+ii=0;
+while [ $ii -lt $NUM_INST ]
+do
+	if [ $ii -ne 0 ]
+	then
+		PCHECKS="$PCHECKS $CDRSERVERPIDFN""$ii.$PID_EXT:cdrserver:$ii"
+	else 
+		PCHECKS="$PCHECKS $CDRSERVERPIDFN.$PID_EXT:cdrserver:"
+	fi
+	ii=`expr $ii + 1`
+done
+
+TIME=`env TZ=GMT date`
+
+for P in $PCHECKS
+do
+  PIDFILE=`echo $P | cut -d":" -f1`
+  PROCESS=`echo $P | cut -d":" -f2`
+  INSTANCE=`echo $P | cut -d":" -f3`
+  if [ -r $PIDFILE ]
+  then
+    # if the pid file exists, but the process does not, we need to restart
+    FILEPID=`cat $PIDFILE`
+    PROCESSPID=`ps -p $FILEPID | grep -v PID | tr -s ' ' ' ' | cut -d" " -f2`
+
+    if [ -z "$PROCESSPID" ]
+    then
+        # process does not exist, need to restart
+        $ECHO "$TIME: narsagent [$PROCESS] not running, deleting $PIDFILE"
+	$RM $PIDFILE
+        $ECHO "$TIME: narsagent [$PROCESS] not running, attempting to restart"
+	# !!! warning - it looks like this is not handling multiple instances
+	# of cdrserver properly
+	PWD=`pwd`
+	cd $SCRIPTDIR
+        ./narsagent $PROCESS start
+	cd $PWD
+    else
+        $ECHO "$TIME: RSM agent [$PROCESS] ($FILEPID) running fine"
+    fi
+  else
+    $ECHO "$TIME: narsagent [$PROCESS] pid file does not exist, must have been stopped manually"
+  fi
+done
+

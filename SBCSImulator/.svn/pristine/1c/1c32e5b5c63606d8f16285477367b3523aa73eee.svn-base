@@ -1,0 +1,1624 @@
+<HTML>
+<HEAD>
+<TITLE>DBI::DBD - DBD Driver Writer's Guide</TITLE>
+<LINK REL="stylesheet" HREF="../../../Active.css" TYPE="text/css">
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD CLASS=block VALIGN=MIDDLE WIDTH=100% BGCOLOR="#cccccc">
+<FONT SIZE=+1><STRONG><P CLASS=block>&nbsp;DBI::DBD - DBD Driver Writer's Guide</P></STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#version and volatility">VERSION and VOLATILITY</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#book">BOOK</A></LI>
+	<LI><A HREF="#registering a new driver">REGISTERING A NEW DRIVER</A></LI>
+	<UL>
+
+		<LI><A HREF="#locating drivers">Locating drivers</A></LI>
+		<LI><A HREF="#registering a new driver">Registering a new driver</A></LI>
+	</UL>
+
+	<LI><A HREF="#creating a new driver using pure perl">CREATING A NEW DRIVER USING PURE PERL</A></LI>
+	<UL>
+
+		<LI><A HREF="#makefile.pl">Makefile.PL</A></LI>
+		<LI><A HREF="#readme file">README file</A></LI>
+		<LI><A HREF="#manifest">MANIFEST</A></LI>
+		<LI><A HREF="#lib/bundle/dbd/driver.pm">lib/Bundle/DBD/Driver.pm</A></LI>
+		<LI><A HREF="#driver.pm">Driver.pm</A></LI>
+		<LI><A HREF="#tests">Tests</A></LI>
+	</UL>
+
+	<LI><A HREF="#creating a new driver using c/xs">CREATING A NEW DRIVER USING C/XS</A></LI>
+	<UL>
+
+		<LI><A HREF="#requirements on a driver">REQUIREMENTS ON A DRIVER</A></LI>
+		<LI><A HREF="#code to be written">CODE TO BE WRITTEN</A></LI>
+		<LI><A HREF="#driver.pm">Driver.pm</A></LI>
+		<LI><A HREF="#driver.xs">Driver.xs</A></LI>
+		<LI><A HREF="#driver.h">Driver.h</A></LI>
+		<LI><A HREF="#implementation header dbdimp.h">Implementation header dbdimp.h</A></LI>
+		<LI><A HREF="#implementation source dbdimp.c">Implementation source dbdimp.c</A></LI>
+		<LI><A HREF="#implementing bind_param_inout support">Implementing bind_param_inout support</A></LI>
+		<LI><A HREF="#makefile.pl">Makefile.PL</A></LI>
+	</UL>
+
+	<LI><A HREF="#methods which do not need to be written">METHODS WHICH DO NOT NEED TO BE WRITTEN</A></LI>
+	<LI><A HREF="#writing an emulation layer for an old perl interface">WRITING AN EMULATION LAYER FOR AN OLD PERL INTERFACE</A></LI>
+	<UL>
+
+		<LI><A HREF="#setting emulation perl variables">Setting emulation perl variables</A></LI>
+	</UL>
+
+	<LI><A HREF="#other miscellaneous information">OTHER MISCELLANEOUS INFORMATION</A></LI>
+	<UL>
+
+		<LI><A HREF="#the imp_xyz_t types">The imp_xyz_t types</A></LI>
+		<LI><A HREF="#using dbic_impset_on">Using DBIc_IMPSET_on</A></LI>
+		<LI><A HREF="#using dbic_is(), dbic_has(), dbic_on() and dbic_off()">Using DBIc_is(), DBIc_has(), <CODE>DBIc_on()</CODE> and <CODE>DBIc_off()</CODE></A></LI>
+		<LI><A HREF="#using dbis>get_fbav()">Using DBIS-&gt;<CODE>get_fbav()</CODE></A></LI>
+	</UL>
+
+	<LI><A HREF="#subclassing dbi drivers">SUBCLASSING DBI DRIVERS</A></LI>
+	<UL>
+
+		<LI><A HREF="#overwriting methods">Overwriting methods</A></LI>
+		<LI><A HREF="#attribute handling">Attribute handling</A></LI>
+	</UL>
+
+	<LI><A HREF="#write_getinfo_pm">write_getinfo_pm</A></LI>
+	<LI><A HREF="#authors">AUTHORS</A></LI>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>DBI::DBD - DBD Driver Writer's Guide</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  perldoc DBI::DBD</PRE>
+<P>
+<HR>
+<H1><A NAME="version and volatility">VERSION and VOLATILITY</A></H1>
+<PRE>
+  $Revision: 1.1 $
+  $Date: 2002/10/17 21:16:16 $</PRE>
+<P>This document is a minimal draft which is in need of further work.</P>
+<P>The changes will occur both because the DBI specification is changing
+and hence the requirements on DBD drivers change, and because feedback
+from people reading this document will suggest improvements to it.</P>
+<P>Please read the DBI documentation first and fully, including the DBI FAQ.
+The reread the DBI specification again as you're reading this. It'll help.</P>
+<P>This document is a patchwork of contributions from various authors.
+More contributions (preferably as patches) are very welcome.</P>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>This document is primarily intended to help people writing new
+database drivers for the Perl Database Interface (Perl DBI).
+It may also help others interested in discovering why the internals of
+a DBD driver are written the way they are.</P>
+<P>This is a guide.  Few (if any) of the statements in it are completely
+authoritative under all possible circumstances.  This means you will
+need to use judgement in applying the guidelines in this document.
+If in <EM>any</EM> doubt at all, please do contact the dbi-dev mailing list
+(details given below) where Tim Bunce and other driver authors can help.</P>
+<P>The primary web-site for locating DBI software and information is</P>
+<PRE>
+  <A HREF="http://dbi.perl.org/">http://dbi.perl.org/</A></PRE>
+<P>There are 2 main and one auxilliary mailing lists for people working
+with DBI.  The primary lists are <A HREF="mailto:dbi-users@isc.org">dbi-users@isc.org</A> for general users
+of DBI and DBD drivers, and <A HREF="mailto:dbi-dev@isc.org">dbi-dev@isc.org</A> mainly for DBD driver
+writers (don't join the dbi-dev list unless you have a good reason).
+The auxilliary list is <A HREF="mailto:dbi-announce@isc.org">dbi-announce@isc.org</A> for announcing new
+releases of DBI or DBD drivers.</P>
+<P>You can join these lists by accessing the web-site
+<A HREF="http://www.perl.org/dbi-lists.html">http://www.perl.org/dbi-lists.html</A>.
+The lists are closed so you cannot send email to any of the lists
+unless you join the list first.</P>
+<P>You should also consider monitoring the comp.lang.perl.* newsgroups.</P>
+<P>
+<HR>
+<H1><A NAME="book">BOOK</A></H1>
+<P>The definitive book on Perl DBI is 'Programming the Perl DBI: Database
+programming with Perl' by Alligator Descartes and Tim Bunce, published
+by O'Reilly Associates, February 2000, ISBN 1-56592-699-4.  Buy it now
+if you have not already done so.</P>
+<P>
+<HR>
+<H1><A NAME="registering a new driver">REGISTERING A NEW DRIVER</A></H1>
+<P>Before writing a new driver, it is in your interests to find out
+whether there already is a driver for your database.  If there is such
+a driver, it would be much easier to make use of it than to write your
+own!</P>
+<P>
+<H2><A NAME="locating drivers">Locating drivers</A></H2>
+<P>The primary web-site for locating Perl software is
+<A HREF="http://www.perl.com/CPAN">http://www.perl.com/CPAN</A>.
+You should look under the various modules listings for the software
+you are after.
+Two of the main pages you should look at are:</P>
+<PRE>
+  <A HREF="http://www.perl.org/CPAN/modules/by-category/07_Database_Interfaces/DBI">http://www.perl.org/CPAN/modules/by-category/07_Database_Interfaces/DBI</A></PRE>
+<PRE>
+  <A HREF="http://www.perl.org/CPAN/modules/by-category/07_Database_Interfaces/DBD">http://www.perl.org/CPAN/modules/by-category/07_Database_Interfaces/DBD</A></PRE>
+<P>See the DBI docs for information on DBI web sites and mailing lists.</P>
+<P>
+<H2><A NAME="registering a new driver">Registering a new driver</A></H2>
+<P>Before going through any official registration process, you will need
+to establish that there is no driver already in the works.
+You'll do that by asking the DBI mailing lists whether there is such a
+driver available, or whether anybody is working on one.</P>
+<P>
+<HR>
+<H1><A NAME="creating a new driver using pure perl">CREATING A NEW DRIVER USING PURE PERL</A></H1>
+<P>Writing a pure Perl driver is surprisingly simple. However, there are
+some problems one should be aware of. The best option is of course
+picking up an existing driver and carefully modifying one method
+after the other.</P>
+<P>As an example we take a look at the <EM>DBD::File</EM> driver, a driver for
+accessing plain files as tables, which is part of the <EM>DBD::CSV</EM>
+package. In what follows I assume the name <CODE>Driver</CODE> for your new
+package: The least thing we have to implement are the files
+<A HREF="#item_Makefile%2EPL"><CODE>Makefile.PL</CODE></A> and <A HREF="#item_Driver%2Epm"><CODE>Driver.pm</CODE></A>.</P>
+<P>
+<H2><A NAME="makefile.pl">Makefile.PL</A></H2>
+<P>You typically start with writing <A HREF="#item_Makefile%2EPL"><CODE>Makefile.PL</CODE></A>, a Makefile generator.
+The contents of this file are described in detail in the MakeMaker
+man pages, it's definitely a good idea if you start reading them.
+At least you should know about the variables <EM>CONFIGURE</EM>, <EM>DEFINED</EM>,
+<EM>DIR</EM>, <EM>EXE_FILES</EM>, <EM>INC</EM>, <EM>LIBS</EM>, <EM>LINKTYPE</EM>, <EM>NAME</EM>, <EM>OPTIMIZE</EM>,
+<EM>PL_FILES</EM>, <EM>VERSION</EM>, <EM>VERSION_FROM</EM>, <EM>clean</EM>, <EM>depend</EM>, <EM>realclean</EM>
+from the <CODE>ExtUtils::MakeMaker</CODE> man page: These are used in almost any
+Makefile.PL. Additionally read the section on <EM>Overriding MakeMaker Methods</EM>
+and the descriptions of the <EM>distcheck</EM>, <EM>disttest</EM> and <EM>dist</EM> targets:
+They will definitely be useful for you.</P>
+<P>Of special importance for DBI drivers is the <EM>postamble</EM> method from
+the <CODE>ExtUtils::MM_Unix</CODE> man page. And for Emacs users I recommend
+the <EM>libscan</EM> method.</P>
+<P>Now an example, I use the word <CODE>Driver</CODE> wherever you should insert
+your drivers name:</P>
+<PRE>
+  # -*- perl -*-</PRE>
+<PRE>
+  use DBI 1.03;
+  use DBI::DBD;
+  use ExtUtils::MakeMaker;</PRE>
+<PRE>
+  WriteMakefile(
+      dbd_edit_mm_attribs( {
+          'NAME'         =&gt; 'DBD::Driver',
+          'VERSION_FROM' =&gt; 'Driver.pm',
+          'INC'          =&gt; $DBI_INC_DIR,
+          'dist'         =&gt; { 'SUFFIX'   =&gt; '.gz',
+                                'COMPRESS' =&gt; 'gzip -9f' },
+          'realclean'    =&gt; '*.xsi'
+      } )
+  );</PRE>
+<PRE>
+  package MY;
+  sub postamble { return main::dbd_postamble(@_); }
+  sub libscan {
+      my ($self, $path) = @_;
+      ($path =~ m/\~$/) ? undef : $path;
+  }</PRE>
+<P>Note the calls to <CODE>dbd_edit_mm_attribs()</CODE> and dbd_postamble().</P>
+<P>See also <A HREF="..\..\..\site\lib/ExtUtils/MakeMaker(3).html">the ExtUtils::MakeMaker(3) manpage</A>. <A HREF="..\..\..\site\lib/ExtUtils/MM_Unix(3).html">the ExtUtils::MM_Unix(3) manpage</A>.</P>
+<P>
+<H2><A NAME="readme file">README file</A></H2>
+<P>The README file should describe what the driver is for, the
+pre-requisites for the build process, the actual build process, and how
+to report errors. Users will find ways of breaking the driver build and
+test process which you would never even dreamed to be possible in your
+nightmares. :-) Therefore, you need to write this document defensively
+and precisely.  Also, it is in your interests to ensure that your tests
+work as widely as possible. As always, use the README from one of the
+established drivers as a basis for your own.</P>
+<P>
+<H2><A NAME="manifest">MANIFEST</A></H2>
+<P>The MANIFEST will be used by the Makefile'd dist target to build the
+distribution tar file that is uploaded to CPAN. It should list every
+file that you want to include in your distribution, one per line.</P>
+<P>
+<H2><A NAME="lib/bundle/dbd/driver.pm">lib/Bundle/DBD/Driver.pm</A></H2>
+<P>The CPAN module provides an extremely powerful bundle mechanism that
+allows you to specify pre-requisites for your driver.
+The primary pre-requisite is Bundle::DBI; you may want or need to add
+some more.
+With the bundle set up correctly, the user can type:</P>
+<PRE>
+        perl -MCPAN -e 'install Bundle::DBD::Driver'</PRE>
+<P>and Perl will download, compile, test and install all the Perl modules
+needed to build your driver.</P>
+<P>A suitable skeleton for this file is shown below.
+The prerequisite modules are listed in the CONTENTS section, with the
+official name of the module followed by a dash and an informal name or
+description.
+Listing Bundle::DBI as the main pre-requisite simplifies life.
+Don't forget to list your driver.
+Note that unless the DBMS is itself a Perl module, you cannot list it
+as a pre-requisite in this file.
+You are strongly advised to keep the version of the bundle in sync
+with the version of your driver.
+You might want to add configuration management, copyright, and
+licencing information at the top.</P>
+<PRE>
+  package Bundle::DBD::Driver;</PRE>
+<PRE>
+  $VERSION = '0.01';</PRE>
+<PRE>
+  1;</PRE>
+<PRE>
+  __END__</PRE>
+<PRE>
+  =head1 NAME</PRE>
+<PRE>
+  Bundle::DBD::Driver - A bundle to install all DBD::Driver related modules</PRE>
+<PRE>
+  =head1 SYNOPSIS</PRE>
+<PRE>
+  C&lt;perl -MCPAN -e 'install Bundle::DBD::Driver'&gt;</PRE>
+<PRE>
+  =head1 CONTENTS</PRE>
+<PRE>
+  Bundle::DBI  - Bundle for DBI by TIMB (Tim Bunce)</PRE>
+<PRE>
+  DBD::Driver  - DBD::Driver by YOU (Your Name)</PRE>
+<PRE>
+  =head1 DESCRIPTION</PRE>
+<PRE>
+  This bundle includes all the modules used by the Perl Database
+  Interface (DBI) driver for Driver (DBD::Driver), assuming the
+  use of DBI version 1.13 or later, created by Tim Bunce.</PRE>
+<PRE>
+  If you've not previously used the CPAN module to install any
+  bundles, you will be interrogated during its setup phase.
+  But when you've done it once, it remembers what you told it.
+  You could start by running:</PRE>
+<PRE>
+    C&lt;perl -MCPAN -e 'install Bundle::CPAN'&gt;</PRE>
+<PRE>
+  =head1 SEE ALSO</PRE>
+<PRE>
+  Bundle::DBI</PRE>
+<PRE>
+  =head1 AUTHOR</PRE>
+<PRE>
+  Your Name E&lt;lt&gt;F&lt;you@yourdomain.com&gt;E&lt;gt&gt;</PRE>
+<PRE>
+  =head1 THANKS</PRE>
+<PRE>
+  This bundle was created by ripping off Bundle::libnet created by
+  Graham Barr E&lt;lt&gt;F&lt;gbarr@ti.com&gt;E&lt;gt&gt;, and radically simplified
+  with some information from Jochen Wiedmann E&lt;lt&gt;F&lt;joe@ispsoft.de&gt;E&lt;gt&gt;.
+  The template was then included in the DBI::DBD documentation by
+  Jonathan Leffler E&lt;lt&gt;F&lt;jleffler@informix.com&gt;E&lt;gt&gt;.</PRE>
+<PRE>
+  =cut</PRE>
+<P>
+<H2><A NAME="driver.pm">Driver.pm</A></H2>
+<P>The Driver.pm file defines the Perl module DBD::Driver for your driver.
+It will define a package DBD::Driver along with some version information,
+some variable definitions, and a function <CODE>driver()</CODE> which will have a more
+or less standard structure.</P>
+<P>It will also define a package DBD::Driver::dr (with methods connect(),
+<CODE>data_sources()</CODE> and disconnect_all()), and a package DBD::Driver::db
+(which will define a function <CODE>prepare()</CODE> etc), and a package DBD::Driver::st
+with methods execute(), <CODE>fetch()</CODE> and the like.</P>
+<P>The Driver.pm file will also contain the documentation specific to
+DBD::Driver in the format used by perldoc.</P>
+<P>Now let's take a closer look at an excerpt of File.pm as an example.
+We ignore things that are common to any module (even non-DBI(D) modules)
+or really specific for the DBD::File package.</P>
+<DL>
+<DT><STRONG><A NAME="item_The_header">The header</A></STRONG><BR>
+<DD>
+<PRE>
+  package DBD::File;</PRE>
+<PRE>
+  use strict;
+  use vars qw($err $errstr $state $drh);</PRE>
+<PRE>
+  $err = 0;             # holds error code   for DBI::err
+  $errstr = &quot;&quot;;         # holds error string for DBI::errstr
+  $sqlstate = &quot;&quot;;       # holds SQL state for    DBI::state</PRE>
+<P>These variables are used for storing error states and messages.
+However, it is crucial to understand that you must not modify
+them directly; instead use the <EM>event</EM> method, see below.</P>
+<PRE>
+  $drh = undef;         # holds driver handle once initialized</PRE>
+<P>This is where the driver handle will be stored, once created. Note,
+that you may assume, there's only one handle for your driver.</P>
+<DT><STRONG><A NAME="item_The_driver_constructor">The driver constructor</A></STRONG><BR>
+<DD>
+<PRE>
+  sub driver
+  {
+      return $drh if $drh;      # already created - return same one
+      my ($class, $attr) = @_;</PRE>
+<PRE>
+      $class .= &quot;::dr&quot;;</PRE>
+<PRE>
+      # not a 'my' since we use it above to prevent multiple drivers
+      $drh = DBI::_new_drh($class, {
+          'Name'        =&gt; 'File',
+          'Version'     =&gt; $VERSION,
+          'Err'         =&gt; \$DBD::File::err,
+          'Errstr'      =&gt; \$DBD::File::errstr,
+          'State'       =&gt; \$DBD::File::state,
+          'Attribution' =&gt; 'DBD::File by Jochen Wiedmann',
+      });</PRE>
+<PRE>
+      return $drh;
+  }</PRE>
+<P>The <EM>driver</EM> method is the driver handle constructor. It's a
+reasonable example of how DBI implements its handles. There are three
+kinds: <STRONG>driver handles</STRONG> (typically stored in <CODE>$drh</CODE>, from now on
+called <CODE>drh</CODE>), <STRONG>database handles</STRONG> (from now on called <CODE>dbh</CODE> or
+<CODE>$dbh</CODE>) and <STRONG>statement handles</STRONG>, (from now on called <CODE>sth</CODE> or
+<CODE>$sth</CODE>).</P>
+<P>The prototype of DBI::_new_drh is</P>
+<PRE>
+  $drh = DBI::_new_drh($class, $attr1, $attr2);</PRE>
+<P>with the following arguments:</P>
+<DL>
+<DT><STRONG><A NAME="item_%24class"><EM>$class</EM></A></STRONG><BR>
+<DD>
+is typically your drivers class, e.g., ``DBD::File::dr'', passed as first
+argument to the <EM>driver</EM> method.
+<P></P>
+<DT><STRONG><A NAME="item_%24attr1"><EM>$attr1</EM></A></STRONG><BR>
+<DD>
+is a hash ref to attributes like <EM>Name</EM>, <EM>Version</EM>, <EM>Err</EM>, <EM>Errstr</EM>
+<EM>State</EM> and <EM>Attributrion</EM>. These are processed and used by DBI, you
+better not make any assumptions on them nor should you add private
+attributes here.
+<P></P>
+<DT><STRONG><A NAME="item_%24attr2"><EM>$attr2</EM></A></STRONG><BR>
+<DD>
+This is another (optional) hash ref with your private attributes. DBI
+will leave them alone.
+<P></P></DL>
+<P>The <EM>DBI::new_drh</EM> method and the <EM>driver</EM> method
+both return <CODE>undef</CODE> for failure (in which case you must look at
+$DBI::err and $DBI::errstr, because you have no driver handle).</P>
+<DT><STRONG><A NAME="item_The_database_handle_constructor">The database handle constructor</A></STRONG><BR>
+<DD>
+The next lines of code look as follows:
+<PRE>
+  package DBD::Driver::dr; # ====== DRIVER ======</PRE>
+<PRE>
+  $DBD::Driver::dr::imp_data_size = 0;</PRE>
+<P>Note that no @ISA is needed here, or for the other DBD::Driver::*
+classes, because the DBI takes care of that for you when the driver is
+loaded.</P>
+<P>The database handle constructor is a driver method, thus we have
+to change the namespace.</P>
+<PRE>
+  sub connect
+  {
+      my ($drh, $dbname, $user, $auth, $attr) = @_;</PRE>
+<PRE>
+      # Some database specific verifications, default settings
+      # and the like following here. This should only include
+      # syntax checks or similar stuff where it's legal to
+      # 'die' in case of errors.</PRE>
+<PRE>
+      # create a 'blank' dbh (call superclass constructor)
+      my $dbh = DBI::_new_dbh($drh, {
+          'Name'         =&gt; $dbname,
+          'USER'         =&gt; $user,
+          'CURRENT_USER' =&gt; $user,
+      });</PRE>
+<PRE>
+      # Process attributes from the DSN; we assume ODBC syntax
+      # here, that is, the DSN looks like var1=val1;...;varN=valN</PRE>
+<PRE>
+      my $var;
+      foreach $var (split(/;/, $dbname)) {
+          if ($var =~ m/(.*?)=(,*)/) {
+              # Not !!! $dbh-&gt;{$var} = $val;
+              $dbh-&gt;STORE($var, $val);
+          }
+      }
+      $dbh;
+  }</PRE>
+<P>This is mostly the same as in the <EM>driver handle constructor</EM> above.
+The arguments are described in the DBI man page. See <EM>DBI(3)</EM>.
+The constructor is called, returning a database handle. The constructors
+prototype is</P>
+<PRE>
+  $dbh = DBI::_new_dbh($drh, $attr1, $attr2);</PRE>
+<P>with the same arguments as in the <EM>driver handle constructor</EM>, the
+exception being <A HREF="#item_%24class"><CODE>$class</CODE></A> replaced by <CODE>$drh</CODE>.</P>
+<P>Note the use of the <EM>STORE</EM> method for setting the dbh attributes.
+That's because within the driver code, the handle object you have is
+the 'inner' handle of a tied hash, not the outer handle that the
+users of your driver have.</P>
+<P>Because you have the inner handle, tie magic doesn't get invoked
+when you get or set values in the hash. This is often very handy for
+speed when you want to get or set simple non-special driver-specific
+attributes.</P>
+<P>However, some attribute values, such as those handled by the DBI
+like PrintError, don't actually exist in the hash and must be
+read via $h-&gt;<CODE>FETCH($attrib)</CODE> and set via $h-&gt;STORE($attrib, $value).
+If in any doubt, use these methods.</P>
+<P></P>
+<DT><STRONG><A NAME="item_Error_handling">Error handling</A></STRONG><BR>
+<DD>
+It is quite likely that something fails in the connect method. With
+DBD::File for example, you might catch an error when setting the
+current directory to something not existant by using the f_dir
+attribute.
+<P>To report an error, you use the <CODE>DBI::set_err</CODE> function/method:</P>
+<PRE>
+  $h-&gt;DBI::set_err($errcode, $errmsg);</PRE>
+<P>This will ensure that the error is recorded correctly and that
+RaiseError and PrintError etc are handled correctly.  Typically you'll
+always use the method instance, aka your method's first argument.</P>
+<P>As set_err always returns undef your error handling code can
+usually be simplified to something like this:</P>
+<PRE>
+  return $h-&gt;DBI::set_err($errcode, $errmsg) if ...;</PRE>
+<P></P>
+<DT><STRONG><A NAME="item_Other_driver_handle_methods">Other driver handle methods</A></STRONG><BR>
+<DD>
+may follow here. In particular you should consider a <EM>data_sources</EM>
+method, and a (possibly empty) <EM>disconnect_all</EM> method. See <EM>DBI(3)</EM>.
+<P></P>
+<DT><STRONG><A NAME="item_The_statement_handle_constructor">The statement handle constructor</A></STRONG><BR>
+<DD>
+There's nothing much new in the statement handle constructor.
+<PRE>
+  package DBD::Driver::db; # ====== DATABASE ======</PRE>
+<PRE>
+  $DBD::Driver::db::imp_data_size = 0;</PRE>
+<PRE>
+  sub prepare
+  {
+      my ($dbh, $statement, @attribs) = @_;</PRE>
+<PRE>
+      # create a 'blank' sth
+      my $sth = DBI::_new_sth($dbh, {
+          'Statement' =&gt; $statement,
+          });</PRE>
+<PRE>
+      # Setup module specific data
+      $sth-&gt;STORE('driver_params', []);
+      $sth-&gt;STORE('NUM_OF_PARAMS', ($statement =~ tr/?//));</PRE>
+<PRE>
+      $sth;
+  }</PRE>
+<P>This is still the same: Check the arguments and call the super class
+constructor <EM>DBI::_new_sth</EM>. Note the prefix <EM>driver_</EM> in the
+attribute names: It is required that your private attributes
+are lowercased and use such a prefix. See the DBI manual.</P>
+<P>Note that we parse the statement here in order to setup the attribute
+<EM>NUM_OF_PARAMS</EM>. We could as well do this in the <EM>execute</EM> method
+below, the DBI specs explicitly allow to defer this. However, one
+could not call <EM>bind_param</EM> in that case.</P>
+<P></P>
+<DT><STRONG><A NAME="item_Transaction_handling">Transaction handling</A></STRONG><BR>
+<DD>
+Pure Perl drivers will rarely support transactions. Thus you're <EM>commit</EM>
+and <EM>rollback</EM> methods will typically be quite simple:
+<PRE>
+  sub commit
+  {
+      my ($dbh) = @_;
+      if ($dbh-&gt;FETCH('Warn')) {
+          warn(&quot;Commit ineffective while AutoCommit is on&quot;);
+      }
+      1;
+  }</PRE>
+<PRE>
+  sub rollback {
+      my ($dbh) = @_;
+      if ($dbh-&gt;FETCH('Warn')) {
+          warn(&quot;Rollback ineffective while AutoCommit is on&quot;);
+      }
+      0;
+  }</PRE>
+<P></P>
+<DT><STRONG><A NAME="item_The_STORE_and_FETCH_methods">The STORE and FETCH methods</A></STRONG><BR>
+<DD>
+These methods (that we have already used, see above) are called for
+you, whenever the user does a
+<PRE>
+  $dbh-&gt;{$attr} = $val;</PRE>
+<P>or, respectively,</P>
+<PRE>
+  $val = $dbh-&gt;{$attr};</PRE>
+<P>See <EM>perltie(1)</EM> for details on tied hash refs to understand why these
+methods are required.</P>
+<P>The DBI will handle most attributes for you, in particular attributes
+like <EM>RaiseError</EM> or <EM>PrintError</EM>. All you have to do handle your
+driver's private attributes and any attributes, like AutoCommit, that
+the DBI can't handle for you. A good example might look like this:</P>
+<PRE>
+  sub STORE
+  {
+      my ($dbh, $attr, $val) = @_;
+      if ($attr eq 'AutoCommit') {
+          # AutoCommit is currently the only standard attribute we have
+          # to consider.
+          if (!$val) { die &quot;Can't disable AutoCommit&quot;; }
+          return 1;
+      }
+      if ($attr =~ m/^driver_/) {
+          # Handle only our private attributes here
+          # Note that we could trigger arbitrary actions.
+          # Ideally we should catch unknown attributes.
+          $dbh-&gt;{$attr} = $val; # Yes, we are allowed to do this,
+          return 1;             # but only for our private attributes
+      }
+      # Else pass up to DBI to handle for us
+      $dbh-&gt;SUPER::STORE($attr, $val);
+  }</PRE>
+<PRE>
+  sub FETCH
+  {
+      my ($dbh, $attr) = @_;
+      if ($attr eq 'AutoCommit') { return 1; }
+      if ($attr =~ m/^driver_/) {
+          # Handle only our private attributes here
+          # Note that we could trigger arbitrary actions.
+          return $dbh-&gt;{$attr}; # Yes, we are allowed to do this,
+                                # but only for our private attributes
+      }
+      # Else pass up to DBI to handle
+      $dbh-&gt;SUPER::FETCH($attr);
+  }</PRE>
+<P>The DBI will actually store and fetch driver-specific attributes (with all
+lowercase names) without warning or error, so there's actually no need to
+implement driver-specific any code in your FETCH and STORE methods unless
+you need extra logic/checks, beyond getting or setting the value.</P>
+<P></P>
+<DT><STRONG><A NAME="item_Other_database_handle_methods">Other database handle methods</A></STRONG><BR>
+<DD>
+may follow here. In particular you should consider a (possibly empty)
+<EM>disconnect</EM> method, a <EM>quote</EM> method (if DBI's default isn't good
+for you).
+<P></P>
+<DT><STRONG><A NAME="item_The_execute_method">The execute method</A></STRONG><BR>
+<DD>
+This is perhaps the most difficult method because we have to consider
+parameter bindings here. We present a simplified implementation by
+using the <EM>driver_params</EM> attribute from above:
+<PRE>
+  package DBD::Driver::st;</PRE>
+<PRE>
+  $DBD::Driver::st::imp_data_size = 0;</PRE>
+<PRE>
+  sub bind_param
+  {
+      my ($sth, $pNum, $val, $attr) = @_;
+      my $type = (ref $attr) ? $attr-&gt;{TYPE} : $attr;
+      if ($type) {
+          my $dbh = $sth-&gt;{Database};
+          $val = $dbh-&gt;quote($sth, $type);
+      }
+      my $params = $sth-&gt;FETCH('driver_params');
+      $params-&gt;[$pNum-1] = $val;
+      1;
+  }</PRE>
+<PRE>
+  sub execute
+  {
+      my ($sth, @bind_values) = @_;
+      my $params = (@bind_values) ?
+          \@bind_values : $sth-&gt;FETCH('driver_params');
+      my $numParam = $sth-&gt;FETCH('NUM_OF_PARAMS');
+      if (@$params != $numParam) { ... }
+      my $statement = $sth-&gt;{'Statement'};
+      for (my $i = 0;  $i &lt; $numParam;  $i++) {
+          $statement =~ s/?/$params-&gt;[$i]/e;
+      }
+      # Do anything ... we assume that an array ref of rows is
+      # created and store it:
+      $sth-&gt;{'driver_data'} = $data;
+      $sth-&gt;{'driver_rows'} = @$data; # number of rows
+      $sth-&gt;STORE('NUM_OF_FIELDS') = $numFields;
+      @$data || '0E0';
+  }</PRE>
+<P>Things you should note here: We setup the NUM_OF_FIELDS attribute
+here, because this is essential for <EM>bind_columns</EM> to work. And
+we use attribute <EM>$sth-</EM>{'Statement'}&gt; which we have created
+within <EM>prepare</EM>. The attribute <EM>$sth-</EM>{'Database'}&gt;, which is
+nothing else than the <EM>dbh</EM>, was automatically created by DBI.</P>
+<P>Finally note that we return the string '0E0' instead of the number
+0, so that</P>
+<PRE>
+  if (!$sth-&gt;execute()) { die $sth-&gt;errstr }</PRE>
+<P>works.</P>
+<P></P>
+<DT><STRONG><A NAME="item_Fetching_data">Fetching data</A></STRONG><BR>
+<DD>
+We need not implement the methods <EM>fetchrow_array</EM>, <EM>fetchall_arrayref</EM>,
+... because these are already part of DBI. All we need is the method
+<EM>fetchrow_arrayref</EM>:
+<PRE>
+  sub fetchrow_arrayref
+  {
+      my ($sth) = @_;
+      my $data = $sth-&gt;FETCH('driver_data');
+      my $row = shift @$data;
+      if (!$row) { return undef; }
+      if ($sth-&gt;FETCH('ChopBlanks')) {
+          map { $_ =~ s/\s+$//; } @$row;
+      }
+      return $sth-&gt;_set_fbav($row);
+  }
+  *fetch = \&amp;fetchrow_arrayref; # required alias for fetchrow_arrayref</PRE>
+<PRE>
+  sub rows { my ($sth) = @_; $sth-&gt;FETCH('driver_rows'); }</PRE>
+<P>Note the use of the method <EM>_set_fbav</EM>: This is required so that
+<EM>bind_col</EM> and <EM>bind_columns</EM> work.</P>
+<P>Fixing the broken implementation for correct handling of quoted
+question marks is left as an exercise to the reader. :-)</P>
+<P></P>
+<DT><STRONG><A NAME="item_Statement_attributes">Statement attributes</A></STRONG><BR>
+<DD>
+The main difference between dbh and sth attributes is, that you
+should implement a lot of attributes here that are required by
+the DBI: For example <EM>NAME</EM>, <EM>NULLABLE</EM>, <EM>TYPE</EM>, ...
+<P>Besides that the STORE and FETCH methods are mainly the same
+as above for dbh's.</P>
+<P></P>
+<DT><STRONG><A NAME="item_Other_statement_methods">Other statement methods</A></STRONG><BR>
+<DD>
+A trivial <CODE>finish</CODE> method to discard the stored data and do
+$sth-&gt;SUPER::finish;
+<P>A <CODE>table_info</CODE> method to return details of available tables.</P>
+<P>A <CODE>type_info_all</CODE> method to return details of supported types.</P>
+<P>And perhaps some other methods that are not part of the DBI specs, in
+particular make metadata available. Considering Tim's last articles do
+yourself a favour and follow the ODBC driver.</P>
+<P></P></DL>
+<P>
+<H2><A NAME="tests">Tests</A></H2>
+<P>The test process should conform as closely as possibly to the Perl
+standard test harness.</P>
+<P>In particular, most of the tests should be run in the t sub-directory,
+and should simply produce an 'ok' when run under 'make test'.
+For details on how this is done, see the Camel book and the section in
+Chapter 7, ``The Standard Perl Library'' on <A HREF="..\..\..\lib/Test/Harness.html">the Test::Harness manpage</A>.</P>
+<P>The tests may need to adapt to the type of database which is being
+used for testing, and to the privileges of the user testing the
+driver.</P>
+<P>The DBD::Informix test code has to adapt in a number of places to the
+type of database to which it is connected as different Informix
+databases have different capabilities.</P>
+<PRE>
+        [...More info TBS...]</PRE>
+<P>
+<HR>
+<H1><A NAME="creating a new driver using c/xs">CREATING A NEW DRIVER USING C/XS</A></H1>
+<P>Creating a new C/XS driver from scratch will always be a daunting task.
+You can and should greatly simplify your task by taking a good
+reference driver implementation and modifying that to match the
+database product for which you are writing a driver.</P>
+<P>The de facto reference driver has been the one for DBD::Oracle, written
+by Tim Bunce who is also the author of the DBI package. The DBD::Oracle
+module is a good example of a driver implemented around a C-level API.</P>
+<P>Nowadays it it seems better to base on DBD::ODBC, another driver
+maintained by Tim and Jeff Urlwin, because it offers a lot of metadata
+and seems to become the guideline for the future development. (Also as
+DBD::Oracle digs deeper into the Oracle 8 OCI interface it'll get even
+more hairly than it is now.)</P>
+<P>The DBD::Informix driver is a good reference for a driver implemented
+using 'embedded SQL'. DBD::Ingres may also be worth a look.</P>
+<PRE>
+        [...More info TBS...]</PRE>
+<P>
+<H2><A NAME="requirements on a driver">REQUIREMENTS ON A DRIVER</A></H2>
+<P>T.B.S.</P>
+<P>
+<H2><A NAME="code to be written">CODE TO BE WRITTEN</A></H2>
+<P>A minimal driver will typically contain 9 files plus some tests.
+Assuming that your driver is called DBD::Driver, these files are:</P>
+<DL>
+<DT><STRONG><A NAME="item_Driver%2Epm">Driver.pm</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_Driver%2Exs">Driver.xs</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_Driver%2Eh">Driver.h</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_dbdimp%2Eh">dbdimp.h</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_dbdimp%2Ec">dbdimp.c</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_Makefile%2EPL">Makefile.PL</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_README">README</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_MANIFEST">MANIFEST</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_lib%2FBundle%2FDBD%2FDriver%2Epm">lib/Bundle/DBD/Driver.pm</A></STRONG><BR>
+<DD>
+</DL>
+<P>
+<H2><A NAME="driver.pm">Driver.pm</A></H2>
+<P>The Driver.pm file is the same as for Pure Perl modules, see above.
+However, there are some subtile differences:</P>
+<UL>
+<LI>
+The variables $DBD::File::dr|db|st::imp_data_size are not defined
+here, but in the XS code, because they declare the size of certain
+C structures.
+<P></P>
+<LI>
+Some methods are typically moved to the XS code, in particular
+<EM>prepare</EM>, <EM>execute</EM>, <EM>disconnect</EM>, <EM>disconnect_all</EM> and the STORE
+and FETCH methods.
+<P></P>
+<LI>
+Other methods are still part of <A HREF="#item_Driver%2Epm"><CODE>Driver.pm</CODE></A>, but have callbacks in
+the XS code.
+<P></P></UL>
+<P>Now let's take a closer look at an excerpt of Oracle.pm (around version
+0.54, prior to Oracle 8 support) as an example.  We ignore things that
+are already discussed for Pure Perl drivers or really Oracle specific.</P>
+<DL>
+<DT><STRONG>The database handle constructor</STRONG><BR>
+<DD>
+<PRE>
+  sub connect
+  {
+      my ($drh, $dbname, $user, $auth) = @_;</PRE>
+<PRE>
+      # Some database specific verifications, default settings
+      # and the like following here. This should only include
+      # syntax checks or similar stuff where it's legal to
+      # 'die' in case of errors.</PRE>
+<PRE>
+      # create a 'blank' dbh (call superclass constructor)
+      my $dbh = DBI::_new_dbh($drh, {
+          'Name'         =&gt; $dbname,
+          'USER'         =&gt; $user,
+          'CURRENT_USER' =&gt; $user,
+          });</PRE>
+<PRE>
+      # Call Oracle OCI orlon func in Oracle.xs file
+      # and populate internal handle data.
+      DBD::Oracle::db::_login($dbh, $dbname, $user, $auth)
+          or return undef;</PRE>
+<PRE>
+      $dbh;
+  }</PRE>
+<P>This is mostly the same as in the Pure Perl case, the exception being
+the use of the private <EM>_login</EM> callback: This will really connect to
+the database. It is implemented in Driver.xst (you should not implement
+it) and calls <EM>dbd_db_login</EM> from <EM>dbdimp.c</EM>. See below for details.</P>
+<P>Since the DBI::_new_xxh methods can't fail in normal situations, we
+don't both checking $dbh before calling _login.</P>
+<DT><STRONG>The statement handle constructor</STRONG><BR>
+<DD>
+There's nothing much new in the statement handle constructor. Like
+the <EM>connect</EM> method it now has a C callback:
+<PRE>
+  package DBD::Oracle::db; # ====== DATABASE ======
+  use strict;</PRE>
+<PRE>
+  sub prepare
+  {
+      my ($dbh, $statement, @attribs) = @_;</PRE>
+<PRE>
+      # create a 'blank' sth
+      my $sth = DBI::_new_sth($dbh, {
+          'Statement' =&gt; $statement,
+          });</PRE>
+<PRE>
+      # Call Oracle OCI oparse func in Oracle.xs file.
+      # (This will actually also call oopen for you.)
+      # and populate internal handle data.</PRE>
+<PRE>
+      DBD::Oracle::st::_prepare($sth, $statement, @attribs)
+          or return undef;</PRE>
+<PRE>
+      $sth;
+  }</PRE>
+<P></P></DL>
+<P>
+<H2><A NAME="driver.xs">Driver.xs</A></H2>
+<P>Driver.xs should look something like this:</P>
+<PRE>
+  #include &quot;Driver.h&quot;</PRE>
+<PRE>
+  DBISTATE_DECLARE;</PRE>
+<PRE>
+  INCLUDE: Driver.xsi</PRE>
+<PRE>
+  MODULE = DBD::Driver    PACKAGE = DBD::Driver::db</PRE>
+<PRE>
+  /* Non-standard dbh XS methods following here, if any.       */
+  /* Currently this includes things like _list_tables from     */
+  /* DBD::mSQL and DBD::mysql.                                 */</PRE>
+<PRE>
+  MODULE = DBD::Driver    PACKAGE = DBD::Driver::st</PRE>
+<PRE>
+  /* Non-standard sth XS methods following here, if any.       */
+  /* In particular this includes things like _list_fields from */
+  /* DBD::mSQL and DBD::mysql for accessing metadata.          */</PRE>
+<P>Note especially the include of <EM>Driver.xsi</EM> here: DBI inserts stub
+functions for almost all private methods here which will typically
+do much work for you. Wherever you really have to implement something,
+it will call a private function in <EM>dbdimp.c</EM>: This is what you have
+to implement.</P>
+<P>
+<H2><A NAME="driver.h">Driver.h</A></H2>
+<P>Driver.h should look like this:</P>
+<PRE>
+  #define NEED_DBIXS_VERSION 93</PRE>
+<PRE>
+  #include &lt;DBIXS.h&gt;      /* installed by the DBI module  */</PRE>
+<PRE>
+  #include &quot;dbdimp.h&quot;</PRE>
+<PRE>
+  #include &lt;dbd_xsh.h&gt;    /* installed by the DBI module  */</PRE>
+<P>
+<H2><A NAME="implementation header dbdimp.h">Implementation header dbdimp.h</A></H2>
+<P>This header file has two jobs:</P>
+<P>First it defines data structures for your private part of the handles.</P>
+<P>Second it defines macros that rename the generic names like
+<EM>dbd_db_login</EM> to database specific names like <EM>ora_db_login</EM>. This
+avoids name clashes and enables use of different drivers when you work
+with a statically linked perl.</P>
+<P>It also will have the important task of disabling XS methods that you
+don't want to implement.</P>
+<P>Finally, the macros will also be used to select alternate
+implementations of some functions. For example, the currently defined
+<A HREF="#item_dbd_db_login"><CODE>dbd_db_login</CODE></A> function is not passed the attribute hash. In future,
+if a dbd_db_login6 macro is defined (for a function with 6 arguments),
+it will be used instead with the attribute hash passed at the sixth
+argument.</P>
+<P>People liked to just pick Oracle's dbdimp.c and use the same names,
+structures and types. I strongly recommend against that: At first
+glance this saves time, but your implementation will be less readable.
+It was just a hell when I had to separate DBI specific parts, Oracle
+specific parts, mSQL specific parts and mysql specific parts in
+DBD::mysql's <EM>dbdimp.h</EM> and <EM>dbdimp.c</EM>. (DBD::mysql was a port of
+DBD::mSQL which was based on DBD::Oracle.) This part of the driver
+is <EM>your exclusive part</EM>. Rewrite it from scratch, so it will be
+clean and short, in other words: A better piece of code. (Of course
+have an eye at other people's work.)</P>
+<PRE>
+  struct imp_drh_st {
+      dbih_drc_t com;           /* MUST be first element in structure   */</PRE>
+<PRE>
+      /* Insert your driver handle attributes here */
+  };</PRE>
+<PRE>
+  struct imp_dbh_st {
+      dbih_dbc_t com;           /* MUST be first element in structure   */</PRE>
+<PRE>
+      /* Insert your database handle attributes here */
+  };</PRE>
+<PRE>
+  struct imp_sth_st {
+      dbih_stc_t com;           /* MUST be first element in structure   */</PRE>
+<PRE>
+      /* Insert your statement handle attributes here */
+  };</PRE>
+<PRE>
+  /*  Rename functions for avoiding name clashes; prototypes are  */
+  /*  in dbd_xst.h                                                */
+  #define dbd_init          ora_init
+  #define dbd_db_login      ora_db_login
+  #define dbd_db_do        ora_db_do
+  ... many more here ...</PRE>
+<P>This structures implement your private part of the handles. You <EM>have</EM>
+to use the name <EM>imp_dbh_dr|db|st</EM> and the first field <EM>must</EM> be of
+type <EM>dbih_drc|dbc|stc_t</EM>. You should never access this fields directly,
+except of using the <EM>DBIc_xxx</EM> macros below.</P>
+<P>
+<H2><A NAME="implementation source dbdimp.c">Implementation source dbdimp.c</A></H2>
+<P>This is the main implementation file. I will drop a short note on any
+function here that's used in the <EM>Driver.xsi</EM> template and thus <STRONG>has</STRONG>
+to be implemented. Of course you can add private or better static
+functions here.</P>
+<P>Note that most people are still using Kernighan &amp; Ritchie syntax here.
+I personally don't like this and especially in this documentation it
+cannot be of harm, so let's use ANSI. Finally Tim Bunce has announced
+interest in moving the DBI sources to ANSI as well.</P>
+<DL>
+<DT><STRONG><A NAME="item_Initialization">Initialization</A></STRONG><BR>
+<DD>
+<PRE>
+  #include &quot;Driver.h&quot;</PRE>
+<PRE>
+  DBISTATE_DECLARE;</PRE>
+<PRE>
+  void dbd_init(dbistate_t* dbistate)
+  {
+      DBIS = dbistate;  /*  Initialize the DBI macros  */
+  }</PRE>
+<P>dbd_init will be called when your driver is first loaded. These
+statements are needed for use of the DBI macros. They will include your
+private header file <EM>dbdimp.h</EM> in turn.</P>
+<DT><STRONG><A NAME="item_do_error">do_error</A></STRONG><BR>
+<DD>
+You need a function to handle recording of errors. You can call it
+whatever you like, but we'll call it <A HREF="#item_do_error"><CODE>do_error</CODE></A> here.
+<PRE>
+  void do_error(SV* h, int rc, char* what) {</PRE>
+<P>Note that <EM>h</EM> is a generic handle, may it be a driver handle, a
+database or a statement handle.</P>
+<PRE>
+  D_imp_xxh(h);</PRE>
+<P>This macro will declare and initialize a variable <EM>imp_xxh</EM> with
+a pointer to your private handle pointer. You may cast this to
+to <EM>imp_drh_t</EM>, <EM>imp_dbh_t</EM> or <EM>imp_sth_t</EM>.</P>
+<PRE>
+  SV *errstr = DBIc_ERRSTR(imp_xxh);
+  sv_setiv(DBIc_ERR(imp_xxh), (IV)rc);  /* set err early        */
+  sv_setpv(errstr, what);
+  DBIh_EVENT2(h, ERROR_event, DBIc_ERR(imp_xxh), errstr);</PRE>
+<P>Note the use of the macros DBIc_ERRSTR and DBIc_ERR for accessing the
+handles error string and error code.</P>
+<P>The macro DBIh_EVENT2 will ensure that the attributes <EM>RaiseError</EM>
+and <EM>PrintError</EM> work: That's all what you have to deal with them. :-)</P>
+<PRE>
+  if (dbis-&gt;debug &gt;= 2)
+      fprintf(DBILOGFP, &quot;%s error %d recorded: %s\n&quot;,
+          what, rc, SvPV(errstr,na));</PRE>
+<P>That's the first time we see how debug/trace logging works within a DBI
+driver.  Make use of this as often as you can!</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_db_login">dbd_db_login</A></STRONG><BR>
+<DD>
+<PRE>
+  int dbd_db_login(SV* dbh, imp_dbh_t* imp_dbh, char* dbname,
+                   char* user, char* auth);</PRE>
+<P>This function will really connect to the database. The argument <EM>dbh</EM>
+is the database handle. <EM>imp_dbh</EM> is the pointer to the handles private
+data, as is <EM>imp_xxx</EM> in <EM>do_error</EM> above. The arguments <EM>dsn</EM>,
+<EM>user</EM> and <EM>auth</EM> correspond to the arguments of the driver handles
+<EM>connect</EM> method.</P>
+<P>You will quite often use database specific attributes here, that are
+specified in the DSN. I recommend you parse the DSN within the
+<EM>connect</EM> method and pass them as handle attributes to <EM>dbd_db_login</EM>.
+Here's how you fetch them, as an example we use <EM>hostname</EM> and <EM>port</EM>
+attributes:</P>
+<PRE>
+  /* This code assumes that the *second* attribute parameter to
+   * DBI::_new_dbh was used to store an hash with login attributes
+   */
+  SV* imp_data = DBIc_IMP_DATA(dbh);
+  HV* hv;
+  SV** svp;
+  char* hostname;
+  char* port;</PRE>
+<PRE>
+  if (! SvTRUE(imp_data) || !SvROK(imp_data)  ||
+        SvTYPE(hv = (HV*) SvRV(imp_data)) != SVt_PVHV) {
+      croak(&quot;Implementation dependent data invalid: Not a hash ref.\n&quot;);
+  }
+  if ((svp = hv_fetch(hv, &quot;hostname&quot;, strlen(&quot;hostname&quot;), FALSE)) &amp;&amp;
+      SvTRUE(*svp)) {
+      hostname = SvPV(*svp, na);
+  } else {
+      hostname = &quot;localhost&quot;;
+  }
+  if ((svp = hv_fetch(hv, &quot;port&quot;, strlen(&quot;port&quot;), FALSE)) &amp;&amp;
+      SvTRUE(*svp)) {
+      port = SvPV(*svp, na);  /*  May be a service name  */
+  } else {
+      port = DEFAULT_PORT;
+  }</PRE>
+<P>Now you should really connect to the database. If you are successful
+(or even if you fail, but you have allocated some resources), you should
+use the following macros:</P>
+<PRE>
+  DBIc_IMPSET_on(imp_dbh);</PRE>
+<P>This indicates that the driver (implementor) has allocated resources in
+the imp_dbh structure and that the implementors private dbd_db_destroy
+function should be called when the handle is destroyed.</P>
+<PRE>
+  DBIc_ACTIVE_on(imp_dbh);</PRE>
+<P>This indicates that the handle has an active connection to the server
+and that the dbd_db_disconnect function should be called before the
+handle is destroyed.</P>
+<P>The dbd_db_login function should return TRUE for success, FALSE otherwise.</P>
+<DT><STRONG><A NAME="item_dbd_db_commit">dbd_db_commit</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_dbd_db_rollback">dbd_db_rollback</A></STRONG><BR>
+<DD>
+<PRE>
+  int dbd_db_commit(   SV* dbh, imp_dbh_t* imp_dbh );
+  int dbd_db_rollback( SV* dbh, imp_dbh_t* imp_dbh );</PRE>
+<P>These are used for commit and rollback. They should return TRUE for
+success, FALSE for error.</P>
+<P>The arguments <EM>dbh</EM> and <EM>imp_dbh</EM> are like above, I will omit
+describing them in what follows, as they appear always.</P>
+<DT><STRONG><A NAME="item_dbd_db_disconnect">dbd_db_disconnect</A></STRONG><BR>
+<DD>
+This is your private part of the <EM>disconnect</EM> method. Any dbh with
+the <EM>ACTIVE</EM> flag on must be disconnected. (Note that you have to set
+it in <EM>dbd_db_connect</EM> above.)
+<PRE>
+  int dbd_db_disconnect(SV* dbh, imp_dbh_t* imp_dbh);</PRE>
+<P>The database handle will return TRUE for success, FALSE otherwise.
+In any case it should do a</P>
+<PRE>
+  DBIc_ACTIVE_off(imp_dbh);</PRE>
+<P>before returning so DBI knows that <EM>dbd_db_disconnect</EM> was executed.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_db_discon_all">dbd_db_discon_all</A></STRONG><BR>
+<DD>
+<PRE>
+  int dbd_discon_all (SV *drh, imp_drh_t *imp_drh);</PRE>
+<P>This function may be called at shutdown time. It should make
+best-efforts to disconnect all database handles - if possible. Some
+databases don't support that, in which case you can do nothing
+but return 'success'.</P>
+<P>You guess what the return codes are? (Hint: See the last functions
+above ... :-)</P>
+<DT><STRONG><A NAME="item_dbd_db_destroy">dbd_db_destroy</A></STRONG><BR>
+<DD>
+This is your private part of the database handle destructor. Any dbh with
+the <EM>IMPSET</EM> flag on must be destroyed, so that you can safely free
+resources. (Note that you have to set it in <EM>dbd_db_connect</EM> above.)
+<PRE>
+  void dbd_db_destroy(SV* dbh, imp_dbh_t* imp_dbh)
+  {
+      DBIc_IMPSET_off(imp_dbh);
+  }</PRE>
+<P>The DBI Driver.xst code will have called dbd_db_disconnect for you,
+if the handle is still 'active', before calling dbd_db_destroy.</P>
+<P>Before returning the function must switch IMPSET to off, so DBI knows
+that the destructor was called.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_db_STORE_attrib">dbd_db_STORE_attrib</A></STRONG><BR>
+<DD>
+This function handles
+<PRE>
+  $dbh-&gt;{$key} = $value;</PRE>
+<P>its prototype is</P>
+<PRE>
+  int dbd_db_STORE_attrib(SV* dbh, imp_dbh_t* imp_dbh, SV* keysv,
+                          SV* valuesv);</PRE>
+<P>You do not handle all attributes, in contrary you should not handle
+DBI attributes here: Leave this to DBI. (There's one exception,
+<EM>AutoCommit</EM>, which you should care about.)</P>
+<P>The return value is TRUE, if you have handled the attribute or FALSE
+otherwise. If you are handling an attribute and something fails, you
+should call <EM>do_error</EM>, so DBI can raise exceptions, if desired.
+If <EM>do_error</EM> returns, however, you have a problem: The user will
+never know about the error, because he typically will not check
+<A HREF="#item_errstr"><CODE>$dbh-&gt;errstr</CODE></A>.</P>
+<P>I cannot recommend a general way of going on, if <EM>do_error</EM> returns,
+but there are examples where even the DBI specification expects that
+you croak(). (See the <EM>AutoCommit</EM> method in <EM>DBI(3)</EM>.)</P>
+<P>If you have to store attributes, you should either use your private
+data structure imp_xxx, the handle hash (via (HV*)SvRV(dbh)), or use
+the private imp_data.</P>
+<P>The first is best for internal C values like integers or pointers and
+where speed is important within the driver. The handle hash is best for
+values the user may want to get/set via driver-specific attributes.
+The private imp_data is an additional SV attached to the handle. You
+could think of it as an unnamed handle attribute. It's not normally used.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_db_FETCH_attrib">dbd_db_FETCH_attrib</A></STRONG><BR>
+<DD>
+This is the counterpart of dbd_db_STORE_attrib, needed for
+<PRE>
+  $value = $dbh-&gt;{$key};</PRE>
+<P>Its prototype is:</P>
+<PRE>
+  SV* dbd_db_FETCH_attrib(SV* dbh, imp_dbh_t* imp_dbh, SV* keysv);</PRE>
+<P>Unlike all previous methods this returns an SV with the value. Note
+that you should normally execute sv_2mortal, if you return a nonconstant
+value. (Constant values are <CODE>&amp;sv_undef</CODE>, <CODE>&amp;sv_no</CODE> and <CODE>&amp;sv_yes</CODE>.)</P>
+<P>Note, that DBI implements a caching algorithm for attribute values.
+If you think, that an attribute may be fetched, you store it in the
+dbh itself:</P>
+<PRE>
+  if (cacheit) /* cache value for later DBI 'quick' fetch? */
+      hv_store((HV*)SvRV(dbh), key, kl, cachesv, 0);</PRE>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_st_prepare">dbd_st_prepare</A></STRONG><BR>
+<DD>
+This is the private part of the <EM>prepare</EM> method. Note that you
+<STRONG>must not</STRONG> really execute the statement here. You may, for example,
+preparse and validate the statement or do similar things.
+<PRE>
+  int dbd_st_prepare(SV* sth, imp_sth_t* imp_sth, char* statement,
+                     SV* attribs);</PRE>
+<P>A typical, simple possibility is just to store the statement in the
+imp_data hash ref and use it in dbd_st_execute. If you can, you should
+setup attributes like NUM_OF_FIELDS, NAME, ... here, but DBI
+doesn't require that. However, if you do, document it.</P>
+<P>In any case you should set the IMPSET flag, as you did in
+<EM>dbd_db_connect</EM> above:</P>
+<PRE>
+  DBIc_IMPSET_on(imp_sth);</PRE>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_st_execute">dbd_st_execute</A></STRONG><BR>
+<DD>
+This is where a statement will really be executed.
+<PRE>
+  int dbd_st_execute(SV* sth, imp_sth_t* imp_sth);</PRE>
+<P>Note, that you must be aware, that a statement may be executed repeatedly.
+Also, you should not expect, that <EM>finish</EM> will be called between
+two executions.</P>
+<P>If your driver supports binding of parameters (he should!), but the
+database doesn't, you must probably do it here. This can be done as
+follows:</P>
+<PRE>
+  char* statement = dbd_st_get_statement(sth, imp_sth);
+      /* Its your drivers task to implement this function.  It     */
+      /* must restore the statement passed to preparse.            */
+      /* See use of imp_data above for an example of how to do     */
+      /* this.                                                     */
+  int numParam = DBIc_NUM_PARAMS(imp_sth);
+  int i;</PRE>
+<PRE>
+  for (i = 0; i &lt; numParam; i++) {
+      char* value = dbd_db_get_param(sth, imp_sth, i);
+      /* Its your drivers task to implement dbd_db_get_param,      */
+      /* it must be setup as a counterpart of dbd_bind_ph.         */
+      /* Look for '?' and replace it with 'value'.  Difficult      */
+      /* task, note that you may have question marks inside        */
+      /* quotes and the like ...  :-(                              */
+      /* See DBD::mysql for an example. (Don't look too deep into  */
+      /* the example, you will notice where I was lazy ...)        */
+  }</PRE>
+<P>The next thing is you really execute the statement. Note that you must
+prepare the attributes NUM_OF_FIELDS, NAME, ... when the statement is
+successfully executed if you have not already done so: They may be used even before a potential
+<EM>fetchrow</EM>. In particular you have to tell DBI the number of fields,
+that the statement has, because it will be used by DBI internally.
+Thus the function will typically ends with:</P>
+<PRE>
+  if (isSelectStatement) {
+      DBIc_NUM_FIELDS(imp_sth) = numFields;
+      DBIc_ACTIVE_on(imp_sth);
+  }</PRE>
+<P>It is important that the ACTIVE flag only be set for select statements.
+See <EM>dbd_st_preparse</EM> and <EM>dbd_db_connect</EM> above for more explanations.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_st_fetch">dbd_st_fetch</A></STRONG><BR>
+<DD>
+This function fetches a row of data. The row is stored in in an array,
+of SV's that DBI prepares for you. This has two advantages: It is fast
+(you even reuse the SV's, so they don't have to be created after the
+first fetchrow) and it guarantees, that DBI handles <EM>bind_cols</EM> for
+you.
+<P>What you do is the following:</P>
+<PRE>
+  AV* av;
+  int numFields = DBIc_NUM_FIELDS(imp_sth); /* Correct, if NUM_FIELDS
+      is constant for this statement. There are drivers where this is
+      not the case! */
+  int chopBlanks = DBIc_is(imp_sth, DBIcf_ChopBlanks);
+  int i;</PRE>
+<PRE>
+  if (!fetch_new_row_of_data(...)) {
+      ... /* check for error or end-of-data */
+      DBIc_ACTIVE_off(imp_sth); /* turn off Active flag automatically */
+      return Nullav;
+  }
+  /* get the fbav (field buffer array value) for this row       */
+  /* it is very important to only call this after you know      */
+  /* that you have a row of data to return.                     */
+  av = DBIS-&gt;get_fbav(imp_sth);
+  for (i = 0; i &lt; numFields; i++) {
+      SV* sv = fetch_a_field(..., i);
+      if (chopBlanks &amp;&amp; SvOK(sv) &amp;&amp; type_is_blank_padded(field_type[i])) {
+          /*  Remove white space from end (only) of sv  */
+      }
+      sv_setsv(AvARRAY(av)[i], sv); /* Note: (re)use! */
+  }
+  return av;</PRE>
+<P>There's no need to use a fetch_a_field function returning an SV*.
+It's more common to use your database API functions to fetch the
+data as character strings and use code like this:</P>
+<PRE>
+  sv_setpvn(AvARRAY(av)[i], char_ptr, char_count);</PRE>
+<P>NULL values must be returned as undef. You can use code like this:</P>
+<PRE>
+  SvOK_off(AvARRAY(av)[i]);</PRE>
+<P>The function returns the AV prepared by DBI for success or <CODE>Nullav</CODE>
+otherwise.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_st_finish">dbd_st_finish</A></STRONG><BR>
+<DD>
+This function can be called if the user wishes to indicate that no
+more rows will be fetched even if the server has more rows to offer.
+See the DBI docs for more background details.
+<P>All it <EM>needs</EM> to do is turn off the Active flag for the sth.
+It will only be called by Driver.xst code, if the driver has set
+ACTIVE to on for the sth.</P>
+<P>Minimal example (the DBI default method just does this):</P>
+<PRE>
+  int dbd_st_finish(SV* sth, imp_sth_t* imp_sth) {
+      DBIc_ACTIVE_off(imp_sth);
+      return 1;
+  }</PRE>
+<P>The function returns TRUE for success, FALSE otherwise.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_st_destroy">dbd_st_destroy</A></STRONG><BR>
+<DD>
+This function is the private part of the statement handle destructor.
+<PRE>
+  void dbd_st_destroy(SV* sth, imp_sth_t* imp_sth) {
+      ... /* any clean-up that's needed */
+      DBIc_IMPSET_off(imp_sth); /* let DBI know we've done it   */
+  }</PRE>
+<P>The DBI Driver.xst code will call dbd_st_finish for you, if the sth has
+the ACTIVE flag set, before calling dbd_st_destroy.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_st_STORE_attrib">dbd_st_STORE_attrib</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_dbd_st_FETCH_attrib">dbd_st_FETCH_attrib</A></STRONG><BR>
+<DD>
+These functions correspond to dbd_db_STORE|FETCH attrib above, except
+that they are for statement handles. See above.
+<PRE>
+  int dbd_st_STORE_attrib(SV* sth, imp_sth_t* imp_sth, SV* keysv,
+                          SV* valuesv);
+  SV* dbd_st_FETCH_attrib(SV* sth, imp_sth_t* imp_sth, SV* keysv);</PRE>
+<P></P>
+<DT><STRONG><A NAME="item_dbd_bind_ph">dbd_bind_ph</A></STRONG><BR>
+<DD>
+This function is internally used by the <EM>bind_param</EM> method, the
+<EM>bind_param_inout</EM> method and by the DBI Driver.xst code if <CODE>execute</CODE>
+is called with any bind parameters.
+<PRE>
+  int dbd_bind_ph (SV *sth, imp_sth_t *imp_sth, SV *param,
+                   SV *value, IV sql_type, SV *attribs,
+                   int is_inout, IV maxlen);</PRE>
+<P>The <EM>param</EM> argument holds an IV with the parameter number (1, 2, ...).
+The <EM>value</EM> argument is the parameter value and <EM>sql_type</EM> is its type.</P>
+<P>If your driver does not support bind_param_inout then you should
+ignore <EM>maxlen</EM> and croak if <EM>is_inout</EM> is TRUE.</P>
+<P>If your driver <EM>does</EM> support bind_param_inout then you should
+note that <EM>value</EM> is the SV <EM>after</EM> dereferencing the reference
+passed to bind_param_inout.</P>
+<P>In drivers of simple databases the function will, for example, store
+the value in a parameter array and use it later in <EM>dbd_st_execute</EM>.
+See the <EM>DBD::mysql</EM> driver for an example.</P>
+<P></P></DL>
+<P>
+<H2><A NAME="implementing bind_param_inout support">Implementing bind_param_inout support</A></H2>
+<P>To provide support for parameters bound by reference rather than by
+value, the driver must do a number of things.  First, and most
+importantly, it must note the references and stash them in its own
+driver structure.  Secondly, when a value is bound to a column, the
+driver must discard any previous reference bound to the column.  On
+each execute, the driver must evaluate the references and internally
+bind the values resulting from the references.  This is only applicable
+if the user writes:</P>
+<PRE>
+  $sth-&gt;execute;</PRE>
+<P>If the user writes:</P>
+<PRE>
+  $sth-&gt;execute(@values);</PRE>
+<P>then DBI automatically calls the binding code for each element of
+@values.  These calls are indistinguishable from explicit user calls to
+bind_param.</P>
+<P>
+<H2><A NAME="makefile.pl">Makefile.PL</A></H2>
+<P>This is exactly as in the Pure Perl case. To be honest, the above
+Makefile.PL contains some things that are superfluous for Pure Perl
+drivers. :-)</P>
+<P>
+<HR>
+<H1><A NAME="methods which do not need to be written">METHODS WHICH DO NOT NEED TO BE WRITTEN</A></H1>
+<P>The DBI code implements the majority of the methods which are
+accessed using the notation DBI-&gt;function(), the only exceptions being
+DBI-&gt;<CODE>connect()</CODE> and DBI-&gt;<CODE>data_sources()</CODE> which require support from the
+driver.</P>
+<P>The DBI code implements the following documented driver, database and
+statement functions which do not need to be written by the DBD driver
+writer.</P>
+<DL>
+<DT><STRONG><A NAME="item_do">$dbh-&gt;<CODE>do()</CODE></A></STRONG><BR>
+<DD>
+The default implementation of this function prepares, executes and
+destroys the statement.  This can be replaced if there is a better
+way to implement this, such as EXECUTE IMMEDIATE which can
+sometimes be used if there are no parameters.
+<P></P>
+<DT><STRONG><A NAME="item_errstr">$h-&gt;<CODE>errstr()</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_err">$h-&gt;<CODE>err()</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_state">$h-&gt;<CODE>state()</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_trace">$h-&gt;<CODE>trace()</CODE></A></STRONG><BR>
+<DD>
+The DBD driver does not need to worry about these routines at all.
+<P></P>
+<DT><STRONG><A NAME="item_%24h%2D%3E%7BChopBlanks%7D">$h-&gt;{ChopBlanks}</A></STRONG><BR>
+<DD>
+This attribute needs to be honured during fetch operations, but does
+not need to be handled by the attribute handling code.
+<P></P>
+<DT><STRONG><A NAME="item_%24h%2D%3E%7BRaiseError%7D">$h-&gt;{RaiseError}</A></STRONG><BR>
+<DD>
+The DBD driver does not need to worry about this attribute at all.
+<P></P>
+<DT><STRONG><A NAME="item_%24h%2D%3E%7BPrintError%7D">$h-&gt;{PrintError}</A></STRONG><BR>
+<DD>
+The DBD driver does not need to worry about this attribute at all.
+<P></P>
+<DT><STRONG><A NAME="item_bind_col">$sth-&gt;<CODE>bind_col()</CODE></A></STRONG><BR>
+<DD>
+Assuming the driver uses the DBIS-&gt;<CODE>get_fbav()</CODE> function (C drivers,
+see below), or the $sth-&gt;<CODE>_set_fbav($data)</CODE> method (Perl drivers)
+the driver does not need to do anything about this routine.
+<P></P>
+<DT><STRONG><A NAME="item_bind_columns">$sth-&gt;<CODE>bind_columns()</CODE></A></STRONG><BR>
+<DD>
+Regardless of whether the driver uses DBIS-&gt;get_fbav(), the driver
+does not need to do anything about this routine as it simply
+iteratively calls $sth-&gt;bind_col().
+<P></P></DL>
+<P>The DBI code implements a default implementation of the following
+functions which do not need to be written by the DBD driver writer
+unless the default implementation is incorrect for the Driver.</P>
+<DL>
+<DT><STRONG><A NAME="item_quote">$dbh-&gt;<CODE>quote()</CODE></A></STRONG><BR>
+<DD>
+This should only be written if the database does not accept the ANSI
+SQL standard for quoting strings, with the string enclosed in single
+quotes and any embedded single quotes replaced by two consecutive
+single quotes.
+<P>For the two argument form of quote, you need to implement the
+<CODE>type_info</CODE> method to provide the information that quote needs.</P>
+<P></P>
+<DT><STRONG><A NAME="item_ping">$dbh-&gt;<CODE>ping()</CODE></A></STRONG><BR>
+<DD>
+This should be implemented as a simple efficient way to determine
+whether the connection to the database is still alive. Typically
+code like this:
+<PRE>
+  sub ping {
+      my $dbh = shift;
+      $sth = $dbh-&gt;prepare_cached(q{
+          select * from A_TABLE_NAME where 1=0
+      }) or return 0;
+      $sth-&gt;execute or return 0;
+      $sth-&gt;finish;
+      return 1;
+  }</PRE>
+<P>where A_TABLE_NAME is the name of a table that always exists (such as a
+database system catalogue).</P>
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="writing an emulation layer for an old perl interface">WRITING AN EMULATION LAYER FOR AN OLD PERL INTERFACE</A></H1>
+<P>Study Oraperl.pm (supplied with DBD::Oracle) and Ingperl.pm (supplied
+with DBD::Ingres) and the corresponding dbdimp.c files for ideas.</P>
+<P>Note that the emulation code sets $dbh-&gt;{CompatMode} = 1; for each
+connection so that the internals of the driver can implement behaviour
+compatible with the old interface when dealing with those handles.</P>
+<P>
+<H2><A NAME="setting emulation perl variables">Setting emulation perl variables</A></H2>
+<P>For example, ingperl has a $sql_rowcount variable. Rather than try
+to manually update this in Ingperl.pm it can be done faster in C code.
+In dbd_init():</P>
+<PRE>
+  sql_rowcount = perl_get_sv(&quot;Ingperl::sql_rowcount&quot;, GV_ADDMULTI);</PRE>
+<P>In the relevant places do:</P>
+<PRE>
+  if (DBIc_COMPAT(imp_sth))     /* only do this for compatibility mode handles */
+      sv_setiv(sql_rowcount, the_row_count);</PRE>
+<P>
+<HR>
+<H1><A NAME="other miscellaneous information">OTHER MISCELLANEOUS INFORMATION</A></H1>
+<P>
+<H2><A NAME="the imp_xyz_t types">The imp_xyz_t types</A></H2>
+<P>Any handle has a corresponding C structure filled with private data.
+Some of this data is reserved for use by DBI (except for using the
+DBIc macros below), some is for you. See the description of the
+<EM>dbdimp.h</EM> file above for examples. The most functions in dbdimp.c
+are passed both the handle <CODE>xyz</CODE> and a pointer to <CODE>imp_xyz</CODE>. In
+rare cases, however, you may use the following macros:</P>
+<DL>
+<DT><STRONG><A NAME="item_D_imp_dbh"><CODE>D_imp_dbh(dbh)</CODE></A></STRONG><BR>
+<DD>
+Given a function argument <EM>dbh</EM>, declare a variable <EM>imp_dbh</EM> and
+initialize it with a pointer to the handles private data. Note: This
+must be a part of the function header, because it declares a variable.
+<P></P>
+<DT><STRONG><A NAME="item_D_imp_sth"><CODE>D_imp_sth(sth)</CODE></A></STRONG><BR>
+<DD>
+Likewise for statement handles.
+<P></P>
+<DT><STRONG><A NAME="item_D_imp_xxx"><CODE>D_imp_xxx(h)</CODE></A></STRONG><BR>
+<DD>
+Given any handle, declare a variable <EM>imp_xxx</EM> and initialize it
+with a pointer to the handles private data. It is safe, for example,
+to cast <EM>imp_xxx</EM> to <CODE>imp_dbh_t*</CODE>, if <CODE>DBIc_TYPE(imp_xxx)</CODE> == DBIt_DB.
+(You can also call sv_derived_from(h, ``DBI::db''), but that's much
+slower.)
+<P></P>
+<DT><STRONG><A NAME="item_D_imp_sth_from_dbh">D_imp_sth_from_dbh</A></STRONG><BR>
+<DD>
+Given a imp_sth, declare a variable <EM>imp_dbh</EM> and initialize it with a
+pointer to the parent database handles implementors structure.
+<P></P></DL>
+<P>
+<H2><A NAME="using dbic_impset_on">Using DBIc_IMPSET_on</A></H2>
+<P>The driver code which initializes a handle should use <CODE>DBIc_IMPSET_on()</CODE>
+as soon as its state is such that the cleanup code must be called.
+When this happens is determined by your driver code.</P>
+<P>Failure to call this can lead to corruption of data structures.
+For example, DBD::Informix maintains a linked list of database handles
+in the driver, and within each handle, a linked list of statements.
+Once a statement is added to the linked list, it is crucial that it is
+cleaned up (removed from the list).
+When <CODE>DBIc_IMPSET_on()</CODE> was being called too late, it was able to cause
+all sorts of problems.</P>
+<P>
+<H2><A NAME="using dbic_is(), dbic_has(), dbic_on() and dbic_off()">Using DBIc_is(), DBIc_has(), <CODE>DBIc_on()</CODE> and <CODE>DBIc_off()</CODE></A></H2>
+<P>Once upon a long time ago, the only way of handling the internal DBI
+boolean flags/attributes was through macros such as:</P>
+<PRE>
+  DBIc_WARN       DBIc_WARN_on        DBIc_WARN_off
+  DBIc_COMPAT     DBIc_COMPAT_on      DBIc_COMPAT_off</PRE>
+<P>Each of these took an imp_xxh pointer as an argument.</P>
+<P>Since then, new attributes have been added such as ChopBlanks,
+RaiseError and PrintError, and these do not have the full set of
+macros.
+The approved method for handling these is now the four macros:</P>
+<PRE>
+  DBIc_is(imp, flag)
+  DBIc_has(imp, flag)    an alias for DBIc_is
+  DBIc_on(imp, flag)
+  DBIc_off(imp, flag)</PRE>
+<P>Consequently, the DBIc_XXXXX family of macros is now mostly deprecated
+and new drivers should avoid using them, even though the older drivers
+will probably continue to do so for quite a while yet. However...</P>
+<P>There is an <EM>important exception</EM> to that. The ACTIVE and IMPSET
+flags should be set via the DBIc_ACTIVE_on and DBIc_IMPSET_on macros,
+and unset via the DBIc_ACTIVE_off and DBIc_IMPSET_off macros.</P>
+<P>
+<H2><A NAME="using dbis>get_fbav()">Using DBIS-&gt;<CODE>get_fbav()</CODE></A></H2>
+<P>The $sth-&gt;<A HREF="#item_bind_col"><CODE>bind_col()</CODE></A> and $sth-&gt;<A HREF="#item_bind_columns"><CODE>bind_columns()</CODE></A> documented in the DBI
+specification do not have to be implemented by the driver writer
+becuase DBI takes care of the details for you.
+However, the key to ensuring that bound columns work is to call the
+function DBIS-&gt;<CODE>get_fbav()</CODE> in the code which fetches a row of data.
+This returns an AV, and each element of the AV contains the SV which
+should be set to contain the returned data.</P>
+<P>The above is for C drivers only. The Perl equivalent is the
+$sth-&gt;<CODE>_set_fbav($data)</CODE> method, as described in the part on Pure
+Perl drivers.</P>
+<P>
+<HR>
+<H1><A NAME="subclassing dbi drivers">SUBCLASSING DBI DRIVERS</A></H1>
+<P>This is definitely an open subject. It can be done, as demonstrated by
+the <EM>DBD::File</EM> driver, but it is not as simple as one might think.</P>
+<P>(Note that this topic is different from subclassing the DBI. For an
+example of that, see the t/subclass.t file supplied with the DBI.)</P>
+<P>The main problem is that the dbh's and sth's that your <EM>connect</EM> and
+<EM>prepare</EM> methods return are not instances of your <EM>DBD::Driver::db</EM>
+or <EM>DBD::Driver::st</EM> packages, they are not even derived from it.
+Instead they are instances of the <EM>DBI::db</EM> or <EM>DBI::st</EM> classes or
+a derived subclass. Thus, if you write a method <EM>mymethod</EM> and do a</P>
+<PRE>
+  $dbh-&gt;mymethod()</PRE>
+<P>then the autoloader will search for that method in the package <EM>DBI::db</EM>.
+Of course you can instead to a</P>
+<PRE>
+  $dbh-&gt;func('mymethod')</PRE>
+<P>and that will indeed work, even if <EM>mymethod</EM> is inherited, but not
+without additional work. Setting <CODE>@ISA</CODE> is not sufficient.</P>
+<P>
+<H2><A NAME="overwriting methods">Overwriting methods</A></H2>
+<P>The first problem is, that the <EM>connect</EM> method has no idea of
+subclasses. For example, you cannot implement base class and subclass
+in the same file: The <EM>install_driver</EM> method wants to do a</P>
+<PRE>
+  require DBD::Driver;</PRE>
+<P>In particular, your subclass <STRONG>has</STRONG> to be a separate driver, from
+the view of DBI, and you cannot share driver handles.</P>
+<P>Of course that's not much of a problem. You should even be able
+to inherit the base classes <EM>connect</EM> method. But you cannot
+simply overwrite the method, unless you do something like this,
+quoted from <EM>DBD::CSV</EM>:</P>
+<PRE>
+  sub connect ($$;$$$) {
+      my ($drh, $dbname, $user, $auth, $attr) = @_;</PRE>
+<PRE>
+      my $this = $drh-&gt;DBD::File::dr::connect($dbname, $user, $auth, $attr);
+      if (!exists($this-&gt;{csv_tables})) {
+          $this-&gt;{csv_tables} = {};
+      }</PRE>
+<PRE>
+      $this;
+  }</PRE>
+<P>Note that we cannot do a</P>
+<PRE>
+  $srh-&gt;SUPER::connect($dbname, $user, $auth, $attr);</PRE>
+<P>as we would usually do in a an OO environment, because $drh is an instance
+of <EM>DBI::dr</EM>. And note, that the <EM>connect</EM> method of <EM>DBD::File</EM> is
+able to handle subclass attributes. See the description of Pure Perl
+drivers above.</P>
+<P>It is essential that you always call superclass method in the above
+manner. However, that should do.</P>
+<P>
+<H2><A NAME="attribute handling">Attribute handling</A></H2>
+<P>Fortunately the DBI specs allow a simple, but still performant way of
+handling attributes. The idea is based on the convention that any
+driver uses a prefix <EM>driver_</EM> for its private methods. Thus it's
+always clear whether to pass attributes to the super class or not.
+For example, consider this STORE method from the <EM>DBD::CSV</EM> class:</P>
+<PRE>
+  sub STORE {
+      my ($dbh, $attr, $val) = @_;
+      if ($attr !~ /^driver_/) {
+          return $dbh-&gt;DBD::File::db::STORE($attr, $val);
+      }
+      if ($attr eq 'driver_foo') {
+      ...
+  }</PRE>
+<P>
+<HR>
+<H1><A NAME="write_getinfo_pm">write_getinfo_pm</A></H1>
+<P>write_getinfo_pm generates a DBD::&lt;foo&gt;::GetInfo package.</P>
+<P>Usage:</P>
+<PRE>
+  perl -MDBI::DBD -e write_getinfo_pm dbi:ODBC:foo_db username password &gt; DBD/&lt;foo&gt;/GetInfo.pm</PRE>
+<P>or</P>
+<PRE>
+  perl -MDBI::DBD -e 'write_getinfo_pm(&quot;dbi:ODBC:foo_db&quot;,&quot;username&quot;,&quot;password&quot;)' &gt; DBD/&lt;foo&gt;/GetInfo.pm</PRE>
+<P>This method generates a DBD::&lt;foo&gt;::GetInfo package from the data source you
+specified in the parameter list or in the environment variable DBI_DSN.
+DBD::&lt;foo&gt;::GetInfo should help a DBD author implementing the DBI <CODE>get_info()</CODE>
+method.
+Because you are just creating this package, it's very unlikly that DBD::&lt;foo&gt;
+already provides a good implementation for get_info(). Thus you will probable
+connect via DBD::ODBC.</P>
+<P>If you connect via DBD::ODBC, you should use version 0.38 or greater;</P>
+<P>Please have a critical look at the data returned! ODBC driver vary dramatically
+in their quality.</P>
+<P>The generator assumes that most values are static and places these values
+directly in the %info hash. A few examples show the use of CODE references
+and the implementation via subroutines.
+It's very likely that you have to write additional subroutines for values
+depending on the session state or server version, e.g. SQL_DBMS_VER.</P>
+<P>A possible implementation of DBD::&lt;foo&gt;::get_info() may look like:</P>
+<PRE>
+  sub get_info {
+    my($dbh, $info_type) = @_;
+    require DBD::&lt;foo&gt;::GetInfo;
+    my $v = $DBD::&lt;foo&gt;::GetInfo::info{int($info_type)};
+    $v = $v-&gt;($dbh) if ref $v eq 'CODE';
+    return $v;
+  }</PRE>
+<P>Please replace &lt;foo&gt; with the name of your driver.</P>
+<P>
+<HR>
+<H1><A NAME="authors">AUTHORS</A></H1>
+<P>Jonathan Leffler &lt;<A HREF="mailto:jleffler@informix.com">jleffler@informix.com</A>&gt;,
+Jochen Wiedmann &lt;<A HREF="mailto:joe@ispsoft.de">joe@ispsoft.de</A>&gt;,
+Steffen Goeldner &lt;<A HREF="mailto:s.goeldner@eurodata.de">s.goeldner@eurodata.de</A>&gt;,
+and Tim Bunce.</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD CLASS=block VALIGN=MIDDLE WIDTH=100% BGCOLOR="#cccccc">
+<FONT SIZE=+1><STRONG><P CLASS=block>&nbsp;DBI::DBD - DBD Driver Writer's Guide</P></STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+</BODY>
+
+</HTML>

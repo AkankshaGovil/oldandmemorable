@@ -1,0 +1,166 @@
+#!/bin/sh
+#
+# 
+#  RSM HA resource
+#
+# Author: Rohini Raman	
+
+#######################################################################
+# Initialization:
+
+. /usr/lib/ocf/resource.d/genband/.ocf-shellfuncs 
+
+#######################################################################
+
+# Fill in some defaults if no values are specified
+HOSTOS=`uname`
+OCF_RESKEY_additional_parameters_default=""
+
+usage() {
+  cat <<UEND
+	usage: $0 (start|stop|validate-all|meta-data|monitor)
+
+	$0 manages RSM as an HA resource.
+
+	The 'start' does nothing.
+	The 'stop' does nothing.
+	The 'status' does nothing.
+	The 'monitor' syncs PAM users to standby system.
+	The 'validate-all' operation reports whether the parameters are valid
+
+UEND
+}
+
+meta_data() {
+	cat <<END
+<?xml version="1.0"?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
+<resource-agent name="rsmresync">
+<version>1.0</version>
+
+<longdesc lang="en">
+Resource script for RSM HA. 
+It manages RSM instance as an HA resource.
+</longdesc>
+<shortdesc lang="en">RSM resource agent</shortdesc>
+
+<parameters>
+
+<parameter name="additional_parameters" unique="0" required="0">
+<longdesc lang="en">
+Additional parameters which are passed on startup. 
+</longdesc>
+<shortdesc lang="en">Additional paramters to pass</shortdesc>
+<content type="integer" default="${OCF_RESKEY_additional_parameters_default}"/>
+</parameter>
+
+</parameters>
+
+<actions>
+<action name="start" timeout="120" />
+<action name="stop" timeout="120" />
+<action name="status" timeout="60" />
+<action name="monitor" depth="0" timeout="30" interval="10" start-delay="10" />
+<action name="validate-all" timeout="5" />
+<action name="meta-data" timeout="5" />
+</actions>
+</resource-agent>
+END
+}
+
+rsmres_validate() {
+# checking the parameters
+	return 0;
+}
+
+rsmres_status() {
+        pro=`cat /var/lib/heartbeat/crm/cib.xml | grep 'name="ip"'| cut -d'"' -f6`
+        apro=`ip addr list | grep $pro`
+        if [ "$apro" \> "" ]; then
+            return $OCF_SUCCESS;
+        else
+            return $OCF_NOT_RUNNING;
+        fi
+									
+
+}
+
+rsmres_monitor() {
+
+        #ocf_log info "Syncing PAM users ...";
+        PIA=` ifconfig eth1 | grep "inet addr" | cut -d':' -f2 |cut -d' ' -f1`;
+        if [ "$PIA" == "" ]; then
+            PIA=` ifconfig eth1 | grep "inet6 addr" | cut -d' ' -f13 |cut -d/ -f1`
+        fi
+	if [ $PIA = "169.254.20.1" ]; then
+	    	PIA="169.254.20.2";
+	else
+       		if [ $PIA = "169.254.20.2" ]; then
+            		PIA="169.254.20.1";
+		else
+			ocf_log debug "ERROR: The private IP addresses $PIA is not part of standard configuration";
+			ocf_log debug "ERROR: PAM syncronization is not possble";
+			#return $OCF_SUCCESS;
+		fi
+        fi
+	
+        #If the ping fails, then it means that peer machine is down.
+        #In that case do not check for VIP address in inet list,
+        #because it is not displayed in inet list, and neither try to rsync.
+
+         successcount=$(ping -c 2 $PIA | grep 'received'| awk -F',' '{ print $2 }' | awk '{ print $1 }')
+         if [ $successcount -ne 0 ]; then
+                ocf_log debug "Peer $PIA is alive";
+                MSG=`rsync -avzr -e "ssh -o StrictHostKeyChecking=no" --files-from=/usr/lib/ocf/resource.d/genband/pam_files_to_sync /etc $PIA:/etc 2>&1`
+
+                if [ $? -ne 0 ]; then
+                       MSG=`rsync -avzr -e "ssh -o StrictHostKeyChecking=no" --files-from=/usr/lib/ocf/resource.d/genband/pam_files_to_sync /etc $PIA:/etc 2>&1`
+
+                        if [ $? -ne 0 ]; then
+                                ocf_log debug "ERROR: Cannot sync PAM users. $MSG";
+                        fi
+                fi
+
+                pro=`cat /var/lib/heartbeat/crm/cib.xml | grep 'name="ip"'| cut -d'"' -f6`
+                apro=`ip addr list | grep $pro`
+                if [ "$apro" \> "" ]; then
+                        ocf_log debug "VIP check successful";
+                        return $OCF_SUCCESS;
+                else
+                        ocf_log debug "VIP check Failed";
+                        return $OCF_NOT_RUNNING;
+                fi
+
+         else
+                ocf_log debug "Peer $PIA is dead";
+                ocf_log debug "NOT running rsync command and Not checking VIP because the peer is not pingable";
+                return $OCF_SUCCESS;
+        fi
+    
+}
+
+rsmres_start() {
+        return $OCF_SUCCESS;
+}
+
+rsmres_stop() {
+        return $OCF_SUCCESS;
+}
+
+
+# What kind of method was invoked?
+case "$1" in
+  start)	rsmres_validate; 
+		rsmres_start;;
+  stop)		rsmres_stop;;
+  status)	rsmres_status;;
+  monitor)	rsmres_monitor;;
+
+  meta-data)	meta_data; exit $OCF_SUCCESS;;
+  validate-all)	rsmres_validate; exit $OCF_SUCCESS;;
+
+ *)		usage
+		exit $OCF_ERR_UNIMPLEMENTED;;
+esac
+exit $?
+

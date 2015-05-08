@@ -1,0 +1,56 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.22.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It would check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 bee4f50263ee940fa2d0a126e9db1c0ce80eb4b5 AUTHORS
+SHA1 eefea3927c5c9e3a6bfd33024448d03b72e00aa5 Changes
+SHA1 30644f50ee197b82f91e86a3ee750f55e482e8ba MANIFEST
+SHA1 9c8ab340a6b10db16bfd46b41d5aad333547e471 MANIFEST.SKIP
+SHA1 c618b2243967442bff9b5af8875781adff79c260 META.yml
+SHA1 b515f698d87332ef83e31efe248ccd2219d5115b Makefile.PL
+SHA1 189f7c686b043a468c545f367fab01f21b056a5b PAR.pm
+SHA1 e3e01400ed4b073c02ba394494bd4289e321107c PAR/Heavy.pm
+SHA1 d2eb33c7b95635e40a7ec1cedc5df24de02ad85b README
+SHA1 a92e5e4f035a15c2eb0901210897861e1b7d8e4c TODO
+SHA1 53b7ddec42e9936cd000d8e65a01f374069034e4 inc/ExtUtils/AutoInstall.pm
+SHA1 f76b8b25a86ad7fd30b6cfa375857f6ae868fa7b inc/Module/Install.pm
+SHA1 488e9a7866469280884d69700419835cf00f567a inc/Module/Install/AutoInstall.pm
+SHA1 cea97807a177f1fa890b15076242dada8901e344 inc/Module/Install/Base.pm
+SHA1 5eb8fdd6b559befa4579e6138e8ebe3610d4c497 inc/Module/Install/Fetch.pm
+SHA1 22afd934650e265bea4dca965a8828f78b1a3da0 inc/Module/Install/Include.pm
+SHA1 656e5a6f5364f790015fcf189e860bf73a1842b2 inc/Module/Install/Makefile.pm
+SHA1 151e9035ca1641c828aec9747ef4cf4606c1f011 inc/Module/Install/Metadata.pm
+SHA1 6d7bacc70df7f184c0de75703ebe14c62c6a619e inc/Module/Install/PAR.pm
+SHA1 249b2349cc3e1959dcb99708dfb3e0159194cc8c inc/Module/Install/Run.pm
+SHA1 7d0face3524789d75eee40207f90918818146c2b inc/Module/Install/Win32.pm
+SHA1 d91164bd4319e0478918dd6b2923af9b5a399d2f inc/Module/Install/_Autrijus.pm
+SHA1 65bfdbb2c48bbb92df0ae865607a197949d98186 inc/Module/Install/_Autrijus/PAR.pm
+SHA1 1d366731dcbb6f9dd0aef87ef077a31cbe39ea2b myldr/Makefile.PL
+SHA1 999ba338629cc53628d2e6c31d9f8cbe5af0cebe myldr/file2c.pl
+SHA1 952e421f5658b941b8c9e2a73b7f28c53a208d91 myldr/main.c
+SHA1 ee852494fd2882e6012791d968857eb76282498a package/parl.nsi
+SHA1 77bcefedd1ef4a460264445e07307a3b09484fde script/par.pl
+SHA1 4db20f6ae6e68fa77b298db994812cf80c5b4a80 script/parl.pod
+SHA1 329e12ff779d9a5fdaeb2c4e54bac3be6e39b360 script/pp
+SHA1 61bccfe67d66f2655a0c4ee54abf96670e9a0750 t/0-signature.t
+SHA1 b6f27c2bb07be9c5de1452c0890683a80ba0f39b t/1-basic.t
+SHA1 a0258484d56cc699190be4cd93a16d145a0e1d16 t/hello.par
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.1 (FreeBSD)
+
+iD8DBQE+a0rdtLPdNzw1AaARAtL6AJ9TVWoBCMhYTi5WDTJCh3mOn7+khgCguEqI
+1LoCHwiw1UjfpdnG7EhL7VU=
+=KkDR
+-----END PGP SIGNATURE-----

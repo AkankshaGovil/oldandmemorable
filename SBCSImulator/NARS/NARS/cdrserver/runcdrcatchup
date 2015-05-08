@@ -1,0 +1,45 @@
+#!/bin/sh
+
+SCRIPTDIR=`dirname $0`
+PERL="$SCRIPTDIR/perl";
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH::$SCRIPTDIR/lib"
+export LD_LIBRARY_PATH
+PERL5LIB="$SCRIPTDIR:$SCRIPTDIR/lib/perl5/site_perl"
+export PERL5LIB
+
+usage ()
+{
+	printf "Usage: `basename $0` -s startfile[:startline] [-e endfile[:endline]] [-c config_file] [-d debuglevel] [-vh]\n"
+}
+
+ARG=
+NEEDARG=1
+while getopts c:s:e:d:hHv i $*
+do
+	case $i in
+		s)	ARG="$ARG -s $OPTARG"
+			NEEDARG=0
+			;;
+		c)	ARG="$ARG -c $OPTARG"
+			;;
+		e)	ARG="$ARG -e $OPTARG"
+			;;
+		d)	ARG="$ARG -d $OPTARG"
+			;;
+		v)	$PERL $SCRIPTDIR/cdrcatchup.pl -v
+			exit 0
+			;;
+		*)	usage
+			exit 0
+			;;
+	esac
+done
+
+if [ $NEEDARG -eq 1 ]
+then
+	usage
+	exit 1
+fi
+
+nohup  $PERL $SCRIPTDIR/cdrcatchup.pl $ARG
+
